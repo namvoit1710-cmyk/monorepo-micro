@@ -1,0 +1,41 @@
+{
+  "name": "@ldc/shell",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "rsbuild dev",
+    "build": "rsbuild build",
+    "preview": "rsbuild preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint ./src"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@ldc/eslint-config": "workspace:^",
+    "@ldc/tailwind-config": "workspace:^",
+    "@ldc/tsconfig": "workspace:^",
+    "@module-federation/rsbuild-plugin": "^2.3.1",
+    "@rsbuild/core": "^1.7.5",
+    "@rsbuild/plugin-react": "^1.4.6",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "@tailwindcss/postcss": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@ldc/env": "workspace:^",
+    "@ldc/ui": "workspace:^",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19",
+    "react-router-dom": "catalog:",
+    "vite": "catalog:",
+    "zod": "catalog:"
+  }
+}

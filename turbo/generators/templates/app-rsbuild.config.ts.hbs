@@ -1,0 +1,32 @@
+import { pluginModuleFederation } from "@module-federation/rsbuild-plugin";
+import { defineConfig } from "@rsbuild/core";
+import { pluginReact } from "@rsbuild/plugin-react";
+
+export default defineConfig({
+  plugins: [
+    pluginReact(),
+    pluginModuleFederation({
+      name: "{{ name }}",
+      remotes: {},
+      shared: {
+        react: { singleton: true, requiredVersion: "^18" },
+        "react-dom": { singleton: true, requiredVersion: "^18" },
+        "react-router-dom": { singleton: true },
+      },
+    }),
+  ],
+  tools: {
+    postcss: {
+      postcssOptions: {
+        plugins: [require("@tailwindcss/postcss")],
+      },
+    },
+  },
+  resolve: {
+    alias: { "@": "./src" },
+  },
+  source: {
+    entry: { index: "./src/main.tsx" },
+  },
+  server: { port: {{ port }} },
+});

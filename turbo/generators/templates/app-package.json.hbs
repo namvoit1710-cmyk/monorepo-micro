@@ -1,0 +1,43 @@
+{
+  "name": "@ldc/{{ name }}",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "rsbuild dev",
+    "build": "rsbuild build",
+    "preview": "rsbuild preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint ./src",
+    "clean": "git clean -xdf .cache .turbo dist node_modules"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@ldc/eslint-config": "workspace:^",
+    "@ldc/prettier-config": "workspace:^",
+    "@ldc/tailwind-config": "workspace:^",
+    "@ldc/tsconfig": "workspace:^",
+    "@module-federation/rsbuild-plugin": "^2.3.1",
+    "@rsbuild/core": "^1.7.5",
+    "@rsbuild/plugin-react": "^1.4.6",
+    "@tailwindcss/postcss": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@ldc/env": "workspace:^",
+    "@ldc/ui": "workspace:^",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19",
+    "react-router-dom": "catalog:",
+    "zod": "catalog:"
+  },
+  "prettier": "@ldc/prettier-config"
+}

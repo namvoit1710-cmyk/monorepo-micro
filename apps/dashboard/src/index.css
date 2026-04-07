@@ -1,0 +1,3 @@
+@import "@ldc/tailwind-config/index.css";
+
+@source "../../../packages/ui/src/**/*.{ts,tsx}";
