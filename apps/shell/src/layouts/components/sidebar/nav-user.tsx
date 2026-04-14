@@ -9,7 +9,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@ldc/ui/components/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,22 +18,24 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../ui/dropdown-menu";
+} from "@ldc/ui/components/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "../../ui/sidebar";
+} from "@ldc/ui/components/sidebar";
+
+export interface INavUser {
+    name: string;
+    email: string;
+    avatar: string;
+}
 
 export function NavUser({
   user,
 }: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
+  user: INavUser;
 }) {
   const { isMobile } = useSidebar();
 

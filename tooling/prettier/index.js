@@ -8,6 +8,7 @@ const config = {
     "@ianvs/prettier-plugin-sort-imports",
     "prettier-plugin-tailwindcss",
   ],
+  tabWidth: 4,
   tailwindFunctions: ["cn", "cva"],
   importOrder: [
     "<TYPES>",
