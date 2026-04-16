@@ -83,9 +83,9 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
           // execSync("pnpm dlx sherif@latest --fix", {
           //   stdio: "inherit",
           // });
-          execSync("pnpm i", { stdio: "inherit" });
+          execSync("bun i", { stdio: "inherit" });
           execSync(
-            `pnpm prettier --write packages/${answers.name}/** --list-different`,
+            `bun run prettier --write packages/${answers.name}/** --list-different`,
           );
           return "Package scaffolded";
         }

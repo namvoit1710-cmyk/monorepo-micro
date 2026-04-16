@@ -18,9 +18,17 @@ export default defineConfig({
             shared: {
                 react: { singleton: true, eager: true, requiredVersion: "^18" },
                 "react-dom": { singleton: true, eager: true, requiredVersion: "^18" },
-                "react-router-dom": { singleton: true, eager: true },
-                "i18next": { singleton: true, eager: true },
-                "react-i18next": { singleton: true, eager: true },
+                "react-router-dom": { singleton: true, eager: true, },
+                "react-i18next": {
+                    singleton: true,
+                    eager: true,
+                    requiredVersion: false,
+                },
+                "i18next": {
+                    singleton: true,
+                    eager: true,
+                    requiredVersion: false,
+                },
             },
         }),
     ],
