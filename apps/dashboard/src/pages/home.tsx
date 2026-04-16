@@ -1,32 +1,13 @@
-import { Link } from "react-router-dom";
 
-import { env } from "@/env";
-import { buildRegistryTheme } from "@ldc/tailwind-config";
-import ModeSwitcher from "@ldc/ui/blocks/mode-switcher/mode-switcher";
-import ThemePicker from "@ldc/ui/blocks/theme-picker/theme-picker";
-import { Button } from "@ldc/ui/components/button";
+import { useTranslation } from "@ldc/i18n";
 
 const HomePage = () => {
-
-    const builderTheme = buildRegistryTheme({
-        baseColor: "neutral",
-        theme: "green",
-    })
-
-    console.log(builderTheme)
+    const { t } = useTranslation("dashboard")
 
     return (
-        <div className="bg-muted w-screen h-screen flex flex-col items-center justify-center">
-            <ModeSwitcher />
-
-            <ThemePicker />
-            <div className="bg-card size-100 rounded">
-                {env.PUBLIC_WORKFLOW_API_URL}
-
-                <Link to="/">
-                    <Button variant={"default"}>Home</Button>
-                </Link>
-            </div>
+        <div className="bg-muted w-full h-full flex flex-col items-center justify-center">
+            <h1 className="text-3xl font-bold text-primary">{t("greeting")}</h1>
+            <p className="text-lg text-muted-foreground">{t("welcome")}</p>
         </div>
     );
 };

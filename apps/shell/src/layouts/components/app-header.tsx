@@ -1,6 +1,7 @@
 import type { BreadcrumbItem } from "@/hooks/use-breadcrumb";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumb";
 import { useTheme } from "@ldc/ui";
+import type { BreadcrumbItemType } from "@ldc/ui/blocks/breadcrumb/breadcrumb";
 import { BreadcrumbBlock } from "@ldc/ui/blocks/breadcrumb/breadcrumb";
 import ModeSwitcher from "@ldc/ui/blocks/mode-switcher/mode-switcher";
 import ThemePicker from "@ldc/ui/blocks/theme-picker/theme-picker";
@@ -9,11 +10,19 @@ import { Button } from "@ldc/ui/components/button";
 import { Separator } from "@ldc/ui/components/separator";
 import { SidebarTrigger } from "@ldc/ui/components/sidebar";
 import { BellRing } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function AppHeader() {
     const { mode, setMode, theme, setTheme } = useTheme();
 
     const breadcrumbs: BreadcrumbItem[] = useBreadcrumbs();
+
+    const navigate = useNavigate();
+    const handleBreadcrumbItemClick = (item: BreadcrumbItemType) => {
+        if (item.href) {
+            void navigate(item.href);
+        }
+    }
 
     return (
         <header className="flex h-16 shrink-0 items-center px-4 justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
@@ -24,7 +33,7 @@ export function AppHeader() {
                     className="mr-2 data-[orientation=vertical]:h-4"
                 />
 
-                <BreadcrumbBlock items={breadcrumbs} />
+                <BreadcrumbBlock items={breadcrumbs} onClickItem={handleBreadcrumbItemClick} />
             </div>
 
             <div className="flex items-center gap-2 justify-end">

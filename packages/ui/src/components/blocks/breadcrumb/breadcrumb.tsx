@@ -3,10 +3,9 @@ import {
     Breadcrumb,
     BreadcrumbEllipsis,
     BreadcrumbItem,
-    BreadcrumbLink,
     BreadcrumbList,
     BreadcrumbPage,
-    BreadcrumbSeparator,
+    BreadcrumbSeparator
 } from "../../ui/breadcrumb"
 import {
     DropdownMenu,
@@ -55,20 +54,18 @@ export function BreadcrumbBlock({
         <Breadcrumb>
             <BreadcrumbList>
                 {/* First item */}
-                <BreadcrumbItem>
-                    <BreadcrumbLink
-                        href={firstItem?.href ?? "#"}
-                        onClick={() => onClickItem?.(firstItem ?? { label: "", href: "#" }, 0)}
-                    >
-                        {firstItem?.label}
-                    </BreadcrumbLink>
+                <BreadcrumbItem
+                    className="cursor-pointer"
+                    onClick={() => onClickItem?.(firstItem ?? { label: "", href: "#" }, 0)}
+                >
+                    {firstItem?.label}
                 </BreadcrumbItem>
 
                 {/* Ellipsis với dropdown cho hidden items */}
                 {needsEllipsis && hiddenItems.length > 0 && (
                     <>
                         <BreadcrumbSeparator />
-                        <BreadcrumbItem>
+                        <BreadcrumbItem className="cursor-pointer">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <BreadcrumbEllipsis className="cursor-pointer" />
@@ -79,11 +76,8 @@ export function BreadcrumbBlock({
                                             key={i}
                                             onClick={() => onClickItem?.(item, i + 1)}
                                         >
-                                            {item.href ? (
-                                                <a href={item.href}>{item.label}</a>
-                                            ) : (
-                                                item.label
-                                            )}
+
+                                            {item.label}
                                         </DropdownMenuItem>
                                     ))}
                                 </DropdownMenuContent>
@@ -100,13 +94,8 @@ export function BreadcrumbBlock({
                     return (
                         <Fragment key={i}>
                             <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbLink
-                                    href={item.href ?? "#"}
-                                    onClick={() => onClickItem?.(item, originalIndex)}
-                                >
-                                    {item.label}
-                                </BreadcrumbLink>
+                            <BreadcrumbItem className="cursor-pointer" onClick={() => onClickItem?.(item, originalIndex)}>
+                                {item.label}
                             </BreadcrumbItem>
                         </Fragment>
                     )
@@ -116,7 +105,7 @@ export function BreadcrumbBlock({
                 {items.length > 1 && (
                     <>
                         <BreadcrumbSeparator />
-                        <BreadcrumbItem>
+                        <BreadcrumbItem onClick={() => onClickItem?.(lastItem ?? { label: "", href: "#" }, items.length - 1)}>
                             <BreadcrumbPage>{lastItem?.label}</BreadcrumbPage>
                         </BreadcrumbItem>
                     </>

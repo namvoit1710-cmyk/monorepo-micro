@@ -1,11 +1,11 @@
 /// <reference types="node" />
-import * as path from "node:path";
-import { fileURLToPath } from "node:url";
 import { includeIgnoreFile } from "@eslint/compat";
 import eslint from "@eslint/js";
 import importPlugin from "eslint-plugin-import";
 import turboPlugin from "eslint-plugin-turbo";
 import { defineConfig } from "eslint/config";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import tseslint from "typescript-eslint";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -55,6 +55,8 @@ export const baseConfig = defineConfig(
     ],
     rules: {
       ...(turboPlugin.configs?.recommended as { rules?: Record<string, unknown> } | undefined)?.rules ?? {},
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },

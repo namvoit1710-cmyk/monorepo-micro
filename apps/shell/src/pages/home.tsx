@@ -1,16 +1,13 @@
-import { Link } from "react-router-dom";
 
-import { Button } from "@ldc/ui/components/button";
+import { useTranslation } from "@ldc/i18n";
 
 const HomePage = () => {
+  const { t } = useTranslation();
+
   return (
-    <div>
-      <h1>Home Page</h1>
-      <Link to="/dashboard">
-        <Button variant="outline" size="sm">
-          Dashboard
-        </Button>
-      </Link>
+    <div className="flex flex-col h-full items-center justify-center overflow-hidden w-full">
+      <h1>{t("greeting")}</h1>
+      <p>{t("welcome")}</p>
     </div>
   );
 };

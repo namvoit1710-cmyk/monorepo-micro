@@ -1,4 +1,7 @@
+import { initializeI18n } from "@ldc/i18n";
 import { setupMFInfra } from "./infra/setup";
+
+void initializeI18n();
 
 setupMFInfra({
   remotes: [

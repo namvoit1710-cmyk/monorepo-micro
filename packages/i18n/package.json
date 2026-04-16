@@ -1,0 +1,30 @@
+{
+  "name": "@ldc/i18n",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "devDependencies": {
+    "@ldc/eslint-config": "workspace:*",
+    "@ldc/prettier-config": "workspace:*",
+    "@ldc/tsconfig": "workspace:*",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@ldc/prettier-config",
+  "dependencies": {
+    "i18next": "^26.0.5",
+    "react-i18next": "^17.0.3"
+  }
+}

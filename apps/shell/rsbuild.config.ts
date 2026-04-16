@@ -6,34 +6,36 @@ import path from "path";
 const { publicVars } = loadEnv({ cwd: path.resolve(__dirname, "../..") });
 
 export default defineConfig({
-  source: {
-    define: publicVars,
-    entry: { index: "./src/main.tsx" },
-  },
-  plugins: [
-    pluginReact(),
-    pluginModuleFederation({
-      name: "shell",
-      remotes: {
-        dashboard: "dashboard@http://localhost:3001/mf-manifest.json",
-      },
-      shared: {
-        react: { singleton: true, requiredVersion: "^18" },
-        "react-dom": { singleton: true, requiredVersion: "^18" },
-        "react-router-dom": { singleton: true },
-      },
-      // runtimePlugins: ["./src/mf-error-handler-plugin.ts"],
-    }),
-  ],
-  tools: {
-    postcss: {
-      postcssOptions: {
-        plugins: [require("@tailwindcss/postcss")],
-      },
+    source: {
+        define: publicVars,
+        entry: { index: "./src/main.tsx" },
     },
-  },
-  resolve: {
-    alias: { "@": "./src" },
-  },
-  server: { port: 3000 },
+    plugins: [
+        pluginReact(),
+        pluginModuleFederation({
+            name: "shell",
+            remotes: {
+                dashboard: "dashboard@http://localhost:3001/mf-manifest.json",
+            },
+            shared: {
+                react: { singleton: true, eager: true, requiredVersion: "^18" },
+                "react-dom": { singleton: true, eager: true, requiredVersion: "^18" },
+                "react-router-dom": { singleton: true, eager: true },
+                "i18next": { singleton: true, eager: true },
+                "react-i18next": { singleton: true, eager: true },
+            },
+            // runtimePlugins: ["./src/mf-error-handler-plugin.ts"],
+        }),
+    ],
+    tools: {
+        postcss: {
+            postcssOptions: {
+                plugins: [require("@tailwindcss/postcss")],
+            },
+        },
+    },
+    resolve: {
+        alias: { "@": "./src" },
+    },
+    server: { port: 3000 },
 });

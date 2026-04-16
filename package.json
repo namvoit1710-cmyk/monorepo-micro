@@ -68,6 +68,7 @@
     "@rsbuild/core": "^1.7.5",
     "@rsbuild/plugin-react": "^1.4.6",
     "@turbo/gen": "^2.5.8",
+    "@types/node": "22.18.12",
     "dotenv-cli": "^10.0.0",
     "prettier": "^3.6.2",
     "turbo": "^2.9.4",

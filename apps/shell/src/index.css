@@ -1,4 +1,4 @@
 @import "@ldc/tailwind-config/core";
-/* @import "@ldc/tailwind-config/themes/olive-green"; */
 
 @source "../../../packages/ui/src/**/*.{ts,tsx}";
+@source "../../dashboard/src/**/*.{ts,tsx}";

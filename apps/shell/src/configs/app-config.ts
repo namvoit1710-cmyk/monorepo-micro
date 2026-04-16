@@ -4,7 +4,7 @@ export const appMenus = [
     {
         title: "Dashboard",
         icon: LayoutDashboard,
-        url: "/",
+        url: "/dashboard",
     },
 
     {
