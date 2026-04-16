@@ -1,5 +1,5 @@
 {
-  "name": "@ldc/autoform",
+  "name": "@ldc/workflow-editor",
   "private": true,
   "type": "module",
   "exports": {
@@ -26,14 +26,17 @@
     "prettier": "catalog:",
     "typescript": "catalog:"
   },
-  "prettier": "@ldc/prettier-config",
   "dependencies": {
-    "@hookform/resolvers": "^5.2.2",
     "@ldc/ui": "workspace:*",
-    "@ldc/data-table": "workspace:*",
-    "@monaco-editor/react": "^4.7.0",
     "lucide-react": "catalog:",
-    "react-hook-form": "^7.72.1",
-    "zod": "catalog:"
-  }
+    "rete": "2.0.6",
+    "rete-area-plugin": "2.1.5",
+    "rete-auto-arrange-plugin": "2.0.2",
+    "rete-connection-path-plugin": "2.0.4",
+    "rete-connection-plugin": "2.0.5",
+    "rete-context-menu-plugin": "2.0.6",
+    "rete-history-plugin": "2.1.1",
+    "rete-react-plugin": "2.1.0"
+  },
+  "prettier": "@ldc/prettier-config"
 }

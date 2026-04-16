@@ -1,0 +1,86 @@
+import { BaseNode } from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/base-node";
+import { IEditorInstance, IEditorValue } from "@common/components/ldc-workflow-editor/components/rete-editor/types";
+import { RefObject, useEffect, useRef } from "react";
+
+interface UseEditorSyncOptions {
+    onChange?: (value: IEditorValue) => void;
+    onNodeSelected?: (node: BaseNode) => void;
+    onNodeAdded?: () => void;
+    onConnectionAdded?: () => void;
+}
+
+export function useEditorSync(
+    editorInstance: IEditorInstance | undefined,
+    isLoadingRef: RefObject<boolean>,
+    options: UseEditorSyncOptions,
+) {
+    const { onChange, onNodeSelected, onNodeAdded, onConnectionAdded } = options;
+
+    useEffect(() => {
+        if (!editorInstance) return;
+
+        const { editor } = editorInstance ?? {};
+        if (!editor) return;
+
+        let active = true;
+        const pipe = (context) => {
+            if (!active || isLoadingRef.current) return context;
+
+            if (
+                ["nodecreated", "noderemoved", "connectioncreated", "connectionremoved"]
+                    .includes(context.type)
+            ) {
+                onChange?.(editorInstance.serializeNodes());
+            }
+
+            if (context.type === "nodecreated") onNodeAdded?.();
+            if (context.type === "connectioncreated") onConnectionAdded?.();
+
+            return context;
+        }
+
+        editor.addPipe(pipe);
+
+        return () => {
+            active = false;
+        };
+    }, [editorInstance]);
+
+    const translateDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        if (!editorInstance) return;
+
+        const { area } = editorInstance ?? {};
+        if (!area) return;
+
+        area.addPipe((context) => {
+            if (context.type === "nodepicked") {
+                onNodeSelected?.(editorInstance.getNodeById(context.data.id));
+
+                const isOutsideViewPort = !editorInstance.isNodeInViewport(context.data.id);
+                if (isOutsideViewPort) {
+                    editorInstance.centerOnNode(context.data.id);
+                }
+            }
+
+            if (context.type === "nodetranslated") {
+                if (translateDebounceRef.current) {
+                    clearTimeout(translateDebounceRef.current);
+                }
+
+                translateDebounceRef.current = setTimeout(() => {
+                    onChange?.(editorInstance.serializeNodes());
+                }, 300);
+            }
+
+            return context;
+        });
+
+        return () => {
+            if (translateDebounceRef.current) {
+                clearTimeout(translateDebounceRef.current);
+            }
+        };
+    }, [editorInstance]);
+}

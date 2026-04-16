@@ -1,0 +1,41 @@
+{
+    "notification": {
+        "success": "Success",
+        "warning": "Warning",
+        "error": "Error",
+        "copied_successfully": "Copied successfully",
+        "pasted_json_successfully": "Pasted JSON successfully",
+        "failed_to_parse_pasted_json": "Failed to parse pasted JSON",
+        "pasted_json_is_not_valid": "Pasted JSON is not valid"
+    },
+
+    "toolbar": {
+        "redo": "Redo",
+        "undo": "Undo",
+        "zoom_in": "Zoom in",
+        "zoom_out": "Zoom out",
+        "zoom_fit": "Fit view",
+        "add_node": "Add node",
+        "paste": "Paste",
+        "copy": "Copy",
+        "delete": "Delete",
+        "execute": "Execute",
+        "open": "Open",
+        "save": "Save",
+        "load": "Load",
+        "export": "Export",
+        "import": "Import",
+        "clear": "Clear",
+        "zoom": "Zoom",
+        "add": "Add",
+        "clean_up": "Clean up"
+    },
+
+    "context_menu": {
+        "open": "Open",
+        "execute_step": "Execute step",
+        "copy": "Copy",
+        "delete": "Delete",
+        "close": "Close"
+    }
+}

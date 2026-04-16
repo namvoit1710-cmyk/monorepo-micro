@@ -1,0 +1,111 @@
+/* eslint-disable react-hooks/refs */
+import { RETE_EDITOR_I18N_NAMESPACE } from "@common/components/ldc-workflow-editor/i18n";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@common/components/ui/dropdown-menu";
+import { BookOpenIcon, CopyIcon, DeleteIcon, PlayIcon, XCircleIcon } from "lucide-react";
+import { ComponentProps, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
+
+export enum NodeContextMenuAction {
+    Open = "open",
+    Execute = "execute",
+    Replace = "replace",
+    Copy = "copy",
+    Duplicate = "duplicate",
+    Delete = "delete",
+    Close = "close"
+}
+
+export type NodeContextMenuActionType = keyof typeof NodeContextMenuAction;
+
+export interface NodeMenuActionEvent {
+    action: NodeContextMenuAction;
+    nodeId: string;
+    nodeData: Record<string, any>;
+}
+
+
+interface INodeContextMenuProps extends ComponentProps<typeof DropdownMenu> {
+    onAction?: (action: NodeContextMenuAction) => void;
+    readOnly?: boolean;
+    anchorEl?: HTMLElement | null;
+}
+
+const getMenuActions = (readOnly: boolean) => {
+    const actions = [
+        { icon: <BookOpenIcon strokeWidth={1.5} />, labelKey: "context_menu.open", action: NodeContextMenuAction.Open, isVisible: true },
+        { icon: <PlayIcon strokeWidth={1.5} />, labelKey: "context_menu.execute_step", action: NodeContextMenuAction.Execute, isVisible: true },
+        { icon: <CopyIcon strokeWidth={1.5} />, labelKey: "context_menu.copy", action: NodeContextMenuAction.Copy, isVisible: !readOnly },
+    ];
+
+    if (readOnly) {
+        return actions.filter((action) => action.isVisible);
+    }
+
+    return actions;
+};
+
+const NodeContextMenu = ({ onAction, readOnly, anchorEl, ...props }: INodeContextMenuProps) => {
+    const { t } = useTranslation(RETE_EDITOR_I18N_NAMESPACE);
+
+    const menuActions = useMemo(() => getMenuActions(readOnly), [readOnly]);
+
+    const rectRef = useRef<DOMRect | null>(null);
+    const rect = useMemo(() => {
+        if (anchorEl) {
+            rectRef.current = anchorEl.getBoundingClientRect();
+        }
+        return rectRef.current;
+    }, [anchorEl]);
+
+    return (
+        <DropdownMenu
+            {...props}
+            modal={false}
+        >
+            <DropdownMenuTrigger asChild>
+                <div
+                    style={{
+                        position: "fixed",
+                        left: rect?.x ?? 0,
+                        top: rect?.y ?? 0,
+                        width: rect?.width ?? 0,
+                        height: rect?.height ?? 0,
+                        pointerEvents: "none",
+                    }}
+                />
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent>
+                {menuActions.map((item, index) => (
+                    <DropdownMenuItem
+                        key={`${item.action}-${index}`}
+                        className="cursor-pointer py-1"
+                        onClick={() => onAction?.(item.action)}
+                    >
+                        {item.icon}
+                        {t(item.labelKey)}
+                    </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                {!readOnly && (<DropdownMenuItem
+                    variant="destructive"
+                    className="cursor-pointer py-1"
+                    onClick={() => onAction?.(NodeContextMenuAction.Delete)}
+                >
+                    <DeleteIcon />
+                    {t("context_menu.delete")}
+                </DropdownMenuItem>)}
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                    onClick={() => onAction?.(NodeContextMenuAction.Close)}
+                >
+                    <XCircleIcon />
+                    {t("context_menu.close")}
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    )
+}
+
+export default NodeContextMenu;
