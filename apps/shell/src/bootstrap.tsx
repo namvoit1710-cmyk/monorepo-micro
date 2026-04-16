@@ -16,7 +16,7 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <React.StrictMode>
-    <ThemeProvider defaultTheme={{ baseColor: "olive", themeColor: "red" }}>
+    <ThemeProvider>
       <App />
     </ThemeProvider>
   </React.StrictMode>,
