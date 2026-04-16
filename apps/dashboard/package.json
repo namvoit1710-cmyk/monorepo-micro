@@ -40,7 +40,8 @@
     "react-dom": "catalog:react19",
     "react-router-dom": "catalog:",
     "vite": "catalog:",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "lucide-react": "catalog:"
   },
   "prettier": "@ldc/prettier-config"
 }

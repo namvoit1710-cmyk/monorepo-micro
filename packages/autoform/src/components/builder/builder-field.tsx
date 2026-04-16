@@ -6,6 +6,7 @@ import { useCheckCondition } from "../../hooks/use-check-condittion";
 import type { FieldComponentProps, IField } from "../../types/schema";
 import FragmentWrapper from "../field-wrapper/fragment-wrapper";
 import BuilderArrayField from "./builder-array-field";
+import BuilderObjectField from "./builder-object-field";
 
 interface IBuilderFieldProps {
     field: IField;
@@ -65,8 +66,7 @@ const BuilderField = (props: IBuilderFieldProps) => {
     const getObjectOutputTypeComponent = (field: IField): JSX.Element | null => {
         switch (field.fieldConfig.fieldWrapper) {
             default:
-                return null
-            // return <BuilderObjectField field={field} path={path} />;
+                return <BuilderObjectField field={field} path={path} />;
         }
     };
 

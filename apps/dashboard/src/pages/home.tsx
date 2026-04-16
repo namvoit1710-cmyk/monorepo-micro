@@ -1,5 +1,7 @@
 import { Builder } from "@ldc/autoform";
 import { useTranslation } from "@ldc/i18n";
+import { Upload, UploadDropzone, UploadFileList } from "@ldc/ui/components/upload";
+import { UploadIcon } from "lucide-react";
 
 const HomePage = () => {
     const { t } = useTranslation("dashboard")
@@ -32,90 +34,18 @@ const HomePage = () => {
                                     },
                                     fields: [
                                         {
-                                            key: "firstName",
+                                            key: "name",
                                             outputType: "string",
                                             fieldConfig: {
+                                                fieldWrapper: "FormItemWrapper",
+                                                wrapperProps: {
+                                                    label: "Name",
+                                                },
                                                 fieldControl: "InputControl",
                                                 controlProps: {
-                                                    label: "First Name",
-                                                    placeholder: "Enter your first name"
+                                                    placeholder: "Enter your name"
                                                 }
-                                            }
-                                        },
-                                        {
-                                            key: "age",
-                                            outputType: "number",
-                                            fieldConfig: {
-                                                fieldControl: "NumberControl",
-                                                controlProps: {
-                                                    label: "Age",
-                                                    placeholder: "Enter your age"
-                                                }
-                                            }
-                                        },
-                                        {
-                                            key: "gender",
-                                            outputType: "string",
-                                            fieldConfig: {
-                                                fieldControl: "SelectControl",
-                                                controlProps: {
-                                                    label: "Gender",
-                                                    placeholder: "Select your gender",
-                                                    options: [
-                                                        { id: "male", value: "Male" },
-                                                        { id: "female", value: "Female" },
-                                                        { id: "other", value: "Other" }
-                                                    ]
-                                                }
-                                            }
-                                        },
-                                        {
-                                            key: "hobbies",
-                                            outputType: "string",
-                                            fieldConfig: {
-                                                fieldControl: "TextareaControl",
-                                                controlProps: {
-                                                    label: "Hobbies",
-                                                    placeholder: "Enter your hobbies"
-                                                }
-                                            }
-                                        },
-
-                                        {
-                                            key: "newsletter",
-                                            outputType: "boolean",
-                                            fieldConfig: {
-                                                fieldControl: "SwitchControl",
-                                                controlProps: {
-                                                    label: "Subscribe to newsletter"
-                                                }
-                                            }
-                                        },
-                                        {
-                                            key: "terms",
-                                            outputType: "boolean",
-                                            fieldConfig: {
-                                                fieldControl: "CheckBoxControl",
-                                                controlProps: {
-                                                    label: "Agree to terms and conditions"
-                                                }
-                                            }
-                                        },
-                                        {
-                                            key: "color",
-                                            outputType: "string",
-                                            fieldConfig: {
-                                                fieldControl: "RadioPopupControl",
-                                                controlProps: {
-                                                    label: "Favorite Color",
-                                                    className: "flex flex-row items-center gap-x-4",
-                                                    options: [
-                                                        { id: "red", label: "Red" },
-                                                        { id: "green", label: "Green" },
-                                                        { id: "blue", label: "Blue" }
-                                                    ]
-                                                }
-                                            }
+                                            },
                                         }
                                     ]
                                 }
@@ -126,6 +56,90 @@ const HomePage = () => {
 
                 onValuesChange={(values) => console.log(values)}
             />
+            <Builder
+                schema={{
+                    fields: [
+                        {
+                            key: "data",
+                            outputType: "object",
+                            fieldConfig: {
+                                fieldWrapper: "TabWrapper",
+                                wrapperProps: {
+                                    variant: "line"
+                                }
+                            },
+                            fields: [
+                                {
+                                    key: "field_id",
+                                    outputType: "object",
+                                    fieldConfig: {
+                                        fieldWrapper: "TabItemWrapper",
+                                        wrapperProps: {
+                                            label: "Tab 1"
+                                        }
+                                    },
+                                    fields: [
+                                        {
+                                            key: "name",
+                                            outputType: "string",
+                                            fieldConfig: {
+                                                fieldWrapper: "FormItemWrapper",
+                                                wrapperProps: {
+                                                    label: "Name",
+                                                },
+                                                fieldControl: "InputControl",
+                                                controlProps: {
+                                                    placeholder: "Enter your name"
+                                                }
+                                            },
+                                        }
+                                    ]
+                                },
+                                {
+                                    key: "field_id_2",
+                                    outputType: "object",
+                                    fieldConfig: {
+                                        fieldWrapper: "TabItemWrapper",
+                                        wrapperProps: {
+                                            label: "Tab 2"
+                                        }
+                                    },
+                                    fields: [
+                                        {
+                                            key: "name",
+                                            outputType: "string",
+                                            fieldConfig: {
+                                                fieldWrapper: "FormItemWrapper",
+                                                wrapperProps: {
+                                                    label: "Age",
+                                                },
+                                                fieldControl: "InputControl",
+                                                controlProps: {
+                                                    placeholder: "Enter your age"
+                                                }
+                                            },
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }}
+
+                onValuesChange={(values) => console.log(values)}
+            />
+
+            <Upload
+                onFilesChange={(files) => console.log(files)}
+            >
+                <UploadDropzone
+                    icon={<UploadIcon className="text-primary" />}
+                    title="Upload your files"
+                    description="Drag and drop files here or click to upload"
+                />
+
+                <UploadFileList />
+            </Upload>
         </>
     );
 };
