@@ -1,3 +1,5 @@
-@import "@ldc/tailwind-config/index.css";
+@import "@ldc/tailwind-config/core";
+@import "@ldc/tailwind-config/themes/olive-orange";
+/* @import "@ldc/tailwind-config/themes/olive-green"; */
 
 @source "../../../packages/ui/src/**/*.{ts,tsx}";

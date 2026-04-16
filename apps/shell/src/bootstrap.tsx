@@ -1,3 +1,4 @@
+import { ThemeProvider } from "@ldc/ui";
 import React from "react";
 import { createRoot } from "react-dom/client";
 
@@ -15,6 +16,8 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider defaultTheme={{ baseColor: "olive", themeColor: "red" }}>
+      <App />
+    </ThemeProvider>
   </React.StrictMode>,
 );
