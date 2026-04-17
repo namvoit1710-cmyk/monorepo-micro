@@ -1,4 +1,4 @@
-import { BotIcon, LayoutDashboard, UserIcon, Workflow } from "lucide-react";
+import { BookOpen, BotIcon, LayoutDashboard, UserIcon, Workflow } from "lucide-react";
 
 export const appMenus = [
     {
@@ -59,4 +59,23 @@ export const appMenus = [
             }
         ],
     },
+
+    {
+        title: "Documentations",
+        icon: BookOpen,
+        items: [
+            {
+                title: "Introductions",
+                url: "/docs/introduction",
+            },
+            {
+                title: "Installations",
+                url: "/docs/installation",
+            },
+            {
+                title: "Project Structure",
+                url: "/docs/structure",
+            },
+        ]
+    }
 ]

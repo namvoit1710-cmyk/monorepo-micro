@@ -16,6 +16,7 @@ export default defineConfig({
             name: "shell",
             remotes: {
                 dashboard: "dashboard@http://localhost:3001/mf-manifest.json",
+                docs: "docs@http://localhost:3002/mf-manifest.json",
             },
             shared: {
                 react: { singleton: true, eager: true, requiredVersion: "^18" },

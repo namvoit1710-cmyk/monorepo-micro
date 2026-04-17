@@ -6,6 +6,7 @@ void initializeI18n();
 setupMFInfra({
   remotes: [
     { name: "dashboard", entry: "http://localhost:3001", enabled: true },
+    { name: "docs", entry: "http://localhost:3002", enabled: true },
   ],
   timeout: { defaultTimeoutMs: 8000 },
   errorSuppressor: {

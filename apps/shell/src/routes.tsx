@@ -14,6 +14,17 @@ const Dashboard = lazy(() =>
     })
 );
 
+const Documentation = lazy(() =>
+    import("docs/remote-docs").catch((error: unknown) => {
+        return {
+            default: () => {
+                throw error instanceof Error ? error : new Error("Remote documentation is unavailable");
+            },
+        };
+    })
+);
+
+
 export const routes: RouteObject[] = [
     {
         path: "/",
@@ -36,7 +47,20 @@ export const routes: RouteObject[] = [
                 handle: {
                     crumb: "Dashboard",
                 },
-            }
+            },
+            {
+                path: "docs/:slug",
+                element: (
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <div className="overflow-hidden [&_#doc-scroll_main]:p-0! [&_#doc-scroll_main]:max-w-full">
+                            <Documentation />
+                        </div>
+                    </Suspense>
+                ),
+                handle: {
+                    crumb: "Documentation",
+                },
+            },
         ],
     },
 ];

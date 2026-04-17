@@ -29,7 +29,7 @@ function createStubManifest(remoteName: string): string {
       publicPath: "auto",
       type: "app",
       buildInfo: { buildVersion: "0.0.0-stub" },
-      remoteEntry: { name: "remoteEntry.js", path: "", type: "global" },
+      remoteEntry: { name: "mf-manifest.json", path: "/", type: "json" },
       globalName: remoteName,
     },
     shared: [],
