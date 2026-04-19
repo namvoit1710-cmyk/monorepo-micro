@@ -7,5 +7,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "src/types/**/*.d.ts", "rsbuild.config.ts", "eslint.config.ts"]
+  "include": ["src", "src/types/**/*.d.ts", "rsbuild.config.ts", "eslint.config.ts", "env.d.ts"]
 }

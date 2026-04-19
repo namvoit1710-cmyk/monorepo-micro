@@ -5,6 +5,7 @@ import { useBuilderContext } from "../../contexts/builder.context";
 import { useCheckCondition } from "../../hooks/use-check-condittion";
 import type { FieldComponentProps, IField } from "../../types/schema";
 import FragmentWrapper from "../field-wrapper/fragment-wrapper";
+import TableWrapper from "../field-wrapper/table-wrapper/table-wrapper";
 import BuilderArrayField from "./builder-array-field";
 import BuilderObjectField from "./builder-object-field";
 
@@ -56,8 +57,7 @@ const BuilderField = (props: IBuilderFieldProps) => {
     const getArrayOutputTypeComponent = (field: IField): JSX.Element | null => {
         switch (field.fieldConfig.fieldWrapper) {
             case "TableWrapper":
-                // return <TableWrapper field={field} path={path} />;
-                return null;
+                return <TableWrapper field={field} path={path} />;
             default:
                 return <BuilderArrayField field={field} path={path} />;
         }

@@ -13,6 +13,7 @@ export interface FieldComponentProps {
 }
 
 export interface FieldWrapperProps extends FieldComponentProps {
+    path?: string[];
     children: React.ReactNode;
 }
 

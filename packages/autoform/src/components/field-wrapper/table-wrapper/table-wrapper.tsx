@@ -16,11 +16,15 @@ import { useTableSync } from "./hooks/use-table-sync";
 import useValidateRow from "./hooks/use-validate-row";
 
 export interface ITableWrapperProps {
-    field: IField;
-    path: string[];
+    field?: IField;
+    path?: string[];
 }
 
 const TableWrapper = ({ field: fieldControl, path }: ITableWrapperProps) => {
+    if (!fieldControl || !path) {
+        return null;
+    }
+
     const name = useMemo(() => path.join("."), [path]);
 
     const { getValues, trigger, clearErrors } = useFormContext();

@@ -140,6 +140,71 @@ const HomePage = () => {
 
                 <UploadFileList />
             </Upload>
+
+
+            <Builder
+                schema={{
+                    fields: [
+                        {
+                            key: "data",
+                            outputType: "array",
+                            fieldConfig: {
+                                fieldWrapper: "TableWrapper",
+                                wrapperProps: {
+                                    variant: "line"
+                                }
+                            },
+                            fields: [
+                                {
+                                    key: "0",
+                                    outputType: "object",
+                                    fieldConfig: {
+                                        wrapperProps: {
+                                            "add": true,
+                                            "minus": true
+                                        }
+                                    },
+                                    fields: [
+                                        {
+                                            key: "name",
+                                            outputType: "string",
+                                            fieldConfig: {
+                                                wrapperProps: {
+                                                    label: "Name",
+                                                },
+                                                fieldControl: "InputControl"
+                                            },
+                                        },
+                                        {
+                                            key: "age",
+                                            outputType: "string",
+                                            fieldConfig: {
+                                                wrapperProps: {
+                                                    label: "Age",
+                                                },
+                                                fieldControl: "InputControl"
+                                            },
+                                        },
+                                        {
+                                            key: "address",
+                                            outputType: "string",
+                                            fieldConfig: {
+                                                wrapperProps: {
+                                                    size: 400,
+                                                    label: "Address",
+                                                },
+                                                fieldControl: "InputControl"
+                                            },
+                                        },
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }}
+
+                onValuesChange={(values) => console.log(values)}
+            />
         </>
     );
 };
