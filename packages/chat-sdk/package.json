@@ -1,0 +1,37 @@
+{
+  "name": "@ldc/chat-sdk",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "peerDependencies": {
+    "react": "catalog:react19"
+  },
+  "dependencies": {
+    "@ldc/ui": "workspace:*",
+    "@assistant-ui/react": "0.12.25",
+    "@assistant-ui/react-markdown": "0.12.9",
+    "lucide-react": "catalog:"
+  },
+  "devDependencies": {
+    "@ldc/eslint-config": "workspace:*",
+    "@ldc/prettier-config": "workspace:*",
+    "@ldc/tailwind-config": "workspace:*",
+    "@ldc/tsconfig": "workspace:*",
+    "@types/react": "catalog:react19",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@ldc/prettier-config"
+}

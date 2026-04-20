@@ -187,9 +187,9 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
       // Install & format
       async (answers) => {
         if ("name" in answers && typeof answers.name === "string") {
-          execSync("pnpm i", { stdio: "inherit" });
+          execSync("bun i", { stdio: "inherit" });
           execSync(
-            `pnpm prettier --write apps/${answers.name}/** --list-different`,
+            `bun run prettier --write apps/${answers.name}/** --list-different`,
           );
           return `App "${answers.name}" scaffolded at apps/${answers.name}`;
         }
