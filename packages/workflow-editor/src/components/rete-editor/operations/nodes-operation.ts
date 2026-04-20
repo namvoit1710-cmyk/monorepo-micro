@@ -1,81 +1,82 @@
-import { ClassicPreset, NodeEditor } from "rete";
-import { AreaPlugin } from "rete-area-plugin";
+import type { NodeEditor } from "rete";
+import { ClassicPreset } from "rete";
+import type { AreaPlugin } from "rete-area-plugin";
 import { generateUUID } from "../../../utils/generate-uuid";
 import { getNodeSize } from "../config/node-config";
 import { BaseNode } from "../nodes/base-node";
 import { socket } from "../nodes/socket";
-import { AreaExtra, NodeExecutionStatus, Schemes } from "../types";
+import type { AreaExtra, NodeExecutionStatus, Schemes } from "../types";
 
 export const getNodes = (editor: NodeEditor<Schemes>): BaseNode[] => {
-  return editor.getNodes();
+    return editor.getNodes();
 };
 
 export const getNodeById = (
-  editor: NodeEditor<Schemes>,
-  nodeId: string
+    editor: NodeEditor<Schemes>,
+    nodeId: string
 ): BaseNode | undefined => {
-  return editor.getNode(nodeId);
+    return editor.getNode(nodeId);
 };
 
 export const addNode = async (
-  editor: NodeEditor<Schemes>,
-  node: BaseNode
+    editor: NodeEditor<Schemes>,
+    node: BaseNode
 ): Promise<void> => {
-  await editor.addNode(node);
+    await editor.addNode(node);
 };
 
 export const removeNode = async (
-  editor: NodeEditor<Schemes>,
-  nodeId: string
+    editor: NodeEditor<Schemes>,
+    nodeId: string
 ): Promise<void> => {
-  for (const item of [...editor.getConnections()]) {
-    if (item.source === nodeId || item.target === nodeId) {
-      await editor.removeConnection(item.id);
+    for (const item of [...editor.getConnections()]) {
+        if (item.source === nodeId || item.target === nodeId) {
+            await editor.removeConnection(item.id);
+        }
     }
-  }
-  editor.removeNode(nodeId);
+    editor.removeNode(nodeId);
 };
 
 export const copyNode = async (
-  editor: NodeEditor<Schemes>,
-  area: AreaPlugin<Schemes, AreaExtra>,
-  nodeId: string
+    editor: NodeEditor<Schemes>,
+    area: AreaPlugin<Schemes, AreaExtra>,
+    nodeId: string
 ): Promise<void> => {
-  const node = editor.getNode(nodeId);
-  if (!node) return;
+    const node = editor.getNode(nodeId);
+    if (!node) return;
 
-  const nodeData = node.original;
-  const newNode = new BaseNode(
-    generateUUID(),
-    nodeData.name,
-    { inputs: nodeData.ports.inputs, outputs: nodeData.ports.outputs },
-    getNodeSize(nodeData.name),
-    nodeData
-  );
+    const nodeData = node.original;
+    const newNode = new BaseNode(
+        generateUUID(),
+        nodeData.name,
+        { inputs: nodeData.ports.inputs, outputs: nodeData.ports.outputs },
+        getNodeSize(nodeData.name),
+        nodeData
+    );
 
-  await editor.addNode(newNode);
+    await editor.addNode(newNode);
 
-  const nodeView = area.nodeViews.get(nodeId);
-  const pos = nodeView
-    ? { x: nodeView.position.x + 200, y: nodeView.position.y }
-    : { x: 0, y: 0 };
+    const nodeView = area.nodeViews.get(nodeId);
+    const pos = nodeView
+        ? { x: nodeView.position.x + 200, y: nodeView.position.y }
+        : { x: 0, y: 0 };
 
-  await area.translate(newNode.id, pos);
+    await area.translate(newNode.id, pos);
 };
 
 export const getNodePosition = (
-  area: AreaPlugin<Schemes, AreaExtra>,
-  nodeId: string
+    area: AreaPlugin<Schemes, AreaExtra>,
+    nodeId: string
 ): { x: number; y: number } | undefined => {
-  return area.nodeViews.get(nodeId)?.position;
+    return area.nodeViews.get(nodeId)?.position;
 };
 
 export const translateNode = async (
-  area: AreaPlugin<Schemes, AreaExtra>,
-  nodeId: string,
-  position: { x: number; y: number }
+    area: AreaPlugin<Schemes, AreaExtra>,
+    nodeId: string,
+    position: { x: number; y: number }
 ): Promise<void> => {
-  await area.translate(nodeId, position);
+    await area.translate(nodeId, position);
 };
 
 export const setNodeStatus = (
@@ -98,7 +99,7 @@ export const getPredecessorNodes = (
     const connections = editor.getConnections();
     const nodes = editor.getNodes();
 
-    const predecessors: Set<string> = new Set();
+    const predecessors = new Set<string>();
     const queue: string[] = [nodeId];
 
     while (queue.length > 0) {
@@ -112,7 +113,7 @@ export const getPredecessorNodes = (
             }
         });
     }
-    
+
     return nodes.filter((node) => predecessors.has(node.id));
 }
 
@@ -123,7 +124,7 @@ export const getSuccessorNodes = (
     const connections = editor.getConnections();
     const nodes = editor.getNodes();
 
-    const successors: Set<string> = new Set();
+    const successors = new Set<string>();
     const queue: string[] = [nodeId];
 
     while (queue.length > 0) {
@@ -137,7 +138,7 @@ export const getSuccessorNodes = (
             }
         });
     }
-    
+
     return nodes.filter((node) => successors.has(node.id));
 }
 
@@ -149,7 +150,7 @@ export const getOutGoerNodes = (
     const nodes = editor.getNodes();
 
     const outGoerIds = connections.filter(connection => connection.source === nodeId).map(connection => connection.target);
-    
+
     return nodes.filter((node) => outGoerIds.includes(node.id));
 }
 
@@ -161,7 +162,7 @@ export const getIncomerNodes = (
     const nodes = editor.getNodes();
 
     const incomerIds = connections.filter(connection => connection.target === nodeId).map(connection => connection.source);
-    
+
     return nodes.filter((node) => incomerIds.includes(node.id));
 }
 
@@ -177,106 +178,106 @@ export const syncNodeSizesFromDOM = (editor: NodeEditor<Schemes>, area: AreaPlug
 };
 
 export const addInputSocket = async (
-  nodeId: string,
-  key: string,
-  label: string,
-  editor: NodeEditor<Schemes>,
-  area: AreaPlugin<Schemes, AreaExtra>
+    nodeId: string,
+    key: string,
+    label: string,
+    editor: NodeEditor<Schemes>,
+    area: AreaPlugin<Schemes, AreaExtra>
 ) => {
-  const node = editor.getNode(nodeId)
-  if (!node) return
+    const node = editor.getNode(nodeId)
+    if (!node) return
 
-  if (node.inputs[key]) return
+    if (node.inputs[key]) return
 
-  node.addInput(key, new ClassicPreset.Input(socket, label))
-  node.original = {
-    ...node.original,
-    ports: {
-      ...node.original.ports,
-      inputs: [...node.original.ports.inputs, { id: key, label }],
-    },
-  }
+    node.addInput(key, new ClassicPreset.Input(socket, label))
+    node.original = {
+        ...node.original,
+        ports: {
+            ...node.original.ports,
+            inputs: [...node.original.ports.inputs, { id: key, label }],
+        },
+    }
 
-  await area.update("node", nodeId)
+    await area.update("node", nodeId)
 
-  await area.emit({ 
-    type: "nodetranslated", 
-    data: {
-        ...node, 
-        position: { x: node.original.x, y: node.original.y },
-        previous: { x: node.original.x, y: node.original.y },
-    } 
-  })
+    await area.emit({
+        type: "nodetranslated",
+        data: {
+            ...node,
+            position: { x: node.original.x, y: node.original.y },
+            previous: { x: node.original.x, y: node.original.y },
+        }
+    })
 }
 
 export const addOutputSocket = async (
-  nodeId: string,
-  key: string,
-  label: string,
-  editor: NodeEditor<Schemes>,
-  area: AreaPlugin<Schemes, AreaExtra>
+    nodeId: string,
+    key: string,
+    label: string,
+    editor: NodeEditor<Schemes>,
+    area: AreaPlugin<Schemes, AreaExtra>
 ) => {
-  const node = editor.getNode(nodeId)
-  if (!node) return
+    const node = editor.getNode(nodeId)
+    if (!node) return
 
-  if (node.outputs[key]) return
+    if (node.outputs[key]) return
 
-  node.addOutput(key, new ClassicPreset.Output(socket, label))
-  node.original = {
-    ...node.original,
-    ports: {
-      ...node.original.ports,
-      outputs: [...node.original.ports.outputs, { id: key, label }],
-    },
-  }
+    node.addOutput(key, new ClassicPreset.Output(socket, label))
+    node.original = {
+        ...node.original,
+        ports: {
+            ...node.original.ports,
+            outputs: [...node.original.ports.outputs, { id: key, label }],
+        },
+    }
 
-  await area.update("node", nodeId)
+    await area.update("node", nodeId)
 
-  await area.emit({ 
-    type: "nodetranslated", 
-    data: {
-      ...node, 
-      position: { x: node.original.x, y: node.original.y },
-      previous: { x: node.original.x, y: node.original.y },
-    } 
-  })
+    await area.emit({
+        type: "nodetranslated",
+        data: {
+            ...node,
+            position: { x: node.original.x, y: node.original.y },
+            previous: { x: node.original.x, y: node.original.y },
+        }
+    })
 }
 
 export const removeInputSocket = async (
-  nodeId: string,
-  key: string,
-  editor: NodeEditor<Schemes>,
-  area: AreaPlugin<Schemes, AreaExtra>
+    nodeId: string,
+    key: string,
+    editor: NodeEditor<Schemes>,
+    area: AreaPlugin<Schemes, AreaExtra>
 ) => {
-  const node = editor.getNode(nodeId)
-  if (!node || !node.inputs[key]) return
+    const node = editor.getNode(nodeId)
+    if (!node?.inputs[key]) return
 
-  const connectionsToRemove = editor
-    .getConnections()
-    .filter((c) => c.target === nodeId && c.targetInput === key)
+    const connectionsToRemove = editor
+        .getConnections()
+        .filter((c) => c.target === nodeId && c.targetInput === key)
 
-  for (const conn of connectionsToRemove) {
-    await editor.removeConnection(conn.id)
-  }
+    for (const conn of connectionsToRemove) {
+        await editor.removeConnection(conn.id)
+    }
 
-  node.removeInput(key)
-  node.original = {
-    ...node.original,
-    ports: {
-      ...node.original.ports,
-      inputs: node.original.ports.inputs.filter((port) => port.id !== key),
-    },
-  }
+    node.removeInput(key)
+    node.original = {
+        ...node.original,
+        ports: {
+            ...node.original.ports,
+            inputs: node.original.ports.inputs.filter((port) => port.id !== key),
+        },
+    }
 
     await area.update("node", nodeId)
-    
-    await area.emit({ 
-      type: "nodetranslated", 
-      data: {
-          ...node, 
-          position: { x: node.original.x, y: node.original.y },
-          previous: { x: node.original.x, y: node.original.y },
-      } 
+
+    await area.emit({
+        type: "nodetranslated",
+        data: {
+            ...node,
+            position: { x: node.original.x, y: node.original.y },
+            previous: { x: node.original.x, y: node.original.y },
+        }
     })
 }
 
@@ -287,7 +288,7 @@ export const removeOutputSocket = async (
     area: AreaPlugin<Schemes, AreaExtra>
 ) => {
     const node = editor.getNode(nodeId)
-    if (!node || !node.outputs[key]) return
+    if (!node?.outputs[key]) return
 
     const connectionsToRemove = editor
         .getConnections()
@@ -307,13 +308,13 @@ export const removeOutputSocket = async (
     }
 
     await area.update("node", nodeId)
-    await area.emit({ 
-        type: "nodetranslated", 
+    await area.emit({
+        type: "nodetranslated",
         data: {
-            ...node, 
+            ...node,
             position: { x: node.original.x, y: node.original.y },
             previous: { x: node.original.x, y: node.original.y },
-        } 
+        }
     })
 }
 
@@ -331,9 +332,9 @@ export const updateInputSocketLabel = async ({
     area: AreaPlugin<Schemes, AreaExtra>
 }) => {
     const node = editor.getNode(nodeId)
-    if (!node || !node.inputs[key]) return
+    if (!node?.inputs[key]) return
 
-    node.inputs[key]!.label = newLabel ?? ""
+    node.inputs[key].label = newLabel ?? ""
     node.original = {
         ...node.original,
         ports: {
@@ -351,13 +352,13 @@ export const updateInputSocketLabel = async ({
     }
     await area.update("node", nodeId)
 
-    await area.emit({ 
-        type: "nodetranslated", 
+    await area.emit({
+        type: "nodetranslated",
         data: {
-            ...node, 
+            ...node,
             position: { x: node.original.x, y: node.original.y },
             previous: { x: node.original.x, y: node.original.y },
-        } 
+        }
     })
 }
 
@@ -375,9 +376,9 @@ export const updateOutputSocketLabel = async ({
     area: AreaPlugin<Schemes, AreaExtra>
 }) => {
     const node = editor.getNode(nodeId)
-    if (!node || !node.outputs[key]) return
+    if (!node?.outputs[key]) return
 
-    node.outputs[key]!.label = newLabel ?? ""
+    node.outputs[key].label = newLabel ?? ""
     node.original = {
         ...node.original,
         ports: {
@@ -395,13 +396,13 @@ export const updateOutputSocketLabel = async ({
     }
     await area.update("node", nodeId)
 
-    await area.emit({ 
-        type: "nodetranslated", 
+    await area.emit({
+        type: "nodetranslated",
         data: {
-            ...node, 
+            ...node,
             position: { x: node.original.x, y: node.original.y },
             previous: { x: node.original.x, y: node.original.y },
-        } 
+        }
     })
 }
 

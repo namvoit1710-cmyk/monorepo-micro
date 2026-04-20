@@ -1,59 +1,59 @@
-import { EditorConfig, IEditorInstance, NodeExecutionStatus } from "../types";
+import type { EditorConfig, IEditorInstance, NodeExecutionStatus } from "../types";
 import { setupPlugins } from "./plugins";
 
 import {
-    addConnection,
-    getConnections,
-    getTransform,
-    removeConnection,
-    removeConnectionBySource,
-    removeConnectionByTarget,
-    setConnectionStatusBySource,
-    setConnectionStatusBySourcePort,
-    setConnectionStatusByTargetPort,
+  addConnection,
+  getConnections,
+  getTransform,
+  removeConnection,
+  removeConnectionBySource,
+  removeConnectionByTarget,
+  setConnectionStatusBySource,
+  setConnectionStatusBySourcePort,
+  setConnectionStatusByTargetPort,
 } from "../operations/connection-operation";
 import {
-    addInputSocket,
-    addNode,
-    addOutputSocket,
-    copyNode,
-    getIncomerNodes,
-    getNodeById,
-    getNodePosition,
-    getNodes,
-    getOutGoerNodes,
-    getPredecessorNodes,
-    getSuccessorNodes,
-    removeInputSocket,
-    removeNode,
-    removeOutputSocket,
-    setNodeStatus,
-    syncNodeSizesFromDOM,
-    translateNode,
-    updateInputSocketLabel,
-    updateNodeView,
-    updateOutputSocketLabel,
+  addInputSocket,
+  addNode,
+  addOutputSocket,
+  copyNode,
+  getIncomerNodes,
+  getNodeById,
+  getNodePosition,
+  getNodes,
+  getOutGoerNodes,
+  getPredecessorNodes,
+  getSuccessorNodes,
+  removeInputSocket,
+  removeNode,
+  removeOutputSocket,
+  setNodeStatus,
+  syncNodeSizesFromDOM,
+  translateNode,
+  updateInputSocketLabel,
+  updateNodeView,
+  updateOutputSocketLabel,
 } from "../operations/nodes-operation";
 
 import {
-    centerOnNode,
-    getZoomLevel,
-    isNodeInViewport,
-    redo,
-    undo,
-    zoomByLevel,
-    zoomIn,
-    zoomOut,
-    zoomToFit
+  centerOnNode,
+  getZoomLevel,
+  isNodeInViewport,
+  redo,
+  undo,
+  zoomByLevel,
+  zoomIn,
+  zoomOut,
+  zoomToFit
 } from "../operations/view-operation";
 
 import { getGroupAtPosition, joinGroup, leaveGroup } from "../operations/group-operation";
 import { createLayoutOperations } from "../operations/layout-operation";
 import {
-    initialLoadNodes,
-    removeAllEditorNodes,
-    resetAllNodeStatus,
-    serializeNodes,
+  initialLoadNodes,
+  removeAllEditorNodes,
+  resetAllNodeStatus,
+  serializeNodes,
 } from "../operations/serialization";
 
 export async function createEditor(
@@ -98,8 +98,8 @@ export async function createEditor(
     addOutputSocket: (nodeId, key, label) => addOutputSocket(nodeId, key, label, editor, area),
     removeInputSocket: (nodeId, key) => removeInputSocket(nodeId, key, editor, area),
     removeOutputSocket: (nodeId, key) => removeOutputSocket(nodeId, key, editor, area),
-    updateInputSocketLabel: (nodeId, key, label) => updateInputSocketLabel({nodeId, key, newLabel: label, editor, area}),
-    updateOutputSocketLabel: (nodeId, key, label) => updateOutputSocketLabel({nodeId, key, newLabel: label, editor, area}),
+    updateInputSocketLabel: (nodeId, key, label) => updateInputSocketLabel({ nodeId, key, newLabel: label, editor, area }),
+    updateOutputSocketLabel: (nodeId, key, label) => updateOutputSocketLabel({ nodeId, key, newLabel: label, editor, area }),
 
     addConnection: (conn) => addConnection(editor, conn),
     getConnections: () => getConnections(editor),
@@ -107,19 +107,22 @@ export async function createEditor(
     setConnectionStatusByTargetPort: (targetNodeId, targetPortId, status) => setConnectionStatusByTargetPort(editor, area, targetNodeId, targetPortId, status),
     removeConnectionBySource: (sourceNodeId) => removeConnectionBySource(editor, sourceNodeId),
     removeConnectionByTarget: (targetNodeId) => removeConnectionByTarget(editor, targetNodeId),
-    
+
     removeConnection: (id) => removeConnection(editor, id),
     getTransform: () => getTransform(area),
 
     getGroupAtPosition: (x, y) => getGroupAtPosition(x, y, editor, area),
     joinGroup: (nodeId, groupId) => {
-        const node = editor.getNode(nodeId);
-        const group = editor.getNode(groupId);
-        return joinGroup(node, group, area, editor);
+      const node = editor.getNode(nodeId);
+      const group = editor.getNode(groupId);
+      if (!node || !group) return;
+
+      return joinGroup(node, group, area, editor);
     },
     leaveGroup: (nodeId) => {
-        const node = editor.getNode(nodeId);
-        return leaveGroup(node, editor, area);
+      const node = editor.getNode(nodeId);
+      if (!node) return;
+      return leaveGroup(node, editor, area);
     },
 
     zoomIn: () => zoomIn(area),
@@ -136,12 +139,12 @@ export async function createEditor(
     serializeNodes: () => serializeNodes(editor, area),
     initialLoadNodes: (initialData) =>
       initialLoadNodes({
-        editor, 
-        area, 
-        history, 
-        initialData, 
-        layout: (direction === "vertical" && config.readOnly) ? () => layoutNodes({ direction }) : null
-    }),
+        editor,
+        area,
+        history,
+        initialData,
+        layout: (direction === "vertical" && config.readOnly) ? () => layoutNodes({ direction }) : () => null
+      }),
 
     destroy: () => {
       area.destroy();

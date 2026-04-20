@@ -1,7 +1,7 @@
-import { ClassicScheme, RenderEmit } from "rete-react-plugin";
+import type { ClassicScheme, RenderEmit } from "rete-react-plugin";
 
-import { cn } from "@common/lib/utils";
-import { EditorDirection, IEditorNode, NodeExecutionStatus } from "../../types";
+import { cn } from "@ldc/ui";
+import type { EditorDirection, IEditorNode, NodeExecutionStatus } from "../../types";
 import { SocketColumn } from "./socket-column";
 import { SocketRow } from "./socket-row";
 
@@ -11,9 +11,9 @@ import "./base-node-shell.css";
 import DynamicNodeIcon from "./dynamic-node-icon";
 import LoadingSpin from "./loading-spin/loading-spin";
 
-type NodeExtraData = { width?: number; height?: number };
+interface NodeExtraData { width?: number; height?: number }
 
-export type BaseNodeShellProps<S extends ClassicScheme> = {
+export interface BaseNodeShellProps<S extends ClassicScheme> {
     readOnly?: boolean;
     styles?: () => any;
     emit: RenderEmit<S>;
@@ -21,7 +21,7 @@ export type BaseNodeShellProps<S extends ClassicScheme> = {
     data: S["Node"] & NodeExtraData & { original: IEditorNode };
     onDoubleClick?: (nodeId: string) => void;
     onContextMenu?: (ref: HTMLDivElement, nodeId: string) => void;
-};
+}
 
 function sortByIndex<T extends [string, undefined | { index?: number }][]>(
     entries: T
@@ -158,7 +158,7 @@ const BaseNodeShell = <S extends ClassicScheme>({
                     <div className="flex size-6 items-center justify-center">
                         <DynamicNodeIcon
                             size={24}
-                            name={icon}
+                            name={icon!}
                             strokeWidth={1.5}
                             className="text-gray-500"
                             style={{ color: original.color ?? "#6a7282" }}

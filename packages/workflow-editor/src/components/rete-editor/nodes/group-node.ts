@@ -1,5 +1,5 @@
 import { NODE_FACTORY_REGISTRY_KEY } from "../config/node-config";
-import { IEditorNode } from "../types";
+import type { IEditorNode } from "../types";
 import { BaseNode } from "./base-node";
 
 export class GroupNode extends BaseNode {

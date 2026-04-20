@@ -15,20 +15,25 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "peerDependencies": {
-    "react": "catalog:react19"
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19"
   },
   "devDependencies": {
     "@ldc/eslint-config": "workspace:*",
     "@ldc/prettier-config": "workspace:*",
     "@ldc/tsconfig": "workspace:*",
+    "@ldc/tailwind-config": "workspace:*",
     "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@ldc/i18n": "workspace:*",
     "@ldc/ui": "workspace:*",
     "lucide-react": "catalog:",
+    "popmotion": "^11.0.5",
     "rete": "2.0.6",
     "rete-area-plugin": "2.1.5",
     "rete-auto-arrange-plugin": "2.0.2",
@@ -36,7 +41,8 @@
     "rete-connection-plugin": "2.0.5",
     "rete-context-menu-plugin": "2.0.6",
     "rete-history-plugin": "2.1.1",
-    "rete-react-plugin": "2.1.0"
+    "rete-react-plugin": "2.1.0",
+    "rete-render-utils": "^2.0.3"
   },
   "prettier": "@ldc/prettier-config"
 }

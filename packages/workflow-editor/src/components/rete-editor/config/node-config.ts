@@ -1,9 +1,9 @@
-import { DEFAULT_SIZE_NODE } from "@common/components/ldc-workflow-editor/constants/node";
+import { DEFAULT_SIZE_NODE } from "../../../constants/node";
 
-import React from "react";
+import type React from "react";
 import BaseNodeShell from "../nodes/components/base-node-shell";
 import GroupNodes from "../nodes/components/group-nodes";
-import { NodeSizeConfig } from "../types";
+import type { NodeSizeConfig } from "../types";
 
 export enum NODE_FACTORY_REGISTRY_KEY {
     GROUP_NODE = "group_node",

@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/refs */
-import { RETE_EDITOR_I18N_NAMESPACE } from "@common/components/ldc-workflow-editor/i18n";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@common/components/ui/dropdown-menu";
+import { useTranslation } from "@ldc/i18n";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@ldc/ui/components/dropdown-menu";
 import { BookOpenIcon, CopyIcon, DeleteIcon, PlayIcon, XCircleIcon } from "lucide-react";
-import { ComponentProps, useMemo, useRef } from "react";
-import { useTranslation } from "react-i18next";
+import type { ComponentProps } from "react";
+import { useMemo, useRef } from "react";
+import { RETE_EDITOR_I18N_NAMESPACE } from "../../../i18n";
 
 export enum NodeContextMenuAction {
     Open = "open",
@@ -47,7 +48,7 @@ const getMenuActions = (readOnly: boolean) => {
 const NodeContextMenu = ({ onAction, readOnly, anchorEl, ...props }: INodeContextMenuProps) => {
     const { t } = useTranslation(RETE_EDITOR_I18N_NAMESPACE);
 
-    const menuActions = useMemo(() => getMenuActions(readOnly), [readOnly]);
+    const menuActions = useMemo(() => getMenuActions(readOnly!), [readOnly]);
 
     const rectRef = useRef<DOMRect | null>(null);
     const rect = useMemo(() => {

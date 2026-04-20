@@ -1,24 +1,27 @@
 import { NodeEditor } from "rete";
-import { Area2D, AreaPlugin } from "rete-area-plugin";
-import {
+import type { Area2D } from "rete-area-plugin";
+import { AreaPlugin } from "rete-area-plugin";
+import type {
     ConnectionPlugin,
-    SocketData,
+    SocketData
+} from "rete-connection-plugin";
+import {
     createPseudoconnection
 } from "rete-connection-plugin";
 import { getElementCenter } from "rete-render-utils";
 import { findNearestPoint, isInsideRect } from "./math";
-import { Position, Schemes } from "./types";
+import type { Position, Schemes } from "./types";
 import { getNodeRect } from "./utils";
 
 export { MagneticConnection } from "./magnetic-connection";
 
-type Props = {
+interface Props {
     createConnection: (from: SocketData, to: SocketData) => Promise<void>;
     display: (from: SocketData, to: SocketData) => boolean;
     offset: (socket: SocketData, position: Position) => Position;
     margin?: number;
     distance?: number;
-};
+}
 
 export function useMagneticConnection<S extends Schemes, K = never>(
     connection: ConnectionPlugin<S, K>,
@@ -36,7 +39,7 @@ export function useMagneticConnection<S extends Schemes, K = never>(
     let picked: null | SocketData = null;
     let nearestSocket: null | (SocketData & Position) = null;
 
-    (connection as ConnectionPlugin<S, K>).addPipe(async (context) => {
+    (connection).addPipe(async (context) => {
         if (!context || typeof context !== "object" || !("type" in context))
             return context;
 
@@ -57,7 +60,7 @@ export function useMagneticConnection<S extends Schemes, K = never>(
 
             const rects = nodes.map(([id, view]) => ({
                 id,
-                ...getNodeRect(editor.getNode(id), view)
+                ...getNodeRect(editor.getNode(id)!, view)
             }));
             const nearestRects = rects.filter((rect) =>
                 isInsideRect(rect, point, margin)

@@ -1,5 +1,5 @@
-import { HistoryDataType, HistoryType, IEditorInstance } from "@common/components/ldc-workflow-editor/components/rete-editor/types";
 import { useCallback, useEffect, useState } from "react";
+import type { HistoryDataType, HistoryType, IEditorInstance } from "../components/rete-editor/types";
 
 const trackedEvents = [
     "nodecreated",
@@ -8,7 +8,7 @@ const trackedEvents = [
     "connectionremoved",
 ] as const
 
-const useEditorHistory = (editorInstance: IEditorInstance | undefined) => {
+const useEditorHistory = (editorInstance: IEditorInstance | null) => {
 
     const [canUndo, setCanUndo] = useState<boolean>(false);
     const [canRedo, setCanRedo] = useState<boolean>(false);

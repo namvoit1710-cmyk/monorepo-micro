@@ -1,4 +1,4 @@
-import { IEditorValue } from "@common/components/ldc-workflow-editor/components/rete-editor/types";
+import type { IEditorValue } from "../components/rete-editor";
 
 export function validateEditorValue(value: unknown): value is IEditorValue {
   if (!value || typeof value !== "object") return false;

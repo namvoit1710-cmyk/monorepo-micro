@@ -2,4 +2,5 @@
 @import "@ldc/tailwind-config/themes/olive-orange";
 
 @source "../../../packages/ui/src/**/*.{ts,tsx}";
+@source "../../../packages/workflow-editor/src/**/*.{ts,tsx}";
 @source "../../../packages/autoform/src/**/*.{ts,tsx}";

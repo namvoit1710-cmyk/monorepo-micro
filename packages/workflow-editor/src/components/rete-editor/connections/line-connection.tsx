@@ -1,46 +1,13 @@
-import { Button } from "@common/components/ui/button";
+import { Button } from "@ldc/ui/components/button";
 import { TrashIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AreaPlugin } from "rete-area-plugin";
+import type { AreaPlugin } from "rete-area-plugin";
 import { Presets } from "rete-react-plugin";
-import styled from "styled-components";
-import { BaseNode } from "../nodes/base-node";
-import { AreaExtra, Connection, EditorDirection, NodeExecutionStatus, Schemes } from "../types";
+import type { BaseNode } from "../nodes/base-node";
+import type { AreaExtra, Connection, EditorDirection, NodeExecutionStatus, Schemes } from "../types";
 import { computeStepPath } from "./path-router";
 
 const { useConnection } = Presets.classic;
-
-const Svg = styled.svg`
-  overflow: visible !important;
-  position: absolute;
-  pointer-events: none;
-  width: 9999px;
-  height: 9999px;
-`;
-
-const Path = styled.path<{ styles?: (props: any) => any; $stroke?: string }>`
-  fill: none;
-  stroke-width: 2px;
-  stroke: ${(props) => props.$stroke ?? "#6b7280"};
-  pointer-events: auto;
-  ${(props) => props.styles && props.styles(props)};
-  filter: blur(0.5px);
-  cursor: pointer;
-
-  &:hover {
-    stroke-width: 3px;
-    stroke: #2563eb;
-    filter: none;
-  }
-`;
-
-const HoverPath = styled.path`
-  fill: none;
-  stroke: transparent;
-  stroke-width: 16px;
-  pointer-events: auto;
-  cursor: pointer;
-`;
 
 const BUTTON_SIZE = 32;
 
@@ -63,7 +30,7 @@ export function LineConnection({ data, area, direction, readOnly, ...props }: {
     const [hovered, setHovered] = useState(false);
     const [midpoint, setMidpoint] = useState<{ x: number; y: number } | null>(null);
 
-    const executionStatus = data.executionStatus as NodeExecutionStatus | undefined;
+    const executionStatus = data.executionStatus;
     const CONNECTION_STROKE: Partial<Record<NodeExecutionStatus, string>> = {
         idle: "#6b7280",
         completed: "#34d399",
@@ -71,6 +38,8 @@ export function LineConnection({ data, area, direction, readOnly, ...props }: {
     const stroke = CONNECTION_STROKE[executionStatus ?? "idle"] ?? "#6b7280";
 
     const arrowTranslate = useMemo(() => {
+        if (!end) return "translate(0, 0)";
+
         return direction === "vertical"
             ? `translate(${end?.x + 12}, ${end?.y - 5})`
             : `translate(${end?.x}, ${end?.y})`;
@@ -103,24 +72,30 @@ export function LineConnection({ data, area, direction, readOnly, ...props }: {
 
     if (!path) return null;
 
-    const { d: customPath, angle: customAngle } = computeStepPath(start, end, direction);
+    const { d: customPath, angle: customAngle } = computeStepPath(start!, end!, direction);
 
     return (
-        <Svg data-id="line-connection">
-            <HoverPath
+        <svg
+            data-id="line-connection"
+            className="overflow-visible! absolute pointer-events-none w-[9999px] h-[9999px]"
+        >
+            <path
                 d={path}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
+                className="fill-none stroke-transparent stroke-[16px] pointer-events-auto cursor-pointer"
             />
 
-            <Path
+            <path
                 ref={pathRef}
-                styles={props.styles}
                 d={path ? customPath : path}
-                $stroke={stroke}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
-                className={hovered ? "hovered" : ""}
+                className="fill-none stroke-[2px] pointer-events-auto blur-[0.5px] cursor-pointer hover:stroke-[3px] hover:stroke-[#2563eb] hover:blur-none"
+                style={{
+                    stroke: stroke,
+                    ...props.styles?.()
+                }}
             />
 
             <g transform={`${arrowTranslate} rotate(${customAngle})`}>
@@ -153,6 +128,6 @@ export function LineConnection({ data, area, direction, readOnly, ...props }: {
                     </Button>
                 </foreignObject>
             )}
-        </Svg>
+        </svg>
     );
 }

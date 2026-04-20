@@ -1,4 +1,4 @@
-import { i18n } from "i18next"
+import type { i18n } from "@ldc/i18n"
 import en from "./locales/en.json"
 
 export const RETE_EDITOR_I18N_NAMESPACE = "rete-editor"

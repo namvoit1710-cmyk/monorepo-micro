@@ -1,7 +1,7 @@
-import { RETE_EDITOR_I18N_NAMESPACE } from "@common/components/ldc-workflow-editor/i18n"
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@common/components/ui/context-menu"
+import { useTranslation } from "@ldc/i18n"
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@ldc/ui/components/context-menu"
 import { ClipboardIcon, CopyIcon, PlusIcon } from "lucide-react"
-import { useTranslation } from "react-i18next"
+import { RETE_EDITOR_I18N_NAMESPACE } from "../../../i18n"
 
 interface IEditorContextMenuProps {
     children: React.ReactNode

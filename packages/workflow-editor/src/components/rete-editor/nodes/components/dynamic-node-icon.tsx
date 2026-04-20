@@ -1,7 +1,9 @@
-import { pascalToKebabCase } from "@common/components/ldc-workflow-editor/utils/string-utils";
 import { EthernetPort } from "lucide-react";
-import { DynamicIcon, IconName } from "lucide-react/dynamic";
-import { ComponentProps, memo } from "react";
+import type { IconName } from "lucide-react/dynamic";
+import { DynamicIcon } from "lucide-react/dynamic";
+import type { ComponentProps } from "react";
+import { memo } from "react";
+import { pascalToKebabCase } from "../../../../utils/string-utils";
 
 interface IDynamicNodeIconProps extends Omit<ComponentProps<typeof DynamicIcon>, "name" | "strokeWidth"> {
     name: string

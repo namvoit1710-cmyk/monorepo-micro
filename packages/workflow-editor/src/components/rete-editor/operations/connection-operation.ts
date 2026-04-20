@@ -1,25 +1,25 @@
-import { NodeEditor } from "rete";
-import { AreaPlugin } from "rete-area-plugin";
-import { Transform } from "rete-area-plugin/_types/area";
-import { BaseNode } from "../nodes/base-node";
-import { AreaExtra, Connection, NodeExecutionStatus, Schemes } from "../types";
+import type { NodeEditor } from "rete";
+import type { AreaPlugin } from "rete-area-plugin";
+import type { Transform } from "rete-area-plugin/_types/area";
+import type { BaseNode } from "../nodes/base-node";
+import type { AreaExtra, Connection, NodeExecutionStatus, Schemes } from "../types";
 
 export const getConnections = (
-  editor: NodeEditor<Schemes>
+    editor: NodeEditor<Schemes>
 ): Connection<BaseNode>[] => {
-  return editor.getConnections() as Connection<BaseNode>[];
+    return editor.getConnections();
 };
 
 export const addConnection = (
-  editor: NodeEditor<Schemes>,
-  connection: Connection<BaseNode>
+    editor: NodeEditor<Schemes>,
+    connection: Connection<BaseNode>
 ): void => {
     editor.addConnection(connection);
 };
 
 export const removeConnection = (
-  editor: NodeEditor<Schemes>,
-  connectionId: string
+    editor: NodeEditor<Schemes>,
+    connectionId: string
 ): void => {
     editor.removeConnection(connectionId);
 };
@@ -29,20 +29,20 @@ export const getTransform = (area: AreaPlugin<Schemes, AreaExtra>): Transform =>
 };
 
 export const setConnectionStatusBySource = (
-        editor: NodeEditor<Schemes>,
-        area: AreaPlugin<Schemes, AreaExtra>,
-        sourceNodeId: string,
-        status: NodeExecutionStatus
-    ): void => {
-        const targetStatus = status === "completed" ? "completed" : "idle";
+    editor: NodeEditor<Schemes>,
+    area: AreaPlugin<Schemes, AreaExtra>,
+    sourceNodeId: string,
+    status: NodeExecutionStatus
+): void => {
+    const targetStatus = status === "completed" ? "completed" : "idle";
 
-        editor
-            .getConnections()
-            .filter((c) => c.source === sourceNodeId)
-            .forEach((conn) => {
-                conn.executionStatus = targetStatus;
-                area.update("connection", conn.id);
-            });
+    editor
+        .getConnections()
+        .filter((c) => c.source === sourceNodeId)
+        .forEach((conn) => {
+            conn.executionStatus = targetStatus;
+            area.update("connection", conn.id);
+        });
 };
 
 export const setConnectionStatusBySourcePort = (

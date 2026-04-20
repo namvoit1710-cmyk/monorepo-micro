@@ -1,13 +1,14 @@
-import { cn } from "@common/lib/utils";
-import { ClassicScheme, Presets, RenderEmit } from "rete-react-plugin";
-import { Socket } from "rete/_types/presets/classic";
-import { EditorDirection } from "../../types";
+import { cn } from "@ldc/ui";
+import type { ClassicScheme, RenderEmit } from "rete-react-plugin";
+import { Presets } from "rete-react-plugin";
+import type { Socket } from "rete/_types/presets/classic";
+import type { EditorDirection } from "../../types";
 
 const { RefSocket } = Presets.classic;
 
 type SocketSide = "input" | "output";
 
-type Props<S extends ClassicScheme> = {
+interface Props<S extends ClassicScheme> {
     side: SocketSide;
     socketKey: string;
     nodeId: string;
@@ -16,7 +17,7 @@ type Props<S extends ClassicScheme> = {
     label?: string;
     direction: EditorDirection;
     readOnly?: boolean;
-};
+}
 
 export function SocketItem<S extends ClassicScheme>({
     side,

@@ -1,8 +1,8 @@
-import { makeCreateEditor } from "@common/components/ldc-workflow-editor/components/rete-editor";
-import { BaseNode } from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/base-node";
-import { EditorConfig, IEditorValue } from "@common/components/ldc-workflow-editor/components/rete-editor/types";
 import { useEffect, useMemo, useRef } from "react";
 import { useRete } from "rete-react-plugin";
+import { makeCreateEditor } from "../components/rete-editor";
+import type { BaseNode } from "../components/rete-editor/nodes/base-node";
+import type { EditorConfig, IEditorValue } from "../components/rete-editor/types";
 
 interface UseEditorSetupOptions {
     direction?: EditorConfig["direction"];

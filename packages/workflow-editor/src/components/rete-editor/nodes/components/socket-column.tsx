@@ -1,5 +1,5 @@
-import { ClassicScheme, RenderEmit } from "rete-react-plugin";
-import { Input, Output, Socket } from "rete/_types/presets/classic";
+import type { ClassicScheme, RenderEmit } from "rete-react-plugin";
+import type { Input, Output, Socket } from "rete/_types/presets/classic";
 import { SocketItem } from "./socket-item";
 
 type SocketEntry<S extends ClassicScheme> = [
@@ -7,13 +7,13 @@ type SocketEntry<S extends ClassicScheme> = [
     Output<Socket> | Input<Socket>
 ];
 
-type Props<S extends ClassicScheme> = {
+interface Props<S extends ClassicScheme> {
     side: "input" | "output";
     entries: SocketEntry<S>[];
     nodeId: string;
     emit: RenderEmit<S>;
     readOnly?: boolean;
-};
+}
 
 export function SocketColumn<S extends ClassicScheme>({
     side,

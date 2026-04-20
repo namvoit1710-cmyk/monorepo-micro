@@ -1,6 +1,7 @@
-import { BaseNode } from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/base-node";
-import { IEditorInstance, IEditorValue } from "@common/components/ldc-workflow-editor/components/rete-editor/types";
-import { RefObject, useEffect, useRef } from "react";
+import type { RefObject } from "react";
+import { useEffect, useRef } from "react";
+import type { BaseNode } from "../components/rete-editor/nodes/base-node";
+import type { IEditorInstance, IEditorValue } from "../components/rete-editor/types";
 
 interface UseEditorSyncOptions {
     onChange?: (value: IEditorValue) => void;
@@ -23,7 +24,7 @@ export function useEditorSync(
         if (!editor) return;
 
         let active = true;
-        const pipe = (context) => {
+        const pipe = (context: any) => {
             if (!active || isLoadingRef.current) return context;
 
             if (
@@ -56,7 +57,7 @@ export function useEditorSync(
 
         area.addPipe((context) => {
             if (context.type === "nodepicked") {
-                onNodeSelected?.(editorInstance.getNodeById(context.data.id));
+                onNodeSelected?.(editorInstance.getNodeById(context.data.id)!);
 
                 const isOutsideViewPort = !editorInstance.isNodeInViewport(context.data.id);
                 if (isOutsideViewPort) {

@@ -1,4 +1,4 @@
-import { cn } from "@common/lib/utils";
+import { cn } from "@ldc/ui";
 
 interface ILoadingSpinProps {
     className?: string,

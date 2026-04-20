@@ -1,14 +1,14 @@
-import { IEditorInstance } from "@common/components/ldc-workflow-editor/components/rete-editor/types";
-import useEditorHistory from "@common/components/ldc-workflow-editor/hooks/use-editor-history";
-import { RETE_EDITOR_I18N_NAMESPACE } from "@common/components/ldc-workflow-editor/i18n";
-import { Button } from "@common/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@common/components/ui/tooltip";
+import { useTranslation } from "@ldc/i18n";
+import { Button } from "@ldc/ui/components/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@ldc/ui/components/tooltip";
 import { BrushCleaning, Minimize, RedoIcon, UndoIcon, ZoomIn, ZoomOut } from "lucide-react";
 import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import type { IEditorInstance } from "../../../components/rete-editor/types";
+import useEditorHistory from "../../../hooks/use-editor-history";
+import { RETE_EDITOR_I18N_NAMESPACE } from "../../../i18n";
 
 interface IBottomToolbarProps {
-    editorInstance: IEditorInstance;
+    editorInstance: IEditorInstance | null;
 }
 
 const BottomToolbar = (props: IBottomToolbarProps) => {

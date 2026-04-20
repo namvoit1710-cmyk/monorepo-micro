@@ -1,24 +1,7 @@
-import { ClassicScheme, Presets } from "rete-react-plugin";
-import styled from "styled-components";
+import type { ClassicScheme } from "rete-react-plugin";
+import { Presets } from "rete-react-plugin";
 
 const { useConnection } = Presets.classic;
-
-const Svg = styled.svg`
-  overflow: visible !important;
-  position: absolute;
-  pointer-events: none;
-  width: 9999px;
-  height: 9999px;
-`;
-
-const Path = styled.path<{ styles?: (props: any) => any }>`
-  fill: none;
-  stroke-width: 2px;
-  stroke: #ffd92c;
-  pointer-events: auto;
-  ${(props) => props.styles && props.styles(props)};
-  filter: blur(2px);
-`;
 
 export function MagneticConnection(props: {
     data: ClassicScheme["Connection"] & { isLoop?: boolean };
@@ -29,8 +12,15 @@ export function MagneticConnection(props: {
     if (!path) return null;
 
     return (
-        <Svg data-id="connection">
-            <Path styles={props.styles} d={path} />
-        </Svg>
+        <svg
+            data-id="connection"
+            className="!overflow-visible absolute pointer-events-none w-[9999px] h-[9999px]"
+        >
+            <path
+                d={path}
+                className="fill-none stroke-[2px] stroke-[#ffd92c] pointer-events-auto blur-[2px]"
+                style={props.styles?.()}
+            />
+        </svg>
     );
 }

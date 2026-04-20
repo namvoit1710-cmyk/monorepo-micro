@@ -1,7 +1,8 @@
-import { ClassicPreset, NodeEditor } from "rete";
-import { ConnectionPlugin } from "rete-connection-plugin";
+import type { NodeEditor } from "rete";
+import { ClassicPreset } from "rete";
+import type { ConnectionPlugin } from "rete-connection-plugin";
 import { useMagneticConnection } from "../connections/magnetic-connection";
-import { AreaExtra, Schemes } from "../types";
+import type { AreaExtra, Schemes } from "../types";
 
 export function SetupMagneticConnection(
     connection: ConnectionPlugin<Schemes, AreaExtra>,
@@ -17,9 +18,9 @@ export function SetupMagneticConnection(
 
             await editor.addConnection(
                 new ClassicPreset.Connection(
-                    sourceNode,
+                    sourceNode!,
                     source.key as never,
-                    targetNode,
+                    targetNode!,
                     target.key as never
                 )
             );

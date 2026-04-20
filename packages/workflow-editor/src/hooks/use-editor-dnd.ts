@@ -1,7 +1,7 @@
-import { getNodeSize } from "@common/components/ldc-workflow-editor/components/rete-editor/config/node-config";
-import { BaseNode } from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/base-node";
-import { IEditorInstance, IEditorNode } from "@common/components/ldc-workflow-editor/components/rete-editor/types";
 import { useCallback, useRef, useState } from "react";
+import { getNodeSize } from "../components/rete-editor/config/node-config";
+import { BaseNode } from "../components/rete-editor/nodes/base-node";
+import type { IEditorInstance, IEditorNode } from "../components/rete-editor/types";
 import { generateUUID } from "../utils/generate-uuid";
 
 export function useEditorDnd(editorInstance: IEditorInstance | undefined, readOnly: boolean) {
@@ -53,12 +53,12 @@ export function useEditorDnd(editorInstance: IEditorInstance | undefined, readOn
         try {
             const editorNode: IEditorNode = JSON.parse(raw);
             const node = new BaseNode(generateUUID(), editorNode.name, editorNode.ports, getNodeSize(editorNode.name), editorNode);
-            
+
             await editorInstance.addNode(node);
             const transform = editorInstance.getTransform();
             const rect = (e.target as HTMLElement).getBoundingClientRect();
-            let x = (e.clientX - rect.left - transform.x) / transform.k;
-            let y = (e.clientY - rect.top - transform.y) / transform.k;
+            const x = (e.clientX - rect.left - transform.x) / transform.k;
+            const y = (e.clientY - rect.top - transform.y) / transform.k;
 
             editorInstance.translateNode(node.id, { x, y });
         } catch (error) {

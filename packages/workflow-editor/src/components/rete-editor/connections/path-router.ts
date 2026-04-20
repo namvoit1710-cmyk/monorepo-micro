@@ -1,12 +1,12 @@
-import { EditorDirection } from "../types";
+import type { EditorDirection } from "../types";
 
-type Position = { x: number; y: number };
+interface Position { x: number; y: number }
 
 const R = 12;
 
 const SOCKET_OFFSET = 12;
 
-export function computeHorizontalStepPath(source: Position, target: Position): {d: string, angle: number} {
+export function computeHorizontalStepPath(source: Position, target: Position): { d: string, angle: number } {
     const dx = target.x - source.x;
     const dy = target.y - source.y;
     const xMid = (source.x + target.x) / 2;
@@ -35,7 +35,7 @@ export function computeHorizontalStepPath(source: Position, target: Position): {
         return {
             d: [
                 `M ${source.x} ${source.y}`,
-                `L ${source.x + 50 - r} ${source.y}`, 
+                `L ${source.x + 50 - r} ${source.y}`,
                 `Q ${source.x + 50} ${source.y} ${source.x + 50} ${source.y + upOrDown * r}`,
                 `L ${source.x + 50} ${loopY + r}`,
                 `Q ${source.x + 50} ${loopY} ${source.x + 50 - r} ${loopY}`,
@@ -56,19 +56,19 @@ export function computeHorizontalStepPath(source: Position, target: Position): {
 
         return {
             d: [
-                    `M ${source.x} ${source.y}`,
-                    `L ${source.x + 50 - r} ${source.y}`, 
-                    `Q ${source.x + 50} ${source.y} ${source.x + 50} ${source.y + down * r}`,
-                    `L ${source.x + 50} ${loopY - r}`,
-                    `Q ${source.x + 50} ${loopY} ${source.x + 50 - r} ${loopY}`,
-                    `L ${target.x - 50 + r} ${loopY}`,
-                    `Q ${target.x - 50} ${loopY} ${target.x - 50} ${loopY - r}`,
-                    `L ${target.x - 50} ${target.y + r}`,
-                    `Q ${target.x - 50} ${target.y} ${target.x - 50 + r} ${target.y}`,
-                    `L ${target.x} ${target.y}`,
-                ].join(" "),
-                angle: 0,
-            }
+                `M ${source.x} ${source.y}`,
+                `L ${source.x + 50 - r} ${source.y}`,
+                `Q ${source.x + 50} ${source.y} ${source.x + 50} ${source.y + down * r}`,
+                `L ${source.x + 50} ${loopY - r}`,
+                `Q ${source.x + 50} ${loopY} ${source.x + 50 - r} ${loopY}`,
+                `L ${target.x - 50 + r} ${loopY}`,
+                `Q ${target.x - 50} ${loopY} ${target.x - 50} ${loopY - r}`,
+                `L ${target.x - 50} ${target.y + r}`,
+                `Q ${target.x - 50} ${target.y} ${target.x - 50 + r} ${target.y}`,
+                `L ${target.x} ${target.y}`,
+            ].join(" "),
+            angle: 0,
+        }
     }
 
     return {
@@ -85,11 +85,11 @@ function computeVerticalStepPath(
     const tx = target.x + SOCKET_OFFSET;
     const sy = source.y;
     const ty = target.y;
- 
+
     const dx = tx - sx;
     const dy = ty - sy;
     const yMid = (sy + ty) / 2;
- 
+
     if (dy > 40 && Math.abs(dx) > 5) {
         const r = Math.min(R, Math.abs(dy) / 2, Math.abs(dx) / 2);
         const signX = dx > 0 ? 1 : -1;
@@ -105,14 +105,14 @@ function computeVerticalStepPath(
             angle: 90,
         };
     }
- 
+
     if (dy > 40 && Math.abs(dx) <= 5) {
         return {
             d: `M ${sx} ${sy} L ${tx} ${ty}`,
             angle: 90,
         };
     }
- 
+
     if (dy <= 0 && dx >= 0) {
         const loopX = Math.max(sx, tx) + 100;
         const r = R;
@@ -132,7 +132,7 @@ function computeVerticalStepPath(
             angle: 90,
         };
     }
- 
+
     if (dy <= 0 && dx < 0) {
         const loopX = Math.min(sx, tx) - 100;
         const r = R;
@@ -152,7 +152,7 @@ function computeVerticalStepPath(
             angle: 90,
         };
     }
- 
+
     return {
         d: `M ${sx} ${sy} L ${tx} ${ty}`,
         angle: dy >= 0 ? 90 : 270,

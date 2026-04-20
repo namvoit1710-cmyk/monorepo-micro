@@ -1,8 +1,8 @@
-import { NodeEditor } from "rete";
-import { AreaPlugin } from "rete-area-plugin";
-import { BaseNode } from "../nodes/base-node";
+import type { NodeEditor } from "rete";
+import type { AreaPlugin } from "rete-area-plugin";
+import type { BaseNode } from "../nodes/base-node";
 import { GroupNode } from "../nodes/group-node";
-import { AreaExtra, Schemes } from "../types";
+import type { AreaExtra, Schemes } from "../types";
 
 export function getGroupAtPosition(
     x: number,

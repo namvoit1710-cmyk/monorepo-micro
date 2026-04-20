@@ -1,6 +1,6 @@
-import { DEFAULT_SIZE_NODE } from "@common/components/ldc-workflow-editor/constants/node";
 import { ClassicPreset } from "rete";
-import { IEditorNode, NodeExecutionStatus, NodePortConfig, NodeSizeConfig } from "../types";
+import { DEFAULT_SIZE_NODE } from "../../../constants/node";
+import type { IEditorNode, NodeExecutionStatus, NodePortConfig, NodeSizeConfig } from "../types";
 import { socket } from "./socket";
 
 export class BaseNode extends ClassicPreset.Node {
@@ -12,7 +12,7 @@ export class BaseNode extends ClassicPreset.Node {
 
     constructor(
         id?: string,
-        label: string = "Node",
+        label = "Node",
         ports?: NodePortConfig,
         size?: NodeSizeConfig,
         initialData?: IEditorNode
@@ -25,12 +25,12 @@ export class BaseNode extends ClassicPreset.Node {
         const inputs = ports?.inputs ?? [{ id: "port", label: "in" }];
         const outputs = ports?.outputs ?? [{ id: "port", label: "out" }];
         this.id = id ?? initialData?.id ?? crypto.randomUUID();
-        this.original = initialData;
+        this.original = initialData!;
 
         for (const key of inputs) {
             this.addInput(key.id, new ClassicPreset.Input(socket, key.label, true));
         }
-        
+
         for (const key of outputs) {
             this.addOutput(key.id, new ClassicPreset.Output(socket, key.label));
         }
@@ -39,7 +39,7 @@ export class BaseNode extends ClassicPreset.Node {
     public updateNodeLabel(label: string) {
         this.original.title = label;
         this.original.name = label;
-        
+
         this.label = label;
     }
 
@@ -48,13 +48,13 @@ export class BaseNode extends ClassicPreset.Node {
     }
 
     public updateInputSocketLabel(portId: string, label: string) {
-        this.original.ports.inputs.find((port) => port.id === portId).label = label;
-        this.inputs[portId].label = label;
+        this.original.ports.inputs.find((port) => port.id === portId)!.label = label;
+        this.inputs[portId]!.label = label;
     }
 
     public updateOutputSocketLabel(portId: string, label: string) {
-        this.original.ports.outputs.find((port) => port.id === portId).label = label;
-        this.outputs[portId].label = label;
+        this.original.ports.outputs.find((port) => port.id === portId)!.label = label;
+        this.outputs[portId]!.label = label;
     }
 
     public addOutputSocket(key: string, label: string) {

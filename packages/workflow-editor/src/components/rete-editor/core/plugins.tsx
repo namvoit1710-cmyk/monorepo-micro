@@ -17,7 +17,7 @@ import { getNodeFactory } from "../config/node-config";
 import { MagneticConnection } from "../connections/magnetic-connection";
 import { createSelectableConnection } from "../connections/selectable-connection";
 import { SetupMagneticConnection } from "../connections/setup-magnetic-connection";
-import { AreaExtra, EditorConfig, Schemes } from "../types";
+import type { AreaExtra, EditorConfig, Schemes } from "../types";
 import { applyContainerStyles } from "./styles";
 
 export interface PluginBundle {

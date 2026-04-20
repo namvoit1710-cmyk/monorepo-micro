@@ -1,14 +1,14 @@
-import { cn } from "@common/lib/utils";
+import { cn } from "@ldc/ui";
 import { useRef } from "react";
-import { ClassicScheme } from "rete-react-plugin";
-import { IEditorNode } from "../../types";
+import type { ClassicScheme } from "rete-react-plugin";
+import type { IEditorNode } from "../../types";
 
-type NodeExtraData = { width?: number; height?: number };
+interface NodeExtraData { width?: number; height?: number }
 
-type Props<S extends ClassicScheme> = {
+interface Props<S extends ClassicScheme> {
     data: S["Node"] & NodeExtraData & { original: IEditorNode };
     styles?: () => any;
-};
+}
 
 const GroupNodes = (props: Props<ClassicScheme>) => {
     const { data } = props;

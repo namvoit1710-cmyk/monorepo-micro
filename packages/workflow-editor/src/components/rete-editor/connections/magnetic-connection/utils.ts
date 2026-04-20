@@ -1,5 +1,5 @@
-import { NodeView } from "rete-area-plugin";
-import { Node } from "./types";
+import type { NodeView } from "rete-area-plugin";
+import type { Node } from "./types";
 
 export function getNodeRect(node: Node, view: NodeView) {
   const {

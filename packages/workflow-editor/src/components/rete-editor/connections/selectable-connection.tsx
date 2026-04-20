@@ -1,6 +1,6 @@
-import { NodeEditor } from "rete";
-import { AreaPlugin } from "rete-area-plugin";
-import { AreaExtra, EditorDirection, Schemes } from "../types";
+import type { NodeEditor } from "rete";
+import type { AreaPlugin } from "rete-area-plugin";
+import type { AreaExtra, EditorDirection, Schemes } from "../types";
 import { LineConnection } from "./line-connection";
 
 interface Props {

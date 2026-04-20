@@ -35,6 +35,7 @@
     "@ldc/env": "workspace:^",
     "@ldc/ui": "workspace:^",
     "@ldc/i18n": "workspace:^",
+    "@ldc/workflow-editor": "workspace:^",
     "@ldc/autoform": "workspace:^",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
