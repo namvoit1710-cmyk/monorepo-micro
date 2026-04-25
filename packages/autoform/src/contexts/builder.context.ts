@@ -2,12 +2,17 @@ import type { ComponentType } from "react";
 import { createContext, useContext } from "react";
 import type { FieldComponentProps, FieldWrapperProps, ISchema } from "../types/schema";
 
+export type BuilderServiceHandler = (endpoint: string, params: Record<string, any>) => unknown;
+export interface BuilderServices {
+    [key: string]: BuilderServiceHandler | BuilderServices;
+}
 
 interface IBuilderContext {
     schema: ISchema;
     fieldComponent: Record<string, ComponentType<FieldComponentProps> | null>;
     wrapperComponent: Record<string, ComponentType<FieldWrapperProps> | null>;
 
+    services?: BuilderServices;
 
 
     refresh?: boolean;

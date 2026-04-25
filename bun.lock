@@ -132,6 +132,7 @@
       "name": "@ldc/autoform",
       "dependencies": {
         "@hookform/resolvers": "^5.2.2",
+        "@ldc/api-sdk": "workspace:*",
         "@ldc/data-table": "workspace:*",
         "@ldc/ui": "workspace:*",
         "@monaco-editor/react": "^4.7.0",

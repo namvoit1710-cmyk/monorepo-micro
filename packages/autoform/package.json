@@ -30,6 +30,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@ldc/ui": "workspace:*",
+    "@ldc/api-sdk": "workspace:*",
     "@ldc/data-table": "workspace:*",
     "@monaco-editor/react": "^4.7.0",
     "lucide-react": "catalog:",

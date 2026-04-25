@@ -1,6 +1,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ldc/ui/components/select";
-import React from "react";
+import React, { useMemo } from "react";
 import type { FieldComponentProps } from "../../types/schema";
+import { useServerOptions } from "../../hooks/use-server-option";
 
 export interface ISelectOption {
     id: string;
@@ -28,6 +29,16 @@ const SelectControl = React.forwardRef<HTMLButtonElement, ISelectControlProps>(
             placeholder,
             error,
         } = props;
+
+        const { data } = useServerOptions(props.field?.fieldConfig?.controlProps?.serverOptions);
+
+        const _options = useMemo(() => {
+            if (props.field?.fieldConfig?.controlProps?.serverOptions) {
+                return data;
+            }
+
+            return options;
+        }, [data, options, props.field]);
 
         return (
             <Select
