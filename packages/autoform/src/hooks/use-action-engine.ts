@@ -6,8 +6,10 @@
 // Inject vào Builder qua onFormActions prop.
 // ============================================================================
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
+import type { SocketClient } from "../../../api-sdk/src/socket-client";
 import { BuilderRef } from "../components/builder/builder";
+import { runAction } from "../libs/action-engine";
 import { ActionConfig, EngineContext } from "../types/action-config";
 
 // ----------------------------------------------------------------------------
@@ -20,6 +22,23 @@ interface UseActionEngineOptions {
 
   /** Builder ref — để lấy react-hook-form methods */
   builderRef: React.RefObject<BuilderRef | null>;
+
+  /**
+   * SocketClient instance — tạo bằng createActionSocket().
+   * Engine tự connect namespace được config trong trigger_workflow step.
+   * Namespace reuse nếu đã connected — không tạo connection mới.
+   */
+  actionSocket?: SocketClient;
+
+  /**
+   * Registered API services — map tên service → APISdk instance.
+   * Dùng cho các step có field `service: "governance"` v.v.
+   * Engine sẽ gọi qua service (có auth headers) thay vì raw fetch.
+   *
+   * @example
+   * services={{ governance: governanceSdk, odata: odataSdk }}
+   */
+  services?: Record<string, { fetch: (endpoint: string, params?: Record<string, any>) => Promise<any> }>;
 
   /**
    * Custom handlers cho step type: "custom"
@@ -61,6 +80,16 @@ interface UseActionEngineReturn {
 
   /** Kiểm tra action name có config hay không */
   hasAction: (actionName: string) => boolean;
+
+  /**
+   * True khi đang có trigger_workflow step đang chờ socket response.
+   * Dùng để disable button ở UI tránh concurrent trigger.
+   * Reset về false sau khi pipeline hoàn thành (success hoặc error).
+   *
+   * @example
+   * <Button disabled={isWaitingWorkflow}>Trigger</Button>
+   */
+  isWaitingWorkflow: boolean;
 }
 
 interface RefetchParams {
@@ -78,6 +107,8 @@ export function useActionEngine(options: UseActionEngineOptions): UseActionEngin
   const {
     actions,
     builderRef,
+    actionSocket,
+    services,
     customHandlers,
     refetchData,
     toast = defaultToast,
@@ -87,6 +118,10 @@ export function useActionEngine(options: UseActionEngineOptions): UseActionEngin
     refresh,
     onEvent,
   } = options;
+
+  // [NEW] Guard concurrent trigger_workflow
+  const [isWaitingWorkflow, setIsWaitingWorkflow] = useState(false);
+  const isWaitingWorkflowRef = useRef(false);
 
   // Index actions by name → O(1) lookup
   const actionMap = useMemo(() => {
@@ -116,6 +151,19 @@ export function useActionEngine(options: UseActionEngineOptions): UseActionEngin
         return;
       }
 
+      // [NEW] Guard concurrent trigger_workflow
+      const hasTriggerWorkflow = config.steps.some((s) => s.type === "trigger_workflow");
+      if (hasTriggerWorkflow) {
+        if (isWaitingWorkflowRef.current) {
+          console.warn(
+            `[useActionEngine] Action "${actionName}" blocked: another trigger_workflow is already running`
+          );
+          return;
+        }
+        isWaitingWorkflowRef.current = true;
+        setIsWaitingWorkflow(true);
+      }
+
       // Build engine context từ payload + methods + UI callbacks
       const ctx: EngineContext = {
         formValues: (payload?.formValues as Record<string, unknown>) ?? methods.getValues(),
@@ -134,8 +182,9 @@ export function useActionEngine(options: UseActionEngineOptions): UseActionEngin
         updateRow: payload?.updateRow as ((partial: Record<string, unknown>) => void) | undefined,
         // Engine dependencies
         customHandlers,
-        
         refetchData: refetchData ?? undefined,
+        actionSocket: actionSocket ?? undefined,
+        services: services ?? undefined,
 
         // UI callbacks
         ui: {
@@ -148,12 +197,19 @@ export function useActionEngine(options: UseActionEngineOptions): UseActionEngin
         },
       };
 
-      await runAction(config, ctx);
+      try {
+        await runAction(config, ctx);
+      } finally {
+        if (hasTriggerWorkflow) {
+          isWaitingWorkflowRef.current = false;
+          setIsWaitingWorkflow(false);
+        }
+      }
     },
-    [actionMap, builderRef, customHandlers, refetchData, toast, confirm, redirect, closeDialog, refresh, onEvent],
+    [actionMap, builderRef, actionSocket, services, customHandlers, refetchData, toast, confirm, redirect, closeDialog, refresh, onEvent],
   );
 
-  return { handleFormActions, hasAction };
+  return { handleFormActions, hasAction, isWaitingWorkflow };
 }
 
 // ----------------------------------------------------------------------------
@@ -161,8 +217,7 @@ export function useActionEngine(options: UseActionEngineOptions): UseActionEngin
 // ----------------------------------------------------------------------------
 
 function defaultToast(message: string, variant?: string) {
-    toast.info(`[${variant ?? "info"}] ${message}`);
-    console.log(`[Toast][${variant ?? "info"}] ${message}`);
+  console.log(`[Toast][${variant ?? "info"}] ${message}`);
 }
 
 function defaultConfirm(message: string): Promise<boolean> {
