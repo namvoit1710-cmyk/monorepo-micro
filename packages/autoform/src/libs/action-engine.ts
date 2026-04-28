@@ -5,7 +5,8 @@
 // Pipeline dừng nếu step nào return false (ví dụ: confirm bị cancel).
 // ============================================================================
 
-import type { ActionStep, EngineContext } from "../types/action-config";
+import { ISocket } from "@ldc/api-sdk/socket";
+import type { ActionConfig, ActionResult, ActionStep, EngineContext } from "../types/action-config";
 import serviceRequest from "../utils/service-request";
 
 
@@ -131,7 +132,7 @@ async function executeApiCall(
 
     switch (step.method) {
       case "GET":
-        data = await service.fetch(url);
+        data = await service?.fetch(url);
         break;
       case "POST":
       case "PUT":
@@ -315,6 +316,173 @@ async function executeCustom(step: ActionStep & { type: "custom" }, ctx: EngineC
 }
 
 // ----------------------------------------------------------------------------
+// Trigger Workflow — Socket.IO suspend helper
+// ----------------------------------------------------------------------------
+
+interface WaitForSocketOptions {
+  socket: ISocket;
+  channel: string;
+  eventKeyField: string;
+  successKey: string;
+  errorKey?: string;
+  /** Filter đúng workflow instance — tránh nhận nhầm event */
+  runId?: string;
+  timeout: number;
+}
+
+function waitForSocketEvent(options: WaitForSocketOptions): Promise<unknown> {
+  const { socket, channel, eventKeyField, successKey, errorKey, runId, timeout } = options;
+
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    const cleanup = () => {
+      socket.off(channel, handler);
+      clearTimeout(timeoutId);
+    };
+
+    const handler = (...args: unknown[]) => {
+      const payload = args[0] as Record<string, unknown>;
+      if (!payload || typeof payload !== "object") return;
+
+      // Filter theo run_id nếu BE trả về trong payload
+      if (runId && payload["run_id"] !== undefined && payload["run_id"] !== runId) {
+        return;
+      }
+
+      const eventKey = payload[eventKeyField];
+
+      if (eventKey === successKey) {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        resolve(payload);
+        return;
+      }
+
+      if (errorKey && eventKey === errorKey) {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        const errorMessage =
+          (payload["message"] as string) ??
+          (payload["error"] as string) ??
+          `[ActionEngine] Workflow failed with event: ${String(eventKey)}`;
+        reject(new Error(errorMessage));
+        return;
+      }
+      // Các event khác (progress, chunk...) → ignore
+    };
+
+    socket.on(channel, handler);
+
+    timeoutId = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(
+        new Error(
+          `[ActionEngine] trigger_workflow timeout after ${timeout}ms waiting for "${successKey}" event`
+        )
+      );
+    }, timeout);
+  });
+}
+
+async function executeTriggerWorkflow(
+  step: ActionStep & { type: "trigger_workflow" },
+  ctx: EngineContext
+): Promise<boolean> {
+  const { actionSocket } = ctx;
+
+  if (!actionSocket) {
+    throw new Error(
+      "[ActionEngine] trigger_workflow step requires actionSocket (SocketClient) injected into useActionEngine"
+    );
+  }
+
+  // Connect namespace từ step config — reuse nếu đã connected
+  const namespace = step.socketNamespace ?? "/";
+  const socket = actionSocket.connect(namespace);
+
+  // 1. Call API trigger workflow
+  const url = interpolate(step.endpoint, ctx);
+
+  let body: unknown;
+  if (step.body === "formValues") {
+    body = ctx.formValues;
+  } else if (step.body === "rowData") {
+    body = ctx.rowData;
+  } else if (step.body && typeof step.body === "object") {
+    body = JSON.parse(interpolate(JSON.stringify(step.body), ctx));
+  }
+
+  let apiResponse: unknown;
+
+  if (step.service && ctx.services?.[step.service]) {
+    apiResponse = await serviceRequest(
+      ctx.services[step.service],
+      "POST",
+      url,
+      body,
+      undefined
+    );
+  } else {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error(
+        (error as any)?.message ?? `[ActionEngine] trigger_workflow API failed: ${res.status}`
+      );
+    }
+
+    apiResponse = await res.json().catch(() => null);
+  }
+
+  // 2. Extract run_id để filter đúng socket event
+  const runId: string | undefined = step.runIdPath
+    ? (getByPath(apiResponse, step.runIdPath) as string)
+    : undefined;
+
+  // 3. Subscribe socket — suspend pipeline chờ completion
+  const socketResult = await waitForSocketEvent({
+    socket,
+    channel: step.socketChannel ?? "data_chunk",
+    eventKeyField: step.socketEventKeyField ?? "_event",
+    successKey: step.socketEventKey,
+    errorKey: step.socketErrorKey,
+    runId,
+    timeout: step.timeout ?? 30_000,
+  });
+
+  // 4. Set lastResult cho step tiếp theo
+  ctx.lastResult = {
+    apiResponse,
+    socketPayload: socketResult,
+    run_id: runId,
+  };
+
+  // 5. Map socket payload vào form fields
+  if (step.resultMapping) {
+    for (const [payloadPath, formField] of Object.entries(step.resultMapping)) {
+      const value = getByPath(socketResult, payloadPath);
+      if (value !== undefined) {
+        ctx.methods.setValue(formField, value, { shouldValidate: true });
+      }
+    }
+    ctx.formValues = ctx.methods.getValues() as Record<string, unknown>;
+  }
+
+  return true;
+}
+
+// ----------------------------------------------------------------------------
 // Step Router
 // ----------------------------------------------------------------------------
 
@@ -339,7 +507,7 @@ async function executeStep(step: ActionStep, ctx: EngineContext): Promise<boolea
       return executeUpdateRow(step, ctx);
 
     case "refetch_data":
-        return executeRefetchData(step, ctx);
+      return executeRefetchData(step, ctx);
 
     case "poll":
       return executePoll(step, ctx);
@@ -370,6 +538,9 @@ async function executeStep(step: ActionStep, ctx: EngineContext): Promise<boolea
 
     case "custom":
       return executeCustom(step, ctx);
+
+    case "trigger_workflow":
+      return executeTriggerWorkflow(step, ctx);
 
     default:
       console.warn(`[ActionEngine] Unknown step type: ${(step as any).type}`);

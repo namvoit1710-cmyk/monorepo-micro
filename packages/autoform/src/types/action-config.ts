@@ -5,6 +5,8 @@
 // Thêm action mới = thêm JSON, không cần deploy code.
 // ============================================================================
 
+import type { SocketClient } from "../../../api-sdk/src/socket-client";
+
 // ----------------------------------------------------------------------------
 // Step Types
 // ----------------------------------------------------------------------------
@@ -158,6 +160,85 @@ interface CustomStep {
   handler: string;
 }
 
+/**
+ * Trigger một external workflow qua REST API, sau đó subscribe Socket.IO
+ * để chờ completion event. Pipeline suspend tại đây cho đến khi:
+ *   - Socket emit event khớp socketEventKey → resume với payload
+ *   - Timeout vượt quá → throw error → onError pipeline chạy
+ *
+ * Socket instance được inject vào useActionEngine qua prop `socket`.
+ * Engine tự subscribe/unsubscribe — không leak listener.
+ *
+ * Race condition safe: run_id từ API response dùng để filter đúng
+ * workflow instance, tránh nhận nhầm event của workflow khác.
+ */
+interface TriggerWorkflowStep {
+  type: "trigger_workflow";
+
+  /** Service name đã register trong context.services */
+  service?: string;
+
+  /** Endpoint trigger workflow. Hỗ trợ template: "/api/trigger/${formValues.id}" */
+  endpoint: string;
+
+  /** Body gửi lên API. "formValues" | "rowData" | object cụ thể */
+  body?: "formValues" | "rowData" | Record<string, unknown>;
+
+  /**
+   * Path để extract run_id từ API response.
+   * Dùng để filter socket event đúng workflow instance.
+   * Nếu không set → không filter theo run_id.
+   * @example "data.run_id"
+   */
+  runIdPath?: string;
+
+  /**
+   * Socket.IO namespace để connect khi step này chạy.
+   * Engine gọi actionSocket.connect(namespace) để lấy Socket instance.
+   * Namespace được reuse nếu đã connected — không tạo connection mới.
+   * @example "/workflow" | "/notifications"
+   * @default "/"
+   */
+  socketNamespace?: string;
+
+  /**
+   * Socket.IO channel name để listen.
+   * @default "data_chunk"
+   */
+  socketChannel?: string;
+
+  /**
+   * Field trong payload để identify event type.
+   * @default "_event"
+   */
+  socketEventKeyField?: string;
+
+  /**
+   * Giá trị event key để detect completion.
+   * @example "workflow_completed"
+   */
+  socketEventKey: string;
+
+  /**
+   * Giá trị event key để detect error.
+   * Nếu match → throw error → onError pipeline chạy.
+   * @example "workflow_error"
+   */
+  socketErrorKey?: string;
+
+  /**
+   * Timeout tính bằng ms. Nếu socket không respond → throw.
+   * @default 30000
+   */
+  timeout?: number;
+
+  /**
+   * Map socket event payload vào form fields sau khi complete.
+   * @example { "data.result_id": "resultField" }
+   */
+  resultMapping?: Record<string, string>;
+}
+
 // ----------------------------------------------------------------------------
 // Union type cho tất cả steps
 // ----------------------------------------------------------------------------
@@ -179,7 +260,8 @@ export type ActionStep =
   | RefreshStep
   | EmitEventStep
   | ConditionStep
-  | CustomStep;
+  | CustomStep
+  | TriggerWorkflowStep;
 
 // ----------------------------------------------------------------------------
 // Action Config — một action = tên + pipeline steps
@@ -233,6 +315,13 @@ export interface EngineContext {
     refresh?: () => void;
     emitEvent?: (event: string, payload?: unknown) => void;
   };
+
+  /**
+   * SocketClient instance — inject từ useActionEngine options.
+   * Engine gọi actionSocket.connect(namespace) trong trigger_workflow step.
+   * Namespace được lấy từ step config socketNamespace (default: "/").
+   */
+  actionSocket?: SocketClient;
 
   services?: Record<string, { fetch: (endpoint: string, params?: Record<string, any>) => Promise<any> }>;
 }
