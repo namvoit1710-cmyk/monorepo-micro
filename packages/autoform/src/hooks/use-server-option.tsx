@@ -1,27 +1,52 @@
-import type { PaginationState } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { useBuilderContext } from "../contexts/builder.context";
-import { IServerOptionsConfig } from "../interfaces/service-option.interface";
+import { IServerOptionsConfig } from "../types/server-option-config";
+import { PaginationState } from "@ldc/data-table";
+
+// ============================================================================
+// Interfaces
+// ============================================================================
 
 export interface IPaginationConfig {
     pageSize?: number;
 }
 
+// ============================================================================
+// Utility
+// ============================================================================
+
+/**
+ * Resolve nested value by dot-notation path.
+ * getByPath({ data: { items: [1,2] } }, "data.items") => [1,2]
+ */
+const getByPath = (obj: any, path?: string): any => {
+    if (!path) return obj;
+    return path.split(".").reduce((acc, key) => acc?.[key], obj);
+};
+
+// ============================================================================
+// Hook
+// ============================================================================
+
 export const useServerOptions = (
     serverOptions?: IServerOptionsConfig,
     paginationConfig?: IPaginationConfig
 ) => {
-    const { services, registerRefetch, unregisterRefetch } = useBuilderContext();
+    const { services } = useBuilderContext();
     const { control } = useFormContext();
     const [data, setData] = useState<Record<string, unknown>[]>([]);
     const [loading, setLoading] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
     const abortRef = useRef<AbortController | null>(null);
 
-    const { endpoint, service, dependencies = [] } = serverOptions ?? {};
+    const { endpoint, service, dependencies = [], responseMapping } = serverOptions ?? {};
 
     const enablePagination = !!paginationConfig;
+
+    // --- Dynamic paths with sensible defaults ---
+    const dataPath = responseMapping?.dataPath ?? "data.items";
+    const totalPath = responseMapping?.totalPath ?? "data.count";
 
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
@@ -89,18 +114,21 @@ export const useServerOptions = (
 
         const requestParams = enablePagination
             ? {
-                ...params,
-                $top: pagination.pageSize,
-                $skip: pagination.pageIndex * pagination.pageSize,
-                $count: true,
-            }
+                  ...params,
+                  $top: pagination.pageSize,
+                  $skip: pagination.pageIndex * pagination.pageSize,
+                  $count: true,
+              }
             : params;
 
         serviceHandler(endpoint, requestParams)
             .then((response: any) => {
                 if (!cancelled) {
-                    setData(response?.data?.items ?? []);
-                    setTotalCount(response?.data?.count ?? 0);
+                    const items = getByPath(response, dataPath);
+                    setData(Array.isArray(items) ? items : []);
+
+                    const total = getByPath(response, totalPath);
+                    setTotalCount(typeof total === "number" ? total : 0);
                 }
             })
             .catch((error: any) => {
@@ -118,7 +146,16 @@ export const useServerOptions = (
             cancelled = true;
             controller.abort();
         };
-    }, [endpoint, serviceHandler, JSON.stringify(params), pagination.pageIndex, pagination.pageSize, refetchVersion]);
+    }, [
+        endpoint,
+        serviceHandler,
+        JSON.stringify(params),
+        pagination.pageIndex,
+        pagination.pageSize,
+        refetchVersion,
+        dataPath,
+        totalPath,
+    ]);
 
     return {
         data,
@@ -127,6 +164,5 @@ export const useServerOptions = (
         setPagination,
         totalCount,
         refetch,
-
     };
 };
