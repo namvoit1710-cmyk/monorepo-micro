@@ -14,6 +14,8 @@ interface IBuilderContext {
 
     services?: BuilderServices;
 
+    registerRefetch?: (key: string, fn: () => Promise<void>) => void;
+    unregisterRefetch?: (key: string) => void;
 
     refresh?: boolean;
     setRefresh?: (refresh: boolean) => void;

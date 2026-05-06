@@ -28,7 +28,7 @@ const TableWrapper = ({ field: fieldControl, path }: ITableWrapperProps) => {
     const name = useMemo(() => path.join("."), [path]);
 
     const { getValues, trigger, clearErrors } = useFormContext();
-    const { onFormActions } = useBuilderContext();
+    const { onFormActions, registerRefetch, unregisterRefetch } = useBuilderContext();
 
     const subField = fieldControl.fields?.[0];
     const wrapperProps = fieldControl.fieldConfig.wrapperProps ?? {
@@ -97,6 +97,19 @@ const TableWrapper = ({ field: fieldControl, path }: ITableWrapperProps) => {
             syncArrayToRHF(initialData, "reset");
         }
     }, [wrapperProps?.data, wrapperProps?.rowCount, resetData, syncArrayToRHF, initialData]);
+
+    // Register refetch function with Builder
+    useEffect(() => {
+        if (registerRefetch) {
+            registerRefetch(name, async () => {
+                const currentData = getValues(name);
+                resetData(currentData ?? []);
+            });
+        }
+        return () => {
+            unregisterRefetch?.(name);
+        };
+    }, [name, registerRefetch, unregisterRefetch, resetData, getValues]);
 
     const isSyncServer = wrapperProps?.isSyncServer ?? (!!wrapperProps?.callback || !!wrapperProps?.callApi);
 

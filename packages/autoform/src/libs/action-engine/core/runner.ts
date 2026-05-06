@@ -16,6 +16,7 @@ import {
     executeSetFieldError,
     executeSetValue,
     executeToast,
+    executeTransform,
     executeTriggerWorkflow,
     executeUpdateRow,
     executeValidate,
@@ -48,6 +49,7 @@ async function executeStep(step: ActionStep, ctx: EngineContext): Promise<boolea
     case "condition":        return executeCondition(step, ctx);
     case "custom":           return executeCustom(step, ctx);
 
+    case "transform":        return executeTransform(step, ctx);
     case "trigger_workflow": return executeTriggerWorkflow(step, ctx);
 
     default:

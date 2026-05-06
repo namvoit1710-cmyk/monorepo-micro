@@ -8,7 +8,7 @@ export type {
     ActionResult,
     ActionStep, ApiCallStep, ClearFieldErrorStep, ClearFieldStep, CloseDialogStep, ConditionStep, ConfirmStep, CustomStep, EmitEventStep, EngineContext, PollStep, RedirectStep, RefetchDataStep, RefetchODataStep, RefetchParams, RefreshStep, ResetFormStep,
     SetFieldErrorStep,
-    SetValueStep, ToastStep, TriggerWorkflowStep, UpdateRowStep, ValidateStep
+    SetValueStep, ToastStep, TransformStep, TriggerWorkflowStep, UpdateRowStep, ValidateStep
 } from "./types";
 
 export { evalExpr, getByPath, interpolate, interpolateDeep, resolveBody } from "./utils";

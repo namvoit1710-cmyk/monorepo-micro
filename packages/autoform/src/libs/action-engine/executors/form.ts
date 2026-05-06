@@ -33,11 +33,46 @@ export async function executeClearField(
 }
 
 export async function executeValidate(
-  step: { type: "validate"; fields?: string[] },
+  step: { type: "validate"; fields?: string[]; row?: boolean },
   ctx: EngineContext
 ): Promise<boolean> {
+  if (step.row) {
+    const tableName = Object.keys(ctx.formValues).find(
+      key => Array.isArray(ctx.formValues[key])
+    );
+
+    if (!tableName) {
+      console.warn("[ActionEngine] validate row: no array field found in formValues");
+      return false;
+    }
+
+    const tableData = ctx.formValues[tableName] as any[];
+
+    // Validate specific row
+    if (ctx.rowIndex !== undefined) {
+      if (step.fields?.length) {
+        const paths = step.fields.map(f => `${tableName}.${ctx.rowIndex}.${f}`);
+        const results = await Promise.all(paths.map(p => ctx.methods.trigger(p)));
+        return results.every(Boolean);
+      }
+      return ctx.methods.trigger(`${tableName}.${ctx.rowIndex}`);
+    }
+
+    // Validate all rows
+    if (step.fields?.length) {
+      const paths = tableData.flatMap((_: any, i: number) =>
+        step.fields!.map(f => `${tableName}.${i}.${f}`)
+      );
+      const results = await Promise.all(paths.map(p => ctx.methods.trigger(p)));
+      return results.every(Boolean);
+    }
+
+    return ctx.methods.trigger(tableName);
+  }
+
   if (step.fields?.length) {
-    const results = await Promise.all(step.fields.map((f) => ctx.methods.trigger(f)));
+    const resolvedFields = step.fields.map(f => interpolate(f, ctx));
+    const results = await Promise.all(resolvedFields.map(f => ctx.methods.trigger(f)));
     return results.every(Boolean);
   }
   return ctx.methods.trigger();

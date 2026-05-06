@@ -25,6 +25,7 @@ export interface ClearFieldStep {
 export interface ValidateStep {
   type: "validate";
   fields?: string[];
+  row?: boolean;
 }
 
 export interface ResetFormStep {
@@ -67,11 +68,7 @@ export interface RefetchODataStep {
 
 export interface RefetchDataStep {
   type: "refetch_data";
-  service?: string;
-  endpoint?: string;
-  filter?: string;
-  orderBy?: string;
-  pageSize?: number;
+  target?: string;
 }
 
 export interface PollStep {
@@ -133,12 +130,21 @@ export interface TriggerWorkflowStep {
   body?: "formValues" | "rowData" | Record<string, unknown>;
   runIdPath?: string;
   socketNamespace?: string;
+  socketRoom?: string;
+  socketRoomPrefix?: string;
   socketChannel?: string;
   socketEventKeyField?: string;
   socketEventKey: string;
   socketErrorKey?: string;
   timeout?: number;
   resultMapping?: Record<string, string>;
+}
+
+export interface TransformStep {
+  type: "transform";
+  expr?: string;
+  outputKey?: string;
+  outputs?: Record<string, string>;
 }
 
 export type ActionStep =
@@ -161,7 +167,8 @@ export type ActionStep =
   | EmitEventStep
   | ConditionStep
   | CustomStep
-  | TriggerWorkflowStep;
+  | TriggerWorkflowStep
+  | TransformStep;
 
 export interface ActionConfig {
   action: string;
