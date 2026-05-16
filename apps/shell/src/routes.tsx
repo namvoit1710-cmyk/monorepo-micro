@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import type { RouteObject } from "react-router-dom";
 
+import { RemoteErrorBoundary } from "./components/remote-error-boundary";
 import RootLayout from "./layouts/root-layout";
 import HomePage from "./pages/home";
 
@@ -40,9 +41,11 @@ export const routes: RouteObject[] = [
             {
                 path: "dashboard",
                 element: (
-                    <Suspense fallback={<div>Loading...</div>}>
-                        <Dashboard />
-                    </Suspense>
+                    <RemoteErrorBoundary name="dashboard">
+                        <Suspense fallback={<div>Loading...</div>}>
+                            <Dashboard />
+                        </Suspense>
+                    </RemoteErrorBoundary>
                 ),
                 handle: {
                     crumb: "Dashboard",
@@ -51,11 +54,13 @@ export const routes: RouteObject[] = [
             {
                 path: "docs/:slug",
                 element: (
-                    <Suspense fallback={<div>Loading...</div>}>
-                        <div className="overflow-hidden [&_#doc-scroll_main]:p-0! [&_#doc-scroll_main]:max-w-full">
-                            <Documentation />
-                        </div>
-                    </Suspense>
+                    <RemoteErrorBoundary name="docs">
+                        <Suspense fallback={<div>Loading...</div>}>
+                            <div className="overflow-hidden [&_#doc-scroll_main]:p-0! [&_#doc-scroll_main]:max-w-full">
+                                <Documentation />
+                            </div>
+                        </Suspense>
+                    </RemoteErrorBoundary>
                 ),
                 handle: {
                     crumb: "Documentation",

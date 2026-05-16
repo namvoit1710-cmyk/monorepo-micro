@@ -22,7 +22,7 @@ export const useServerOptions = (serverOptions?: IServerOptionsConfig) => {
 
     const depValues = useWatch({
         control,
-        name: dependencies.length > 0 ? dependencies : undefined,
+        name: dependencies.length > 0 ? dependencies : [],
         disabled: !dependencies.length,
     });
 
