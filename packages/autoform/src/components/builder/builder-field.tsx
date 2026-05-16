@@ -2,6 +2,7 @@ import type { ComponentType, JSX } from "react";
 import { memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { useBuilderContext } from "../../contexts/builder.context";
+import { SlotProvider } from "../../contexts/slot.context";
 import { useCheckCondition } from "../../hooks/use-check-condittion";
 import type { FieldComponentProps, IField } from "../../types/schema";
 import FragmentWrapper from "../field-wrapper/fragment-wrapper";
@@ -92,9 +93,11 @@ const BuilderField = (props: IBuilderFieldProps) => {
     }
 
     return (
-        <WrapperComponent {...wrapperProps} field={field} path={path}>
-            {FieldComponent}
-        </WrapperComponent>
+        <SlotProvider value={{ slots }}>
+            <WrapperComponent {...wrapperProps} field={field} path={path}>
+                {FieldComponent}
+            </WrapperComponent>
+        </SlotProvider>
     );
 };
 

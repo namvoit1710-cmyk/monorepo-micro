@@ -1,24 +1,63 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { useBuilderContext } from "../contexts/builder.context";
+import { IServerOptionsConfig } from "../types/server-option-config";
+import { PaginationState } from "@ldc/data-table";
 
-export interface IServerOptionsConfig {
-    endpoint: string;
-    service: string;
-    dependencies?: string[];
-    method?: "GET" | "POST";
-    params?: Record<string, string | number | boolean>;
+// ============================================================================
+// Interfaces
+// ============================================================================
+
+export interface IPaginationConfig {
+    pageSize?: number;
 }
 
-export const useServerOptions = (serverOptions?: IServerOptionsConfig) => {
+// ============================================================================
+// Utility
+// ============================================================================
+
+/**
+ * Resolve nested value by dot-notation path.
+ * getByPath({ data: { items: [1,2] } }, "data.items") => [1,2]
+ */
+const getByPath = (obj: any, path?: string): any => {
+    if (!path) return obj;
+    return path.split(".").reduce((acc, key) => acc?.[key], obj);
+};
+
+// ============================================================================
+// Hook
+// ============================================================================
+
+export const useServerOptions = (
+    serverOptions?: IServerOptionsConfig,
+    paginationConfig?: IPaginationConfig
+) => {
     const { services } = useBuilderContext();
     const { control } = useFormContext();
     const [data, setData] = useState<Record<string, unknown>[]>([]);
-
     const [loading, setLoading] = useState(false);
+    const [totalCount, setTotalCount] = useState(0);
     const abortRef = useRef<AbortController | null>(null);
 
-    const { endpoint, service, dependencies = [] } = serverOptions ?? {};
+    const { endpoint, service, dependencies = [], responseMapping } = serverOptions ?? {};
+
+    const enablePagination = !!paginationConfig;
+
+    // --- Dynamic paths with sensible defaults ---
+    const dataPath = responseMapping?.dataPath ?? "data.items";
+    const totalPath = responseMapping?.totalPath ?? "data.count";
+
+    const [pagination, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: paginationConfig?.pageSize ?? 10,
+    });
+
+    const [refetchVersion, setRefetchVersion] = useState(0);
+
+    const refetch = useCallback(async () => {
+        setRefetchVersion((v) => v + 1);
+    }, []);
 
     const depValues = useWatch({
         control,
@@ -28,7 +67,6 @@ export const useServerOptions = (serverOptions?: IServerOptionsConfig) => {
 
     const params = useMemo(() => {
         if (!dependencies.length) return {};
-
         return dependencies.reduce((acc, dep, index) => {
             const value = Array.isArray(depValues) ? depValues[index] : depValues;
             if (value != null && value !== "") {
@@ -48,12 +86,21 @@ export const useServerOptions = (serverOptions?: IServerOptionsConfig) => {
     }, [services, service]);
 
     useEffect(() => {
+        if (enablePagination) {
+            setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+        }
+    }, [JSON.stringify(params), enablePagination]);
+
+    useEffect(() => {
         if (!endpoint || !serviceHandler) return;
 
         if (dependencies.length > 0) {
-            const hasAllDeps = dependencies.every((dep) => params[dep] != null && params[dep] !== "");
+            const hasAllDeps = dependencies.every(
+                (dep) => params[dep] != null && params[dep] !== ""
+            );
             if (!hasAllDeps) {
                 setData([]);
+                setTotalCount(0);
                 return;
             }
         }
@@ -65,16 +112,30 @@ export const useServerOptions = (serverOptions?: IServerOptionsConfig) => {
         let cancelled = false;
         setLoading(true);
 
-        serviceHandler(endpoint, params)
+        const requestParams = enablePagination
+            ? {
+                  ...params,
+                  $top: pagination.pageSize,
+                  $skip: pagination.pageIndex * pagination.pageSize,
+                  $count: true,
+              }
+            : params;
+
+        serviceHandler(endpoint, requestParams)
             .then((response: any) => {
                 if (!cancelled) {
-                    setData(response?.data ?? []);
+                    const items = getByPath(response, dataPath);
+                    setData(Array.isArray(items) ? items : []);
+
+                    const total = getByPath(response, totalPath);
+                    setTotalCount(typeof total === "number" ? total : 0);
                 }
             })
             .catch((error: any) => {
                 if (!cancelled) {
                     console.error("Error fetching server options:", error);
                     setData([]);
+                    setTotalCount(0);
                 }
             })
             .finally(() => {
@@ -85,7 +146,23 @@ export const useServerOptions = (serverOptions?: IServerOptionsConfig) => {
             cancelled = true;
             controller.abort();
         };
-    }, [endpoint, serviceHandler, JSON.stringify(params)]);
+    }, [
+        endpoint,
+        serviceHandler,
+        JSON.stringify(params),
+        pagination.pageIndex,
+        pagination.pageSize,
+        refetchVersion,
+        dataPath,
+        totalPath,
+    ]);
 
-    return { data, loading };
+    return {
+        data,
+        loading,
+        pagination,
+        setPagination,
+        totalCount,
+        refetch,
+    };
 };
