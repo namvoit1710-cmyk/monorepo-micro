@@ -1,0 +1,77 @@
+import { IEditorConnectionValue } from "@common/components/ldc-workflow-editor";
+import { IEditorValue } from "@common/components/ldc-workflow-editor/components/rete-editor";
+import { BaseNode } from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/base-node";
+import { create } from "zustand";
+import { NodeExecutionState } from "../types/execution";
+import { IWorkflow } from "../types/workflows";
+
+interface EditorState {
+    workflowInfo: IWorkflow;
+    selectedNode: BaseNode | null;
+    predecessorNodes: BaseNode[];
+    outgoerNodes: BaseNode[];
+    incomerNodes: BaseNode[];
+    workflowData: IEditorValue;
+    localExecution: {
+        type: "node" | "workflow" | null;
+        nodeId?: string;
+        runId?: string;
+    } | null,
+    nodeExecutionMap: Record<string, NodeExecutionState>;
+}
+
+interface EditorActions {
+    setWorkflowInfo: (data: IWorkflow) => void;
+    setSelectedNode: (node: BaseNode | null) => void;
+    setPredecessorNodes: (nodes: BaseNode[]) => void;
+    setOutgoerNodes: (nodes: BaseNode[]) => void;
+    setIncomerNodes: (nodes: BaseNode[]) => void;
+    setWorkflowData: (data: IEditorValue) => void;
+    setWorkflowConnections: (connections: IEditorConnectionValue[]) => void;
+
+    setNodeExecution: (nodeId: string, state: NodeExecutionState) => void;
+    resetNodeExecution: (nodeId: string) => void;
+    resetAllNodeExecutions: () => void;
+
+    setLocalExecution: (execution: EditorState["localExecution"]) => void;
+
+    resetEditorStore: () => void;
+}
+
+type EditorStore = EditorState & EditorActions;
+
+const initialState: EditorState = {
+    workflowInfo: null,
+    selectedNode: null,
+    localExecution: null,
+    predecessorNodes: [],
+    outgoerNodes: [],
+    incomerNodes: [],
+    workflowData: { nodes: [], connections: [] },
+    nodeExecutionMap: {},
+};
+
+export const useEditorStore = create<EditorStore>((set, get) => ({
+    ...initialState,
+
+    setWorkflowInfo: (data) => set({ workflowInfo: data }),
+    setSelectedNode: (node) => set({ selectedNode: node }),
+    setPredecessorNodes: (nodes) => set({ predecessorNodes: nodes }),
+    setOutgoerNodes: (nodes) => set({ outgoerNodes: nodes }),
+    setIncomerNodes: (nodes) => set({ incomerNodes: nodes }),
+    setWorkflowData: (data) => set({ workflowData: data }),
+    setWorkflowConnections: (connections) => set({ workflowData: { ...get().workflowData, connections } }),
+
+    setNodeExecution: (nodeId, state) => set({
+        nodeExecutionMap: { ...get().nodeExecutionMap, [nodeId]: state },
+    }),
+    resetNodeExecution: (nodeId) => {
+        const { [nodeId]: _, ...rest } = get().nodeExecutionMap;
+        set({ nodeExecutionMap: rest });
+    },
+    resetAllNodeExecutions: () => set({ nodeExecutionMap: {} }),
+
+    setLocalExecution: (execution) => set({ localExecution: execution }),
+
+    resetEditorStore: () => set(initialState),
+}));

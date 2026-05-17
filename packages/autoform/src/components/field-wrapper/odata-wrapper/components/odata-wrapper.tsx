@@ -1,12 +1,5 @@
-import { useBuilderContext } from "@common/components/ldc-auto-form/contexts/builder.context";
-import { IField } from "@common/components/ldc-auto-form/interfaces/component.interface";
-import { IFormFieldControlBaseProps } from "@common/components/ldc-auto-form/interfaces/form-field.interface";
-import { useMessageBox, withMessageBox } from "@common/components/ldc-confirmation/messagebox-provider";
-import { Button } from "@common/components/ui/button";
-import { SearchInput } from "@common/components/ui/input";
-import { cn } from "@common/lib/utils";
-import { Columns3Cog, Plus, Trash2 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { AlertCircle, Columns3Cog, Plus, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useChangeTracker } from "../hooks/use-change-tracker";
 import useColumnVisible from "../hooks/use-column-visibility";
 import { useODataFetch } from "../hooks/use-odata-fetch";
@@ -17,14 +10,17 @@ import ColumnVisibleDropdown from "./column-visible-dropdown";
 import OdataAddEditModal from "./odata-add-edit-modal";
 import ODataTable from "./odata-table";
 
-import { BuilderServices } from "@common/components/ldc-auto-form/hooks/use-builder-services";
-
-import { Slot } from "@common/components/ldc-auto-form/contexts/slot.context";
+import { cn } from "@ldc/ui";
+import { SearchInput } from "@ldc/ui/blocks/search-input/search-input";
+import { Button } from "@ldc/ui/components/button";
 import { useFormContext } from "react-hook-form";
-import "../styles/styles.css";
+import type { BuilderServices } from "../../../../contexts/builder.context";
+import { useBuilderContext } from "../../../../contexts/builder.context";
+import { Slot } from "../../../../contexts/slot.context";
+import type { FieldWrapperProps, IField } from "../../../../types/schema";
 import MoreActionDropdown from "./more-action-dropdown";
 
-export interface IODataWrapperProps extends IFormFieldControlBaseProps {
+export interface IODataWrapperProps extends FieldWrapperProps {
     field: IField;
     path: string[];
 }
@@ -34,11 +30,11 @@ const OdataWrapper = (props: IODataWrapperProps) => {
 
     const name: string = useMemo(() => path.join("."), [path]);
 
-    const { getValues } = useFormContext();
-    const { services, onFormActions } = useBuilderContext();
+    const { getValues, getFieldState } = useFormContext();
+    const { error } = getFieldState(name);
+    const { services, registerRefetch, unregisterRefetch } = useBuilderContext();
 
-    const fileId = getValues(`__${field.key}_file_id`);
-    console.log("fileId", `__${field.key}_file_id`, fileId);
+    const fileId = getValues(`__${name}_file_id`);
 
     const wrapperProps = field.fieldConfig.wrapperProps || {};
     const {
@@ -69,7 +65,7 @@ const OdataWrapper = (props: IODataWrapperProps) => {
     } = useODataState();
 
     const odataService = useODataFetch({
-        odataService: services?.odata as BuilderServices["odata"],
+        odataService: services?.odata as unknown as BuilderServices["odata"],
         endpoint: fileId ? `odata/${fileId}/data` : field?.fieldConfig?.wrapperProps?.endpoint,
         pagination,
         defaultOrderBy: getOrderByString(),
@@ -90,20 +86,23 @@ const OdataWrapper = (props: IODataWrapperProps) => {
     const { rowSelections, hasRowSelected, setRowSelections } = useRowSelection();
 
     const [isRowActionModal, setIsRowActionModal] = useState(false);
+    const [readOnly, setReadOnly] = useState(false);
     const [selectedRow, setSelectedRow] = useState<any>(null);
 
-    const messageBox = useMessageBox();
     const handleRowAction = async (action: string, row: any) => {
         if (action === "edit") {
             setSelectedRow(row);
             setIsRowActionModal(true);
         }
 
+        if (action === "view") {
+            setSelectedRow(row);
+            setReadOnly(true);
+            setIsRowActionModal(true);
+        }
+
         if (action === "delete") {
-            const confirmed = await messageBox("Are you sure you want to delete this row?", "Confirm Delete");
-            if (confirmed) {
-                trackDelete(row._id);
-            }
+            trackDelete(row._id);
             return;
         }
     }
@@ -121,13 +120,13 @@ const OdataWrapper = (props: IODataWrapperProps) => {
     }
 
     const handleRemoveSelectedRows = async () => {
-        const confirmed = await messageBox("Are you sure you want to delete selected rows?", "Confirm Delete");
+        // const confirmed = await messageBox("Are you sure you want to delete selected rows?", "Confirm Delete");
 
-        if (confirmed) {
-            const selectedIds = Object.keys(rowSelections).filter((id) => rowSelections[id]);
-            trackDeleteBatch(selectedIds);
-            setRowSelections({});
-        }
+        // if (confirmed) {
+        const selectedIds = Object.keys(rowSelections).filter((id) => rowSelections[id]);
+        trackDeleteBatch(selectedIds);
+        setRowSelections({});
+        // }
     };
 
     const getRowClassName = useCallback((row: any) => {
@@ -139,9 +138,23 @@ const OdataWrapper = (props: IODataWrapperProps) => {
         }
     }, []);
 
+    useEffect(() => {
+        registerRefetch?.(field.key, odataService.refetch);
+        return () => unregisterRefetch?.(field.key);
+    }, [odataService.refetch, field.key]);
+
     return (
         <>
             <section className="flex flex-col gap-2">
+                {error && (
+                    <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 border border-destructive/20">
+                        <AlertCircle className="size-5 text-destructive shrink-0" />
+                        <span className="text-sm text-destructive font-medium">
+                            {error.message}
+                        </span>
+                    </div>
+                )}
+
                 <div className="flex items-center gap-4 justify-between">
                     {isShowSearch ? <SearchInput wrapperClassName="flex-2 max-w-100" disabled={isLoading} /> : <span />}
 
@@ -218,6 +231,8 @@ const OdataWrapper = (props: IODataWrapperProps) => {
                         rowSelection={rowSelections}
                         onRowSelectionChange={setRowSelections}
 
+                        trackUpdate={trackUpdate}
+
                         sortState={
                             sortState?.field
                                 ? { field: sortState.field, order: sortState.order }
@@ -239,6 +254,7 @@ const OdataWrapper = (props: IODataWrapperProps) => {
                         setSelectedRow(null);
                     }
                 }}
+                readOnly={readOnly}
                 field={field}
                 isEdit={!!selectedRow}
                 defaultValues={selectedRow}
@@ -249,4 +265,4 @@ const OdataWrapper = (props: IODataWrapperProps) => {
     )
 }
 
-export default withMessageBox(OdataWrapper);
+export default OdataWrapper;

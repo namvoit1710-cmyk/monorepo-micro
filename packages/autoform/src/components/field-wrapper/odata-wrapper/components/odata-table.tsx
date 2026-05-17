@@ -1,6 +1,6 @@
-import { IField } from "@common/components/ldc-auto-form/interfaces/component.interface";
-import { DataTable } from "@common/components/ldc-table";
-import { PaginationState } from "@tanstack/react-table";
+import type { PaginationState } from "@ldc/data-table";
+import { DataTable } from "@ldc/data-table";
+import type { IField } from "../../../../types/schema";
 import { useTableColumns } from "../hooks/use-table-columns";
 
 export interface ODataTableControlProps<T> extends Omit<React.ComponentProps<typeof DataTable>, "columns" | "data"> {
@@ -11,6 +11,8 @@ export interface ODataTableControlProps<T> extends Omit<React.ComponentProps<typ
     isDeletable?: boolean;
     isEditable?: boolean;
     isShowRowMoreAction?: boolean;
+
+    trackUpdate: (rowId: string, partial: Record<string, any>) => void;
 
     sortState: {
         field: string;
@@ -24,7 +26,7 @@ export interface ODataTableControlProps<T> extends Omit<React.ComponentProps<typ
     onRowAction?: (action: string, row: T) => void;
 }
 
-const ODataTable = <T,>(props: ODataTableControlProps<T>) => {
+const ODataTable = <T extends { _id: string },>(props: ODataTableControlProps<T>) => {
     const {
         field,
         data,
@@ -38,13 +40,15 @@ const ODataTable = <T,>(props: ODataTableControlProps<T>) => {
 
         onRowAction,
 
+        trackUpdate,
+
         ...dataTableProps
     } = props;
 
-    const subField: IField = field.fields?.[0];
+    const subField = field.fields?.[0];
 
     const { columns } = useTableColumns({
-        tableRowWrapper: subField,
+        tableRowWrapper: subField!,
         isReadonly: field.fieldConfig.wrapperProps?.isReadonly ?? false,
         selectedIndex: [],
         sortState,
@@ -54,7 +58,8 @@ const ODataTable = <T,>(props: ODataTableControlProps<T>) => {
         isShowRowMoreAction,
         onAction: (action: string, row: any) => {
             onRowAction?.(action, row.original);
-        }
+        },
+        trackUpdate: trackUpdate,
     })
 
     return (

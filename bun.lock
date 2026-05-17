@@ -113,6 +113,34 @@
         "typescript": "catalog:",
       },
     },
+    "apps/workflow-management": {
+      "name": "@ldc/workflow-management",
+      "version": "1.0.0",
+      "dependencies": {
+        "@ldc/env": "workspace:^",
+        "@ldc/ui": "workspace:^",
+        "react": "catalog:react19",
+        "react-dom": "catalog:react19",
+        "react-router-dom": "catalog:",
+        "zod": "catalog:",
+      },
+      "devDependencies": {
+        "@ldc/eslint-config": "workspace:^",
+        "@ldc/prettier-config": "workspace:^",
+        "@ldc/tailwind-config": "workspace:^",
+        "@ldc/tsconfig": "workspace:^",
+        "@module-federation/rsbuild-plugin": "^2.3.1",
+        "@rsbuild/core": "^1.7.5",
+        "@rsbuild/plugin-react": "^1.4.6",
+        "@tailwindcss/postcss": "catalog:",
+        "@types/node": "catalog:",
+        "@types/react": "catalog:react19",
+        "@types/react-dom": "catalog:react19",
+        "eslint": "catalog:",
+        "prettier": "catalog:",
+        "typescript": "catalog:",
+      },
+    },
     "packages/api-sdk": {
       "name": "@ldc/api-sdk",
       "dependencies": {
@@ -266,6 +294,7 @@
         "clsx": "^2.1.1",
         "lucide-react": "catalog:",
         "radix-ui": "^1.4.3",
+        "sonner": "^2.0.7",
         "tailwind-merge": "^3.5.0",
       },
       "devDependencies": {
@@ -312,6 +341,7 @@
         "rete-history-plugin": "2.1.1",
         "rete-react-plugin": "2.1.0",
         "rete-render-utils": "^2.0.3",
+        "styled-components": "^6.4.1",
       },
       "devDependencies": {
         "@ldc/eslint-config": "workspace:*",
@@ -644,6 +674,8 @@
     "@ldc/validators": ["@ldc/validators@workspace:packages/validators"],
 
     "@ldc/workflow-editor": ["@ldc/workflow-editor@workspace:packages/workflow-editor"],
+
+    "@ldc/workflow-management": ["@ldc/workflow-management@workspace:apps/workflow-management"],
 
     "@module-federation/bridge-react-webpack-plugin": ["@module-federation/bridge-react-webpack-plugin@2.3.1", "", { "dependencies": { "@module-federation/sdk": "2.3.1", "@types/semver": "7.5.8", "semver": "7.6.3" } }, "sha512-rixIHit2xeusr052t/IOfgQa9OyKc21GiJC8uE/5szmgJlJOHmiXa7QrudKb4KVDCcbd5Ad2b4+XrSYxxRUzJA=="],
 
@@ -1849,6 +1881,8 @@
 
     "signal-exit": ["signal-exit@4.1.0", "", {}, "sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw=="],
 
+    "sonner": ["sonner@2.0.7", "", { "peerDependencies": { "react": "^18.0.0 || ^19.0.0 || ^19.0.0-rc", "react-dom": "^18.0.0 || ^19.0.0 || ^19.0.0-rc" } }, "sha512-W6ZN4p58k8aDKA4XPcx2hpIQXBRAgyiWVkYhT7CvK6D3iAu7xjvVyhQHg2/iaKJZ1XVJ4r7XuwGL+WGEK37i9w=="],
+
     "sorted-array-functions": ["sorted-array-functions@1.3.0", "", {}, "sha512-2sqgzeFlid6N4Z2fUQ1cvFmTOLRi/sEDzSQ0OKYchqgoPmQBVyM3959qYx3fpS6Esef80KjmpgPeEr028dP3OA=="],
 
     "source-map-js": ["source-map-js@1.2.1", "", {}, "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA=="],
@@ -1889,7 +1923,7 @@
 
     "style-value-types": ["style-value-types@5.1.2", "", { "dependencies": { "hey-listen": "^1.0.8", "tslib": "2.4.0" } }, "sha512-Vs9fNreYF9j6W2VvuDTP7kepALi7sk0xtk2Tu8Yxi9UoajJdEVpNpCov0HsLTqXvNGKX+Uv09pkozVITi1jf3Q=="],
 
-    "styled-components": ["styled-components@6.4.0", "", { "dependencies": { "@emotion/is-prop-valid": "1.4.0", "css-to-react-native": "3.2.0", "csstype": "3.2.3", "stylis": "4.3.6" }, "peerDependencies": { "react": ">= 16.8.0", "react-dom": ">= 16.8.0", "react-native": ">= 0.68.0" }, "optionalPeers": ["react-dom", "react-native"] }, "sha512-BL1EDFpt+q10eAeZB0q9ps6pSlPejaBQWBkiuM16pyoVTG4NhZrPrZK0cqNbrozxSsYwUsJ9SQYN6NyeKJYX9A=="],
+    "styled-components": ["styled-components@6.4.1", "", { "dependencies": { "@emotion/is-prop-valid": "1.4.0", "css-to-react-native": "3.2.0", "csstype": "3.2.3", "stylis": "4.3.6" }, "peerDependencies": { "react": ">= 16.8.0", "react-dom": ">= 16.8.0", "react-native": ">= 0.68.0" }, "optionalPeers": ["react-dom", "react-native"] }, "sha512-ADu2dF53esUzzM4I0ewxhxFtsDd6v4V6dNkg3vG0iFKhnt06sJneTZnRvujAosZwW0XD58IKgGMQoqri4wHRqg=="],
 
     "stylis": ["stylis@4.3.6", "", {}, "sha512-yQ3rwFWRfwNUY7H5vpU0wfdkNSnvnJinhF9830Swlaxl03zsOjCfmX0ugac+3LtK0lYSgwL/KXc8oYL3mG4YFQ=="],
 

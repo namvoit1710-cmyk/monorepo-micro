@@ -10,9 +10,7 @@ export interface IPaginationState {
     pageSize: number;
 }
 
-export interface IFilterState {
-    [key: string]: any;
-}
+export type IFilterState = Record<string, any>;
 
 export interface IODataStateOptions {
     initialPageSize?: number;
@@ -25,11 +23,7 @@ export interface IODataStateOptions {
 export interface IODataStateReturn {
     // Pagination
     pagination: IPaginationState;
-    setPagination: (
-        pagination: 
-            | Partial<IPaginationState> 
-            | ((prev: IPaginationState) => Partial<IPaginationState> | IPaginationState)
-    ) => void;
+    setPagination: (newPagination: Partial<IPaginationState>) => void;
 
     // Search
     searchValue: string;

@@ -1,5 +1,5 @@
-import { BuilderServices } from "@common/components/ldc-auto-form/hooks/use-builder-services";
 import { useCallback, useEffect, useState } from "react";
+import type { BuilderServices } from "../../../../hooks/use-builder-services";
 
 export interface IODataParams {
     $top?: number;

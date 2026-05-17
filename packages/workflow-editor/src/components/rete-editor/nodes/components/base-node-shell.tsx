@@ -1,12 +1,15 @@
 import type { ClassicScheme, RenderEmit } from "rete-react-plugin";
 
-import { cn } from "@ldc/ui";
 import type { EditorDirection, IEditorNode, NodeExecutionStatus } from "../../types";
 import { SocketColumn } from "./socket-column";
 import { SocketRow } from "./socket-row";
 
-import { CheckIcon, XIcon } from "lucide-react";
+import { useTranslation } from "@ldc/i18n";
+import { cn } from "@ldc/ui";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@ldc/ui/components/tooltip";
+import { CheckIcon, InfoIcon, XIcon } from "lucide-react";
 import { memo, useEffect, useRef } from "react";
+import { RETE_EDITOR_I18N_NAMESPACE } from "../../../../i18n";
 import "./base-node-shell.css";
 import DynamicNodeIcon from "./dynamic-node-icon";
 import LoadingSpin from "./loading-spin/loading-spin";
@@ -48,6 +51,8 @@ const BaseNodeShell = <S extends ClassicScheme>({
     onDoubleClick,
     onContextMenu,
 }: BaseNodeShellProps<S>) => {
+    const { t } = useTranslation(RETE_EDITOR_I18N_NAMESPACE);
+
     const inputs = Object.entries(data.inputs);
     const outputs = Object.entries(data.outputs);
 
@@ -60,6 +65,10 @@ const BaseNodeShell = <S extends ClassicScheme>({
     const selected = data.selected ?? false;
     const status: NodeExecutionStatus = (data as any).executionStatus ?? "idle";
     const icon = original.icon;
+    const description = original.description ?? "";
+    const intruction = original.instruction ?? "";
+
+    console.log(original);
 
     const isHorizontal = direction === "horizontal";
     const hasInput = inputs.length > 0;
@@ -166,6 +175,34 @@ const BaseNodeShell = <S extends ClassicScheme>({
                     </div>
                     <span className="text-center line-clamp-2 max-w-[200px]">{original?.title ?? label}</span>
                 </div>
+
+                {(description || intruction) && (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <div className="absolute top-2 left-2">
+                                    <InfoIcon className="text-gray-500 size-4" />
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <div className="flex flex-col items-start gap-1">
+                                    {description && (
+                                        <div>
+                                            <span className="font-semibold">{t("description")}</span>
+                                            <p className="text-gray-500">{description}</p>
+                                        </div>
+                                    )}
+                                    {intruction && (
+                                        <div>
+                                            <span className="font-semibold">{t("instruction")}</span>
+                                            <p className="text-gray-500">{intruction}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
 
                 <div className={cn("absolute bottom-2 right-2", !isHorizontal && "top-2 right-2!")}>
                     {status === "executing" && (

@@ -1,7 +1,6 @@
-/* eslint-disable react-hooks/refs */
 import { useTranslation } from "@ldc/i18n";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@ldc/ui/components/dropdown-menu";
-import { BookOpenIcon, CopyIcon, DeleteIcon, PlayIcon, XCircleIcon } from "lucide-react";
+import { BookOpenIcon, CopyIcon, DeleteIcon, Edit, PlayIcon, XCircleIcon } from "lucide-react";
 import type { ComponentProps } from "react";
 import { useMemo, useRef } from "react";
 import { RETE_EDITOR_I18N_NAMESPACE } from "../../../i18n";
@@ -31,16 +30,13 @@ interface INodeContextMenuProps extends ComponentProps<typeof DropdownMenu> {
     anchorEl?: HTMLElement | null;
 }
 
-const getMenuActions = (readOnly: boolean) => {
+const getMenuActions = () => {
     const actions = [
-        { icon: <BookOpenIcon strokeWidth={1.5} />, labelKey: "context_menu.open", action: NodeContextMenuAction.Open, isVisible: true },
-        { icon: <PlayIcon strokeWidth={1.5} />, labelKey: "context_menu.execute_step", action: NodeContextMenuAction.Execute, isVisible: true },
-        { icon: <CopyIcon strokeWidth={1.5} />, labelKey: "context_menu.copy", action: NodeContextMenuAction.Copy, isVisible: !readOnly },
+        { icon: <BookOpenIcon strokeWidth={1.5} />, labelKey: "context_menu.open", action: NodeContextMenuAction.Open },
+        { icon: <Edit strokeWidth={1.5} />, labelKey: "context_menu.update_node_info", action: NodeContextMenuAction.Replace },
+        { icon: <PlayIcon strokeWidth={1.5} />, labelKey: "context_menu.execute_step", action: NodeContextMenuAction.Execute },
+        { icon: <CopyIcon strokeWidth={1.5} />, labelKey: "context_menu.copy", action: NodeContextMenuAction.Copy },
     ];
-
-    if (readOnly) {
-        return actions.filter((action) => action.isVisible);
-    }
 
     return actions;
 };
@@ -48,7 +44,7 @@ const getMenuActions = (readOnly: boolean) => {
 const NodeContextMenu = ({ onAction, readOnly, anchorEl, ...props }: INodeContextMenuProps) => {
     const { t } = useTranslation(RETE_EDITOR_I18N_NAMESPACE);
 
-    const menuActions = useMemo(() => getMenuActions(readOnly!), [readOnly]);
+    const menuActions = useMemo(() => getMenuActions(), []);
 
     const rectRef = useRef<DOMRect | null>(null);
     const rect = useMemo(() => {
@@ -57,6 +53,10 @@ const NodeContextMenu = ({ onAction, readOnly, anchorEl, ...props }: INodeContex
         }
         return rectRef.current;
     }, [anchorEl]);
+
+    if (readOnly) {
+        return null;
+    }
 
     return (
         <DropdownMenu
@@ -76,11 +76,11 @@ const NodeContextMenu = ({ onAction, readOnly, anchorEl, ...props }: INodeContex
                 />
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent>
+            <DropdownMenuContent className="min-w-fit!">
                 {menuActions.map((item, index) => (
                     <DropdownMenuItem
                         key={`${item.action}-${index}`}
-                        className="cursor-pointer py-1"
+                        className="cursor-pointer py-1 whitespace-nowrap"
                         onClick={() => onAction?.(item.action)}
                     >
                         {item.icon}

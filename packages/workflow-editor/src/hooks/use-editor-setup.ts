@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useRete } from "rete-react-plugin";
+import type { BaseNode, EditorConfig, IEditorValue } from "../components/rete-editor";
 import { makeCreateEditor } from "../components/rete-editor";
-import type { BaseNode } from "../components/rete-editor/nodes/base-node";
-import type { EditorConfig, IEditorValue } from "../components/rete-editor/types";
 
 interface UseEditorSetupOptions {
     direction?: EditorConfig["direction"];
@@ -48,6 +47,7 @@ export function useEditorSetup(value: IEditorValue, options: UseEditorSetupOptio
             }
 
             if (!editorInstance.getNodes().length) {
+                console.log("Initial load of nodes:", value);
                 await editorInstance.initialLoadNodes(value);
             }
 

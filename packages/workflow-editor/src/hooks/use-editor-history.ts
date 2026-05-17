@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import type { HistoryDataType, HistoryType, IEditorInstance } from "../components/rete-editor/types";
+import type { IEditorInstance } from "../components/rete-editor";
+import type { HistoryDataType, HistoryType } from "../components/rete-editor/types";
 
 const trackedEvents = [
     "nodecreated",
@@ -8,7 +9,7 @@ const trackedEvents = [
     "connectionremoved",
 ] as const
 
-const useEditorHistory = (editorInstance: IEditorInstance | null) => {
+const useEditorHistory = (editorInstance: IEditorInstance | undefined) => {
 
     const [canUndo, setCanUndo] = useState<boolean>(false);
     const [canRedo, setCanRedo] = useState<boolean>(false);

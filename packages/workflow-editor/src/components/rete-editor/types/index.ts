@@ -1,12 +1,11 @@
-import type { GetSchemes, NodeEditor } from "rete";
-import { ClassicPreset } from "rete";
-import type { AreaPlugin } from "rete-area-plugin";
-import type { Transform } from "rete-area-plugin/_types/area";
-import type { ContextMenuExtra } from "rete-context-menu-plugin";
-import type { HistoryPlugin } from "rete-history-plugin";
-import type { ReactArea2D } from "rete-react-plugin";
-import type { BaseNode } from "../nodes/base-node";
-import type { GroupNode } from "../nodes/group-node";
+import { ClassicPreset, GetSchemes, NodeEditor } from "rete";
+import { AreaPlugin } from "rete-area-plugin";
+import { Transform } from "rete-area-plugin/_types/area";
+import { ContextMenuExtra } from "rete-context-menu-plugin";
+import { HistoryPlugin } from "rete-history-plugin";
+import { ReactArea2D } from "rete-react-plugin";
+import { BaseNode } from "../nodes/base-node";
+import { GroupNode } from "../nodes/group-node";
 
 
 // ─── Connection ───────────────────────────────────────────────────────────────
@@ -21,7 +20,7 @@ export class Connection<N extends BaseNode> extends ClassicPreset.Connection<N, 
 export type Schemes = GetSchemes<BaseNode, Connection<BaseNode>>;
 export type AreaExtra = ReactArea2D<Schemes> | ContextMenuExtra;
 export type HistoryType = HistoryPlugin<Schemes>;
-export interface HistoryDataType {
+export type HistoryDataType = {
     history: {
         produced: Record<string, unknown>[];
         reserved: Record<string, unknown>[];
@@ -41,11 +40,11 @@ export interface EditorConfig {
 
 // ─── Node Types ───────────────────────────────────────────────────────────────
 
-export interface NodePort {
+export type NodePort = {
     id: string;
     label: string;
     [key: string]: any;
-}
+};
 
 export interface NodePortConfig {
     inputs?: NodePort[];
@@ -125,6 +124,7 @@ export interface IEditorInstance {
     removeNode: (nodeId: string) => Promise<void>;
     copyNode: (nodeId: string) => Promise<void>;
     getTransform: () => Transform;
+
     getConnections: () => Connection<BaseNode>[];
     addConnection: (connection: Connection<BaseNode>) => void;
     setConnectionStatusBySourcePort: (sourceNodeId: string, sourcePortId: string, status: NodeExecutionStatus) => void;
@@ -132,6 +132,8 @@ export interface IEditorInstance {
     removeConnection: (connectionId: string) => void;
     removeConnectionBySource: (sourceNodeId: string) => void;
     removeConnectionByTarget: (targetNodeId: string) => void;
+    checkDuplicateConnection: (newConn: Connection<BaseNode>) => boolean;
+    
     getPredecessorNodes: (nodeId: string) => BaseNode[];
     getSuccessorNodes: (nodeId: string) => BaseNode[];
     getOutGoerNodes: (nodeId: string) => BaseNode[];
@@ -151,8 +153,8 @@ export interface IEditorInstance {
     getNodePosition: (nodeId: string) => { x: number; y: number } | undefined;
 
     getGroupAtPosition: (x: number, y: number) => GroupNode | null;
-    joinGroup: (nodeId: string, groupId: string) => Promise<void> | undefined;
-    leaveGroup: (nodeId: string) => Promise<void> | undefined;
+    joinGroup: (nodeId: string, groupId: string) => Promise<void>;
+    leaveGroup: (nodeId: string) => Promise<void>;
 
     getZoomLevel: () => number;
     zoomByLevel: (zoomLevel: number) => Promise<void>;

@@ -1,7 +1,8 @@
 import { useCallback, useRef, useState } from "react";
+import type { IEditorInstance } from "../components/rete-editor";
+import { BaseNode } from "../components/rete-editor";
 import { getNodeSize } from "../components/rete-editor/config/node-config";
-import { BaseNode } from "../components/rete-editor/nodes/base-node";
-import type { IEditorInstance, IEditorNode } from "../components/rete-editor/types";
+import type { IEditorNode } from "../components/rete-editor/types";
 import { generateUUID } from "../utils/generate-uuid";
 
 export function useEditorDnd(editorInstance: IEditorInstance | undefined, readOnly: boolean) {

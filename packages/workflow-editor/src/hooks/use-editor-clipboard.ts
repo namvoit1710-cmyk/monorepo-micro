@@ -1,7 +1,8 @@
 import { useTranslation } from "@ldc/i18n";
+import { toast } from "@ldc/ui/blocks/toast";
 import type { RefObject } from "react";
 import { useCallback, useState } from "react";
-import type { IEditorInstance, IEditorValue } from "../components/rete-editor";
+import type { IEditorInstance, IEditorValue } from "../components/rete-editor/types";
 import { RETE_EDITOR_I18N_NAMESPACE } from "../i18n";
 import { validateEditorValue } from "../utils/validate-editor-value";
 
@@ -38,6 +39,7 @@ export function useEditorClipboard({
 
         setTimeout(() => {
             setHandlerLoading(prev => ({ ...prev, isCopyLoading: false }))
+            toast.success(t("notification.success"), t("notification.copied_successfully"));
         }, 400)
     }, [editorInstance]);
 
@@ -57,6 +59,7 @@ export function useEditorClipboard({
             const parsed: unknown = JSON.parse(text);
 
             if (!validateEditorValue(parsed)) {
+                toast.warning(t("notification.warning"), t("notification.pasted_json_is_not_valid"));
                 return;
             }
 
@@ -66,10 +69,11 @@ export function useEditorClipboard({
                 await editorInstance.initialLoadNodes(parsed);
                 onChange?.(parsed)
             } finally {
+                toast.success(t("notification.success"), t("notification.pasted_json_successfully"));
                 isLoadingRef.current = false;
             }
         } catch {
-            console.log(t("notification.warning"), t("notification.failed_to_parse_pasted_json"));
+            toast.warning(t("notification.warning"), t("notification.failed_to_parse_pasted_json"));
         } finally {
             setHandlerLoading(prev => ({ ...prev, isPasteLoading: false }))
         }

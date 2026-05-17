@@ -43,6 +43,14 @@ export class BaseNode extends ClassicPreset.Node {
         this.label = label;
     }
 
+    public updateNodeInfo(label: string, description: string, instruction: string) {
+        this.original.title = label ?? "";
+        this.original.name = label ?? "";
+        this.original.description = description ?? "";
+        this.original.instruction = instruction ?? "";
+        this.label = label ?? "";
+    }
+
     public updateParameters(parameters: Record<string, any>) {
         this.original.parameters = parameters;
     }

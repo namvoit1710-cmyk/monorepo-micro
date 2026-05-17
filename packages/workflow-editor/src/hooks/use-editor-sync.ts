@@ -28,14 +28,23 @@ export function useEditorSync(
             if (!active || isLoadingRef.current) return context;
 
             if (
-                ["nodecreated", "noderemoved", "connectioncreated", "connectionremoved"]
+                ["nodecreated", "noderemoved", "connectionremoved"]
                     .includes(context.type)
             ) {
                 onChange?.(editorInstance.serializeNodes());
             }
 
             if (context.type === "nodecreated") onNodeAdded?.();
-            if (context.type === "connectioncreated") onConnectionAdded?.();
+            if (context.type === "connectioncreate") {
+                if (editorInstance.checkDuplicateConnection(context.data)) {
+                    return;
+                }
+            };
+
+            if (context.type === "connectioncreated") {
+                onConnectionAdded?.();
+                onChange?.(editorInstance.serializeNodes());
+            }
 
             return context;
         }

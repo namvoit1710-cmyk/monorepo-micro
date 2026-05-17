@@ -1,37 +1,40 @@
 import { useTranslation } from "@ldc/i18n";
 import { Button } from "@ldc/ui/components/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@ldc/ui/components/tooltip";
-import { BrushCleaning, Minimize, RedoIcon, UndoIcon, ZoomIn, ZoomOut } from "lucide-react";
+import { Minimize, RedoIcon, UndoIcon, Workflow, ZoomIn, ZoomOut } from "lucide-react";
 import { useMemo } from "react";
-import type { IEditorInstance } from "../../../components/rete-editor/types";
 import useEditorHistory from "../../../hooks/use-editor-history";
 import { RETE_EDITOR_I18N_NAMESPACE } from "../../../i18n";
+import type { IEditorInstance } from "../../rete-editor";
 
 interface IBottomToolbarProps {
-    editorInstance: IEditorInstance | null;
+    readOnly?: boolean;
+    editorInstance: IEditorInstance;
 }
 
 const BottomToolbar = (props: IBottomToolbarProps) => {
     const { t } = useTranslation(RETE_EDITOR_I18N_NAMESPACE);
 
-    const { editorInstance } = props;
+    const { editorInstance, readOnly } = props;
 
     const { canRedo, canUndo } = useEditorHistory(editorInstance);
 
     const menuItems = useMemo(() => {
         return [
-            {
-                icon: <UndoIcon />,
-                label: t("toolbar.undo"),
-                onClick: editorInstance?.undo,
-                disabled: !canUndo,
-            },
-            {
-                icon: <RedoIcon />,
-                label: t("toolbar.redo"),
-                onClick: editorInstance?.redo,
-                disabled: !canRedo,
-            },
+            ...(!readOnly ? [
+                {
+                    icon: <UndoIcon />,
+                    label: t("toolbar.undo"),
+                    onClick: editorInstance?.undo,
+                    disabled: !canUndo,
+                },
+                {
+                    icon: <RedoIcon />,
+                    label: t("toolbar.redo"),
+                    onClick: editorInstance?.redo,
+                    disabled: !canRedo,
+                },
+            ] : []),
             {
                 icon: <Minimize />,
                 label: t("toolbar.zoom_fit"),
@@ -48,8 +51,8 @@ const BottomToolbar = (props: IBottomToolbarProps) => {
                 onClick: editorInstance?.zoomOut,
             },
             {
-                icon: <BrushCleaning />,
-                label: t("toolbar.clean_up"),
+                icon: <Workflow />,
+                label: t("toolbar.auto_layout"),
                 onClick: editorInstance?.layout,
             },
         ]
@@ -68,6 +71,7 @@ const BottomToolbar = (props: IBottomToolbarProps) => {
                                     disabled={item.disabled}
                                     className="shadow-lg cursor-pointer"
                                     onClick={item.onClick}
+                                    aria-label={item.label}
                                 >
                                     {item.icon}
                                 </Button>

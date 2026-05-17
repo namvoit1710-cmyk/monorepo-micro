@@ -58,6 +58,7 @@ const SideToolBar = ({ clipboardHandlers, isHandlerLoading, extensions, onAddNod
                                     variant="outline"
                                     className="shadow-lg cursor-pointer"
                                     onClick={item.onClick}
+                                    aria-label={item.label}
                                 >
                                     {item.icon}
                                 </Button>
@@ -76,6 +77,7 @@ const SideToolBar = ({ clipboardHandlers, isHandlerLoading, extensions, onAddNod
                                     variant="outline"
                                     className="shadow-lg cursor-pointer"
                                     onClick={item.callback}
+                                    aria-label={item.label}
                                 >
                                     {item.icon}
                                 </Button>

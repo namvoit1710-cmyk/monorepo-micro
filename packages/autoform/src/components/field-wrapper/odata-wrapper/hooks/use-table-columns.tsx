@@ -1,13 +1,14 @@
-import { Slot } from "@common/components/ldc-auto-form/contexts/slot.context";
-import { IField } from "@common/components/ldc-auto-form/interfaces/component.interface";
-import { ColumnDef } from "@common/components/ldc-table";
-import { Badge } from "@common/components/ui/badge";
-import { Button } from "@common/components/ui/button";
-import { Checkbox } from "@common/components/ui/checkbox";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@common/components/ui/dropdown-menu";
-import { Eye, MoreHorizontal, Pencil, Trash } from "lucide-react";
+import type { ColumnDef } from "@ldc/data-table";
+import { Badge } from "@ldc/ui/components/badge";
+import { Button } from "@ldc/ui/components/button";
+import { Checkbox } from "@ldc/ui/components/checkbox";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@ldc/ui/components/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@ldc/ui/components/tooltip";
+import { AlertCircle, AlertTriangle, Eye, MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
-import { RowDisplayStatus } from "./use-table-data";
+import { Slot } from "../../../../contexts/slot.context";
+import type { IField } from "../../../../types/schema";
+import type { RowDisplayStatus } from "./use-table-data";
 
 interface OptionItem {
     label: string;
@@ -60,6 +61,28 @@ const CheckboxCell = ({ checked }: { checked: boolean }) => (
     </div>
 );
 
+const ValidationIcon = ({ status, message, fieldKey, rowData }: { status: "error" | "warning"; message: string; fieldKey: string; rowData: any }) => {
+    const validateField = rowData._validate_field;
+
+    if (validateField !== fieldKey) return null;
+
+    const Icon = status === "error" ? AlertCircle : AlertTriangle;
+    const colorClass = status === "error" ? "text-destructive" : "text-yellow-500";
+
+    return (
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Icon className={`size-4 ${colorClass} ml-2 inline-block`} />
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>{message}</p>
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
+    );
+};
+
 interface UseTableColumnsOptions {
     tableRowWrapper: IField;
     isReadonly: boolean;
@@ -76,9 +99,11 @@ interface UseTableColumnsOptions {
     onSortChange?: (field: string, order: "asc" | "desc") => void;
 
     onAction?: (action: string, row: any) => void;
+
+    trackUpdate: (rowId: string, partial: Record<string, any>) => void;
 }
 
-export const useTableColumns = ({
+export const useTableColumns = <T extends { _id: string },>({
     tableRowWrapper,
     isReadonly,
     selectedIndex,
@@ -91,6 +116,8 @@ export const useTableColumns = ({
     onSortChange,
 
     onAction,
+
+    trackUpdate,
 }: UseTableColumnsOptions) => {
     const onActionRef = useRef(onAction);
     const tableFields = Array.isArray(tableRowWrapper?.fields) ? tableRowWrapper.fields : [];
@@ -99,12 +126,12 @@ export const useTableColumns = ({
         onActionRef.current = onAction;
     }, [onAction]);
 
-    const dataColumns = useMemo<ColumnDef<any>[]>(() => {
+    const dataColumns = useMemo<ColumnDef<T>[]>(() => {
         return tableFields.map((field: IField) => {
             const rules = Array.isArray(field?.fieldConfig?.rules) ? field.fieldConfig.rules : [];
 
             const accessorKey = field?.fieldConfig?.controlProps?.aliasKey ?? field?.key;
-            const rawKey = field?.key;
+            const rawKey = field?.fieldConfig?.controlProps?.aliasKey ?? field?.key;
 
             const valueKey = field?.fieldConfig?.controlProps?.valueKey ?? "id";
             const labelKey = field?.fieldConfig?.controlProps?.labelKey ?? "value";
@@ -129,39 +156,55 @@ export const useTableColumns = ({
                     const status: RowDisplayStatus = row.original._status;
                     const isLocalChange = status === "inserted" || status === "updated";
 
+                    // Get validation info
+                    const validateStatus = row.original._validate_status as "error" | "warning" | undefined;
+                    const validateMessage = row.original._validate_message as string | undefined;
+                    const showValidation = validateStatus && validateMessage && (validateStatus === "error" || validateStatus === "warning");
+
+                    let content: React.ReactNode;
+
                     if (!isLocalChange || !hasOptions) {
                         const displayValue = row.getValue(accessorKey);
 
                         if (Array.isArray(displayValue)) {
-                            return <BadgeCell labels={displayValue.map(String)} />;
+                            content = <BadgeCell labels={displayValue.map(String)} />;
+                        } else if (typeof displayValue === "boolean") {
+                            content = <CheckboxCell checked={displayValue} />;
+                        } else {
+                            content = displayValue;
                         }
+                    } else {
+                        const rawValue = row.original[rawKey];
+                        const resolved = resolveLabel(rawValue, options, valueKey, labelKey);
 
-                        if (typeof displayValue === "boolean") {
-                            return (
-                                <CheckboxCell checked={displayValue} />
-                            );
+                        if (Array.isArray(resolved)) {
+                            content = <BadgeCell labels={resolved} />;
+                        } else if (typeof resolved === "boolean") {
+                            content = <CheckboxCell checked={resolved} />;
+                        } else {
+                            content = resolved;
                         }
-                        return displayValue;
                     }
 
-                    const rawValue = row.original[rawKey];
-                    const resolved = resolveLabel(rawValue, options, valueKey, labelKey);
-
-                    if (Array.isArray(resolved)) {
-                        return <BadgeCell labels={resolved} />;
-                    }
-
-                    if (typeof resolved === "boolean") {
-                        return <CheckboxCell checked={resolved} />;
-                    }
-
-                    return resolved;
+                    return (
+                        <div className="flex items-center gap-1">
+                            {showValidation && (
+                                <ValidationIcon
+                                    status={validateStatus}
+                                    message={validateMessage}
+                                    fieldKey={rawKey}
+                                    rowData={row.original}
+                                />
+                            )}
+                            {content}
+                        </div>
+                    );
                 },
             };
         });
     }, [tableFields, isReadonly]);
 
-    const actionsColumn = useMemo<ColumnDef<any>[]>(() => {
+    const actionsColumn = useMemo<ColumnDef<T>[]>(() => {
         return [{
             accessorKey: "actions",
             meta: { align: "center" as const },
@@ -197,7 +240,12 @@ export const useTableColumns = ({
                                         </DropdownMenuItem>
                                     )}
 
-                                    <Slot name="row-more-action" />
+                                    <Slot
+                                        name="row-more-action"
+                                        rowId={row.original._id}
+                                        rowData={row.original}
+                                        updateRow={(partial: Record<string, any>) => trackUpdate(row.original._id, partial)}
+                                    />
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         )}
@@ -207,7 +255,7 @@ export const useTableColumns = ({
         }];
     }, [onActionRef, selectedIndex.length, isShowRowMoreAction]);
 
-    const columns = useMemo<ColumnDef<any>[]>(
+    const columns = useMemo<ColumnDef<T>[]>(
         () => [...dataColumns, ...actionsColumn],
         [dataColumns, actionsColumn]
     );

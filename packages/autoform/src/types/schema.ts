@@ -2,8 +2,8 @@ import type { ComponentType } from "react";
 import type { FieldControl } from "../components/field-control";
 import type { FieldWrapper } from "../components/field-wrapper";
 import type { IConditionConfig } from "./condition";
-import type { IValidationRules } from "./validation";
 import type { IServerOptionsConfig } from "./server-option-config";
+import type { IValidationRules } from "./validation";
 
 export type OutputType = "string" | "number" | "boolean" | "array" | "object";
 
@@ -33,10 +33,11 @@ export interface IField {
 }
 
 export interface IFieldConfig {
+    slot?: string;
     fieldWrapper?: string;
     wrapperProps?: Record<string, any>;
     fieldControl?: string;
-    controlProps?: Record<string, any>  & { serverOptions?: IServerOptionsConfig };
+    controlProps?: Record<string, any> & { serverOptions?: IServerOptionsConfig };
     condition?: IConditionConfig;
     rules?: IValidationRules[];
 }

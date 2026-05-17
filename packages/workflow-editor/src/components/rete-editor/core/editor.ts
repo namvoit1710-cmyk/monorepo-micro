@@ -3,6 +3,7 @@ import { setupPlugins } from "./plugins";
 
 import {
   addConnection,
+  checkDuplicateConnection,
   getConnections,
   getTransform,
   removeConnection,
@@ -103,6 +104,7 @@ export async function createEditor(
 
     addConnection: (conn) => addConnection(editor, conn),
     getConnections: () => getConnections(editor),
+    checkDuplicateConnection: (newConn) => checkDuplicateConnection(editor, newConn),
     setConnectionStatusBySourcePort: (sourceNodeId, sourcePortId, status) => setConnectionStatusBySourcePort(editor, area, sourceNodeId, sourcePortId, status),
     setConnectionStatusByTargetPort: (targetNodeId, targetPortId, status) => setConnectionStatusByTargetPort(editor, area, targetNodeId, targetPortId, status),
     removeConnectionBySource: (sourceNodeId) => removeConnectionBySource(editor, sourceNodeId),
@@ -115,14 +117,11 @@ export async function createEditor(
     joinGroup: (nodeId, groupId) => {
       const node = editor.getNode(nodeId);
       const group = editor.getNode(groupId);
-      if (!node || !group) return;
-
-      return joinGroup(node, group, area, editor);
+      return joinGroup(node!, group!, area, editor);
     },
     leaveGroup: (nodeId) => {
       const node = editor.getNode(nodeId);
-      if (!node) return;
-      return leaveGroup(node, editor, area);
+      return leaveGroup(node!, editor, area);
     },
 
     zoomIn: () => zoomIn(area),
@@ -143,7 +142,7 @@ export async function createEditor(
         area,
         history,
         initialData,
-        layout: (direction === "vertical" && config.readOnly) ? () => layoutNodes({ direction }) : () => null
+        layout: (direction === "vertical" && config.readOnly) ? () => layoutNodes({ direction }) : null
       }),
 
     destroy: () => {

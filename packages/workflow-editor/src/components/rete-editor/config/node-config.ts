@@ -1,12 +1,13 @@
-import { DEFAULT_SIZE_NODE } from "../../../constants/node";
-
 import type React from "react";
+import { DEFAULT_SIZE_NODE } from "../../../constants/node";
+import ApprovalNode from "../nodes/components/approval-node";
 import BaseNodeShell from "../nodes/components/base-node-shell";
 import GroupNodes from "../nodes/components/group-nodes";
 import type { NodeSizeConfig } from "../types";
 
 export enum NODE_FACTORY_REGISTRY_KEY {
     GROUP_NODE = "group_node",
+    APPROVAL_FLOW_NODE = "approval_flow_node",
 }
 
 const nodeSizeConfig: Record<string, NodeSizeConfig> = {
@@ -22,6 +23,7 @@ export function getNodeSize(name: string): NodeSizeConfig | undefined {
 
 const NODE_FACTORY_REGISTRY = new Map<string, React.ComponentType<any>>([
     [NODE_FACTORY_REGISTRY_KEY.GROUP_NODE, GroupNodes],
+    [NODE_FACTORY_REGISTRY_KEY.APPROVAL_FLOW_NODE, ApprovalNode],
 ]);
 
 export function getNodeFactory(workerType: string): React.ComponentType<any> {

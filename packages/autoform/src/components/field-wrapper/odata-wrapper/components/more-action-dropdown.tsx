@@ -1,7 +1,7 @@
-import { Slot } from "@common/components/ldc-auto-form/contexts/slot.context";
-import { Button } from "@common/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@common/components/ui/dropdown-menu";
+import { Button } from "@ldc/ui/components/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@ldc/ui/components/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
+import { Slot } from "../../../../contexts/slot.context";
 
 const MoreActionDropdown = () => {
     return (

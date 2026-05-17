@@ -1,10 +1,11 @@
-import { Button } from "@common/components/ui/button";
-import { Checkbox } from "@common/components/ui/checkbox";
-import { SearchInput } from "@common/components/ui/input";
-import { Label } from "@common/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@common/components/ui/popover";
-import { useDebounceValue } from "@common/hooks/use-debounce-value";
-import { ReactNode, useEffect, useState } from "react";
+import { SearchInput } from "@ldc/ui/blocks/search-input/search-input";
+import { Button } from "@ldc/ui/components/button";
+import { Checkbox } from "@ldc/ui/components/checkbox";
+import { Label } from "@ldc/ui/components/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@ldc/ui/components/popover";
+import { useDebounceValue } from "@ldc/ui/hooks/use-debounce-value";
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 
 interface ColumnVisibleDropdownProps {
     children: ReactNode;
@@ -66,17 +67,17 @@ const ColumnVisibleDropdown = ({ children, columns, value, onChange }: ColumnVis
                         Columns ({visibleCount}/{columns.length})
                     </span>
                     <div className="flex gap-1">
-                        <Button 
-                            variant="ghost" 
-                            size="sm" 
+                        <Button
+                            variant="ghost"
+                            size="sm"
                             className="h-7 text-xs"
                             onClick={handleSelectAll}
                         >
                             All
                         </Button>
-                        <Button 
-                            variant="ghost" 
-                            size="sm" 
+                        <Button
+                            variant="ghost"
+                            size="sm"
                             className="h-7 text-xs"
                             onClick={handleDeselectAll}
                         >
@@ -97,13 +98,13 @@ const ColumnVisibleDropdown = ({ children, columns, value, onChange }: ColumnVis
                     )}
                     {!!filteredColumns?.length && filteredColumns.map((column, index) => (
                         <div key={column.key} className="flex items-center space-x-2">
-                            <Checkbox 
-                                id={`column-${column.key}`} 
+                            <Checkbox
+                                id={`column-${column.key}`}
                                 checked={selectedColumns[column.key] ?? true}
                                 onCheckedChange={(checked: boolean) => handleCheckedChange(column.key, checked)}
                             />
-                            <Label 
-                                htmlFor={`column-${column.key}`} 
+                            <Label
+                                htmlFor={`column-${column.key}`}
                                 className="text-sm font-normal cursor-pointer flex-1"
                             >
                                 {column.label}

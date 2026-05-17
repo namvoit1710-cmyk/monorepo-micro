@@ -1,4 +1,4 @@
-@reference "@ldc/tailwind-config/core";
+@reference "tailwindcss";
 
 .base-node-shell {
     @apply relative p-1 rounded-lg;

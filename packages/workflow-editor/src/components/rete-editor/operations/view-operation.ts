@@ -1,7 +1,6 @@
-import type { NodeEditor } from "rete";
-import type { AreaPlugin } from "rete-area-plugin";
-import { AreaExtensions } from "rete-area-plugin";
-import type { AreaExtra, HistoryType, Schemes } from "../types";
+import { NodeEditor } from "rete";
+import { AreaExtensions, AreaPlugin } from "rete-area-plugin";
+import { AreaExtra, HistoryType, Schemes } from "../types";
 
 const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
 
@@ -85,7 +84,7 @@ export const zoomByLevel = async (
     const { k } = area.area.transform;
 
     if (zoomLevel === k) return;
-
+    
     await area.area.zoom(zoomLevel);
 };
 
@@ -93,7 +92,7 @@ export const centerOnNode = async (
     area: AreaPlugin<Schemes, AreaExtra>,
     editor: NodeEditor<Schemes>,
     nodeId: string,
-    duration = 300
+    duration: number = 300
 ): Promise<void> => {
     const node = editor.getNode(nodeId);
     if (!node) return;
@@ -101,9 +100,14 @@ export const centerOnNode = async (
     const nodeView = area.nodeViews.get(nodeId);
     if (!nodeView) return;
 
+    // Wait for browser layout/paint after container resize
+    await new Promise<void>(resolve => requestAnimationFrame(() => 
+        requestAnimationFrame(() => resolve())
+    ));
+
     const position = getNodePositionInViewport(area, editor, nodeId);
     if (!position) return;
-
+    
     const { tx, ty, fromTx, fromTy } = position;
 
     return new Promise<void>((resolve) => {
@@ -131,35 +135,35 @@ export const centerOnNode = async (
 };
 
 export const isNodeInViewport = (
-    area: AreaPlugin<Schemes, AreaExtra>,
-    editor: NodeEditor<Schemes>,
-    nodeId: string
+  area: AreaPlugin<Schemes, AreaExtra>,
+  editor: NodeEditor<Schemes>,
+  nodeId: string
 ): boolean => {
-    const node = editor.getNode(nodeId);
-    if (!node) return false;
+  const node = editor.getNode(nodeId);
+  if (!node) return false;
 
-    const nodeView = area.nodeViews.get(nodeId);
-    if (!nodeView) return false;
+  const nodeView = area.nodeViews.get(nodeId);
+  if (!nodeView) return false;
 
-    const { x: nodeX, y: nodeY } = nodeView.position;
-    const nodeWidth = node.width ?? 0;
-    const nodeHeight = node.height ?? 0;
+  const { x: nodeX, y: nodeY } = nodeView.position;
+  const nodeWidth = node.width ?? 0;
+  const nodeHeight = node.height ?? 0;
 
-    const { k: zoom, x: tx, y: ty } = area.area.transform;
-    const viewportWidth = area.container.clientWidth;
-    const viewportHeight = area.container.clientHeight;
+  const { k: zoom, x: tx, y: ty } = area.area.transform;
+  const viewportWidth = area.container.clientWidth;
+  const viewportHeight = area.container.clientHeight;
 
-    const screenX = nodeX * zoom + tx;
-    const screenY = nodeY * zoom + ty;
-    const screenW = nodeWidth * zoom;
-    const screenH = nodeHeight * zoom;
+  const screenX = nodeX * zoom + tx;
+  const screenY = nodeY * zoom + ty;
+  const screenW = nodeWidth * zoom;
+  const screenH = nodeHeight * zoom;
 
-    return (
-        screenX >= 0 &&
-        screenX + screenW <= viewportWidth &&
-        screenY >= 0 &&
-        screenY + screenH <= viewportHeight
-    );
+  return (
+    screenX >= 0 &&
+    screenX + screenW <= viewportWidth &&
+    screenY >= 0 &&
+    screenY + screenH <= viewportHeight
+  );
 };
 
 export const undo = (history: HistoryType): void => {

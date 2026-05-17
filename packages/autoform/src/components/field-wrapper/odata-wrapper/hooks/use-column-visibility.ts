@@ -1,5 +1,5 @@
-import { IField } from "@common/components/ldc-auto-form/interfaces/component.interface";
 import { useState } from "react";
+import type { IField } from "../../../../types/schema";
 
 interface IUseColumnVisibleProps {
     field: IField;
@@ -9,7 +9,7 @@ const useColumnVisible = ({
     field,
 }: IUseColumnVisibleProps) => {
 
-    const subFields: IField = field?.fields?.[0];
+    const subFields: IField | undefined = field?.fields?.[0];
     const columns = (subFields?.fields ?? [])?.map((subField) => ({
         key: subField.key,
         label: subField.fieldConfig?.wrapperProps?.label || subField.key,

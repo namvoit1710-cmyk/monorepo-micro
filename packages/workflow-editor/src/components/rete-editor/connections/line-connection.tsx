@@ -3,11 +3,44 @@ import { TrashIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { AreaPlugin } from "rete-area-plugin";
 import { Presets } from "rete-react-plugin";
+import styled from "styled-components";
 import type { BaseNode } from "../nodes/base-node";
 import type { AreaExtra, Connection, EditorDirection, NodeExecutionStatus, Schemes } from "../types";
 import { computeStepPath } from "./path-router";
 
 const { useConnection } = Presets.classic;
+
+const Svg = styled.svg`
+  overflow: visible !important;
+  position: absolute;
+  pointer-events: none;
+  width: 9999px;
+  height: 9999px;
+`;
+
+const Path = styled.path<{ styles?: (props: any) => any; $stroke?: string }>`
+  fill: none;
+  stroke-width: 2px;
+  stroke: ${(props) => props.$stroke ?? "#6b7280"};
+  pointer-events: auto;
+  ${(props) => props.styles?.(props)};
+  filter: blur(0.5px);
+  cursor: pointer;
+
+  &:hover {
+    stroke-width: 3px;
+    stroke: #2563eb;
+    filter: none;
+  }
+`;
+
+const HoverPath = styled.path`
+  fill: none;
+  stroke: transparent;
+  stroke-width: 16px;
+  pointer-events: auto;
+  cursor: pointer;
+`;
 
 const BUTTON_SIZE = 32;
 
@@ -75,27 +108,21 @@ export function LineConnection({ data, area, direction, readOnly, ...props }: {
     const { d: customPath, angle: customAngle } = computeStepPath(start!, end!, direction);
 
     return (
-        <svg
-            data-id="line-connection"
-            className="overflow-visible! absolute pointer-events-none w-[9999px] h-[9999px]"
-        >
-            <path
+        <Svg data-id="line-connection">
+            <HoverPath
                 d={path}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
-                className="fill-none stroke-transparent stroke-[16px] pointer-events-auto cursor-pointer"
             />
 
-            <path
+            <Path
                 ref={pathRef}
+                styles={props.styles}
                 d={path ? customPath : path}
+                $stroke={stroke}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
-                className="fill-none stroke-[2px] pointer-events-auto blur-[0.5px] cursor-pointer hover:stroke-[3px] hover:stroke-[#2563eb] hover:blur-none"
-                style={{
-                    stroke: stroke,
-                    ...props.styles?.()
-                }}
+                className={hovered ? "hovered" : ""}
             />
 
             <g transform={`${arrowTranslate} rotate(${customAngle})`}>
@@ -128,6 +155,6 @@ export function LineConnection({ data, area, direction, readOnly, ...props }: {
                     </Button>
                 </foreignObject>
             )}
-        </svg>
+        </Svg>
     );
 }

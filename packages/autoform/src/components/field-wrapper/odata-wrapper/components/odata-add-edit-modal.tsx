@@ -1,41 +1,45 @@
-import { IField } from "@common/components/ldc-auto-form/interfaces/component.interface";
-import { Button } from "@common/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@common/components/ui/dialog";
-import { ComponentProps, useRef } from "react";
-import Builder, { BuilderRef } from "../../../builder/builder";
+import { Button } from "@ldc/ui/components/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@ldc/ui/components/dialog";
+import type { ComponentProps } from "react";
+import { useRef } from "react";
+import type { IField } from "../../../../types/schema";
+import type { BuilderRef } from "../../../builder/builder";
+import Builder from "../../../builder/builder";
 
 interface IOdataAddEditModalProps extends ComponentProps<typeof Dialog> {
     field: IField;
     isEdit: boolean;
+    readOnly?: boolean;
     defaultValues?: any;
 
     onSubmit?: (values: any) => void;
 }
 
 const OdataAddEditModal = (props: IOdataAddEditModalProps) => {
-    const { field, isEdit, defaultValues, onSubmit, ...dialogProps } = props;
+    const { field, isEdit, defaultValues, onSubmit, readOnly, ...dialogProps } = props;
 
     const subFields = field.fields?.[0] ?? { fields: [] };
 
     const builderRef = useRef<BuilderRef>(null);
 
     const handleFormSubmit = (values: any) => {
-        console.log("Form Submitted with values: ", values);
         if (onSubmit) {
             onSubmit(values);
         }
     }
 
-    console.log("defaultValues", defaultValues)
-
     return (
         <Dialog {...dialogProps}>
             <DialogContent className="min-w-150">
                 <DialogHeader>
-                    {isEdit ? `Edit Row` : `Add Item`}
+                    {isEdit ? readOnly ? `View Row` : `Edit Row` : `Add Item`}
                 </DialogHeader>
 
-                <div className="flex-2 overflow-y-auto">
+                <div className="flex-2 overflow-y-auto relative">
+                    {readOnly && (
+                        <div className="absolute inset-0 z-10 flex items-center justify-center" />
+                    )}
+
                     <Builder
                         ref={builderRef}
                         schema={{ fields: subFields?.fields || [] }}
@@ -50,9 +54,11 @@ const OdataAddEditModal = (props: IOdataAddEditModalProps) => {
                         Cancel
                     </Button>
 
-                    <Button onClick={() => builderRef.current?.onSubmit()}>
-                        {isEdit ? `Save Changes` : `Add Item`}
-                    </Button>
+                    {!readOnly && (
+                        <Button onClick={() => builderRef.current?.onSubmit()}>
+                            {isEdit ? `Save Changes` : `Add Item`}
+                        </Button>
+                    )}
                 </DialogFooter>
             </DialogContent>
         </Dialog>

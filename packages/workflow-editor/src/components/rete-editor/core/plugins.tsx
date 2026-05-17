@@ -63,7 +63,8 @@ export const setupPlugins = async (
         Presets.classic.setup({
             customize: {
                 node(context) {
-                    const NodeComp = getNodeFactory(context.payload.label);
+                    const nodeType = context.payload.original?.node_type ?? context.payload.label;
+                    const NodeComp = getNodeFactory(nodeType);
 
                     return (props: any) => (
                         <NodeComp

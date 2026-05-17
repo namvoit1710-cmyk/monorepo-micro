@@ -45,7 +45,7 @@ export const initialLoadNodes = async ({
     area: AreaPlugin<Schemes, AreaExtra>,
     history: HistoryPlugin<Schemes>,
     initialData: IEditorValue,
-    layout: () => Promise<void> | null,
+    layout: (() => Promise<void>) | null,
 }): Promise<void> => {
     for (const nodeData of initialData.nodes) {
         const worker = nodeData.data;
@@ -71,14 +71,15 @@ export const initialLoadNodes = async ({
 
         if (!source || !target) continue;
 
-        await editor.addConnection(
-            new ClassicPreset.Connection(
-                source,
-                conn.sourceOutput,
-                target,
-                conn.targetInput
-            )
-        );
+        const connection = new ClassicPreset.Connection(
+            source,
+            conn.sourceOutput,
+            target,
+            conn.targetInput
+        )
+        connection.id = conn.id;
+
+        await editor.addConnection(connection);
     }
 
     history.clear()
