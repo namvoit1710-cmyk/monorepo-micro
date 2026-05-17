@@ -4,7 +4,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./action-engine": "./src/libs/action-engine"
+    "./action-engine": "./src/libs/action-engine/index.ts"
   },
   "license": "MIT",
   "scripts": {
@@ -30,11 +30,12 @@
   "prettier": "@ldc/prettier-config",
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "@ldc/ui": "workspace:*",
     "@ldc/api-sdk": "workspace:*",
     "@ldc/data-table": "workspace:*",
+    "@ldc/ui": "workspace:*",
     "@monaco-editor/react": "^4.7.0",
     "lucide-react": "catalog:",
+    "react-error-boundary": "^6.1.1",
     "react-hook-form": "^7.72.1",
     "zod": "catalog:"
   }

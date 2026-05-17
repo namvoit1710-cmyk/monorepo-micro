@@ -1,11 +1,11 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import { WORKER_TYPE_UPDATE_PORT } from "@/constants/config";
 import useFormDropZone from "@/features/workflows/hooks/use-form-dropzone";
 import useGenerateWorkerMenu from "@/features/workflows/hooks/use-merge-nodes";
 import { useEditorStore } from "@/features/workflows/stores/editor-stores";
-import Builder from "@common/components/ldc-auto-form/components/builder/builder";
+import { useLanguage } from "@/hooks/use-language";
 import { IField } from "@common/components/ldc-auto-form/interfaces/component.interface";
 import { useDebounceCallback } from "@common/hooks/use-debounce-callback";
+import Builder from "@ldc/autoform";
 import { useMemo } from "react";
 import { FieldValues } from "react-hook-form";
 import { useNodeDetailContext } from "./node-detail-provider";

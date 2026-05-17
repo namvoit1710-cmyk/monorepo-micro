@@ -215,7 +215,12 @@ export function createLayoutOperations(
       } else if (isMerge) {
         branchMap.set(id, null);
       } else {
-        const parentId = inEdges[0].source;
+        const firstEdge = inEdges[0];
+        if (!firstEdge) {
+          branchMap.set(id, null);
+          continue;
+        }
+        const parentId = firstEdge.source;
         const parentNode = allLayoutNodes.get(parentId);
 
         if (parentNode && !parentNode.isDummy) {
@@ -223,7 +228,7 @@ export function createLayoutOperations(
           const outputKeys = Object.keys(realParent?.outputs ?? {});
 
           if (outputKeys.length > 1) {
-            const portIndex = outputKeys.indexOf(inEdges[0].sourceOutput);
+            const portIndex = outputKeys.indexOf(firstEdge.sourceOutput);
             branchMap.set(id, {
               branchSourceId: parentId,
               portIndex: Math.max(portIndex, 0),
@@ -263,10 +268,12 @@ export function createLayoutOperations(
         if (parentPositions.length > 0) {
           parentPositions.sort((a, b) => a - b);
           const mid = Math.floor(parentPositions.length / 2);
-          const median =
+          const midLow = parentPositions[mid - 1] ?? 0;
+          const midVal = parentPositions[mid] ?? 0;
+          const median: number =
             parentPositions.length % 2 === 0
-              ? (parentPositions[mid - 1] + parentPositions[mid]) / 2
-              : parentPositions[mid];
+              ? (midLow + midVal) / 2
+              : midVal;
 
           if (branch) {
             const offset =
@@ -303,7 +310,9 @@ export function createLayoutOperations(
       let crossings = 0;
       for (let i = 0; i < eps.length; i++) {
         for (let j = i + 1; j < eps.length; j++) {
-          if ((eps[i][0] - eps[j][0]) * (eps[i][1] - eps[j][1]) < 0)
+          const ei = eps[i];
+          const ej = eps[j];
+          if (ei && ej && (ei[0] - ej[0]) * (ei[1] - ej[1]) < 0)
             crossings++;
         }
       }
@@ -313,28 +322,38 @@ export function createLayoutOperations(
     for (let iter = 0; iter < 4; iter++) {
       let improved = false;
       for (let li = 0; li < sortedLayers.length - 1; li++) {
-        const [, cur] = sortedLayers[li];
-        const [, nxt] = sortedLayers[li + 1];
+        const layerCur = sortedLayers[li];
+        const layerNxt = sortedLayers[li + 1];
+        if (!layerCur || !layerNxt) continue;
+        const [, cur] = layerCur;
+        const [, nxt] = layerNxt;
         for (let i = 0; i < nxt.length - 1; i++) {
           const before = countCrossings(cur, nxt);
-          [nxt[i], nxt[i + 1]] = [nxt[i + 1], nxt[i]];
+          const tmp1 = nxt[i]; const tmp2 = nxt[i + 1];
+          if (tmp1 !== undefined && tmp2 !== undefined) { nxt[i] = tmp2; nxt[i + 1] = tmp1; }
           if (countCrossings(cur, nxt) < before) {
             improved = true;
           } else {
-            [nxt[i], nxt[i + 1]] = [nxt[i + 1], nxt[i]];
+            const r1 = nxt[i]; const r2 = nxt[i + 1];
+            if (r1 !== undefined && r2 !== undefined) { nxt[i] = r2; nxt[i + 1] = r1; }
           }
         }
       }
       for (let li = sortedLayers.length - 1; li > 0; li--) {
-        const [, cur] = sortedLayers[li];
-        const [, prv] = sortedLayers[li - 1];
+        const layerCur2 = sortedLayers[li];
+        const layerPrv = sortedLayers[li - 1];
+        if (!layerCur2 || !layerPrv) continue;
+        const [, cur] = layerCur2;
+        const [, prv] = layerPrv;
         for (let i = 0; i < prv.length - 1; i++) {
           const before = countCrossings(prv, cur);
-          [prv[i], prv[i + 1]] = [prv[i + 1], prv[i]];
+          const tp1 = prv[i]; const tp2 = prv[i + 1];
+          if (tp1 !== undefined && tp2 !== undefined) { prv[i] = tp2; prv[i + 1] = tp1; }
           if (countCrossings(prv, cur) < before) {
             improved = true;
           } else {
-            [prv[i], prv[i + 1]] = [prv[i + 1], prv[i]];
+            const rp1 = prv[i]; const rp2 = prv[i + 1];
+            if (rp1 !== undefined && rp2 !== undefined) { prv[i] = rp2; prv[i + 1] = rp1; }
           }
         }
       }
@@ -373,10 +392,13 @@ export function createLayoutOperations(
 
       let totalCross = 0;
       for (let i = 0; i < items.length; i++) {
-        totalCross += items[i].crossSize;
-        if (i < items.length - 1) {
+        const item = items[i];
+        if (!item) continue;
+        totalCross += item.crossSize;
+        const nextItem = items[i + 1];
+        if (i < items.length - 1 && nextItem) {
           totalCross +=
-            items[i].isDummy || items[i + 1].isDummy
+            item.isDummy || nextItem.isDummy
               ? DUMMY_SPACING
               : NODE_SPACING;
         }
@@ -386,14 +408,17 @@ export function createLayoutOperations(
       const mainPos = layerMainPos.get(depth)!;
 
       for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (!item) continue;
         const pos = isVertical
           ? { x: crossCursor, y: mainPos }
           : { x: mainPos, y: crossCursor };
-        finalPositions.set(items[i].id, pos);
-        crossCursor += items[i].crossSize;
-        if (i < items.length - 1) {
+        finalPositions.set(item.id, pos);
+        crossCursor += item.crossSize;
+        const nextItem = items[i + 1];
+        if (i < items.length - 1 && nextItem) {
           crossCursor +=
-            items[i].isDummy || items[i + 1].isDummy
+            item.isDummy || nextItem.isDummy
               ? DUMMY_SPACING
               : NODE_SPACING;
         }
@@ -645,7 +670,10 @@ export function createLayoutOperations(
       }
 
       for (const edgeKey of backEdges) {
-        const [sourceId, targetId] = edgeKey.split("->");
+        const parts = edgeKey.split("->");
+        const sourceId = parts[0];
+        const targetId = parts[1];
+        if (!sourceId || !targetId) continue;
         const srcPos = finalPositions.get(sourceId);
         const tgtPos = finalPositions.get(targetId);
         if (!srcPos || !tgtPos) continue;

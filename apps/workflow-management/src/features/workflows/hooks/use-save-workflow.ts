@@ -1,7 +1,7 @@
-import { useLanguage } from "@/components/containers/language-provider";
+import { useLanguage } from "@/hooks/use-language";
 import { useLatestRef } from "@/hooks/use-last-ref";
-import { toast } from "@common/components/ldc-toast";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@ldc/tanstack-query";
+import { toast } from "@ldc/ui/blocks/toast/toast";
 import { useCallback, useRef } from "react";
 import { useEditorStore } from "../stores/editor-stores";
 import { IWorkflowSavePayload } from "../types/workflows";
@@ -15,14 +15,14 @@ interface IUseSaveWorkflowOptions {
 const useSaveWorkflow = ({ onSaved }: IUseSaveWorkflowOptions = {}) => {
     const workflowData = useEditorStore(s => s.workflowData);
     const workflowInfo = useEditorStore(s => s.workflowInfo);
-    
+
     const { t } = useLanguage();
     const saveStartTimeRef = useRef<number | null>(null);
 
     const latestRef = useLatestRef({
-            workflowInfo,
-            workflowData,
-        });
+        workflowInfo,
+        workflowData,
+    });
 
     const queryClient = useQueryClient();
     const { mutateAsync, isPending } = useUpdateWorkflow({
@@ -38,7 +38,7 @@ const useSaveWorkflow = ({ onSaved }: IUseSaveWorkflowOptions = {}) => {
 
     const onSave = useCallback(async (workflowId: string, workflowName?: string) => {
         const { workflowInfo, workflowData } = latestRef.current;
-        const payload: IWorkflowSavePayload = mapWorkflowToSavePayload({...workflowInfo, name: workflowName ?? workflowInfo.name}, workflowData)
+        const payload: IWorkflowSavePayload = mapWorkflowToSavePayload({ ...workflowInfo, name: workflowName ?? workflowInfo.name }, workflowData)
 
         saveStartTimeRef.current = Date.now();
 

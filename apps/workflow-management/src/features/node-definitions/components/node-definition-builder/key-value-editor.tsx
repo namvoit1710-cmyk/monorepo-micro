@@ -1,9 +1,9 @@
-import { useLanguage } from "@/components/containers/language-provider";
-import { Button } from "@common/components/ui/button";
-import { Input } from "@common/components/ui/input";
-import { cn } from "@common/lib/utils";
+import { useLanguage } from "@/hooks/use-language";
+import { cn } from "@ldc/ui";
+import { Button } from "@ldc/ui/components/button";
+import { Input } from "@ldc/ui/components/input";
 import { PlusIcon, TrashIcon } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 export interface IKeyValuePair {
     key: string;
@@ -67,16 +67,16 @@ const AutocompleteInput = ({
     const [showDropdown, setShowDropdown] = useState(false);
     const [focusedIndex, setFocusedIndex] = useState(-1);
     const inputRef = useRef<HTMLInputElement>(null);
-    const dropdownRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    const filtered = suggestions?.filter((s) => {
+    const filtered = useMemo(() => suggestions?.filter((s) => {
         if (!value) return true;
         const lower = value.toLowerCase();
         return (
             s.value.toLowerCase().includes(lower) ||
             s.label.toLowerCase().includes(lower)
         );
-    }) ?? [];
+    }) ?? [], [suggestions, value]);
 
     const handleSelect = useCallback(
         (suggestion: ISuggestion) => {
@@ -98,7 +98,8 @@ const AutocompleteInput = ({
             setFocusedIndex((prev) => Math.max(prev - 1, 0));
         } else if (e.key === "Enter" && focusedIndex >= 0) {
             e.preventDefault();
-            handleSelect(filtered[focusedIndex]);
+            const selected = filtered[focusedIndex];
+            if (selected) handleSelect(selected);
         } else if (e.key === "Escape") {
             setShowDropdown(false);
         }
@@ -107,7 +108,7 @@ const AutocompleteInput = ({
     const hasSuggestions = suggestions && suggestions.length > 0;
 
     return (
-        <div className="relative">
+        <div className="relative" ref={containerRef}>
             <Input
                 ref={inputRef}
                 value={value}
@@ -119,9 +120,10 @@ const AutocompleteInput = ({
                 onFocus={() => {
                     if (hasSuggestions) setShowDropdown(true);
                 }}
-                onBlur={() => {
-                    // Delay to allow click on dropdown item
-                    setTimeout(() => setShowDropdown(false), 150);
+                onBlur={(e) => {
+                    if (!containerRef.current?.contains(e.relatedTarget as Node)) {
+                        setShowDropdown(false);
+                    }
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder}
@@ -130,7 +132,6 @@ const AutocompleteInput = ({
 
             {showDropdown && filtered.length > 0 && (
                 <div
-                    ref={dropdownRef}
                     className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto"
                 >
                     {filtered.map((suggestion, idx) => (
@@ -179,7 +180,7 @@ const KeyValueEditor = ({
     const handleChange = useCallback(
         (index: number, field: "key" | "value", val: string) => {
             const next = [...pairs];
-            next[index] = { ...next[index], [field]: val };
+            next[index] = { ...next[index], [field]: val } as IKeyValuePair;
             onChange(next);
         },
         [pairs, onChange]
@@ -219,7 +220,7 @@ const KeyValueEditor = ({
 
                     {pairs.map((pair, index) => (
                         <div
-                            key={index}
+                            key={`${index}-${pair.key}`}
                             className="grid grid-cols-[1fr_1fr_40px] gap-2 px-3 py-2 items-center border-b border-gray-100 last:border-b-0"
                         >
                             <AutocompleteInput

@@ -32,7 +32,10 @@
       "typescript": "5.9.3",
       "vite": "7.1.12",
       "zod": "4.3.6",
-      "lucide-react": "^1.7.0"
+      "lucide-react": "^1.7.0",
+      "zustand": "5.0.13",
+      "date-fns": "^4.1.0",
+      "react-error-boundary": "6.1.1"
     },
     "catalogs": {
       "react19": {
@@ -54,6 +57,8 @@
     "dev:dashboard": "turbo watch dev -F @ldc/dashboard",
     "build:dashboard": "turbo build -F @ldc/dashboard",
     "start:dashboard": "bun install && bun run dev:dashboard",
+    "dev:workflow": "turbo watch dev -F @ldc/workflow-management",
+    "build:workflow": "turbo build -F @ldc/workflow-management",
     "dev:docs": "turbo watch dev -F @ldc/docs",
     "build:docs": "turbo build -F @ldc/docs",
     "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
@@ -70,7 +75,6 @@
     "@rsbuild/core": "^1.7.5",
     "@rsbuild/plugin-react": "^1.4.6",
     "@turbo/gen": "^2.5.8",
-    "@types/node": "22.18.12",
     "dotenv-cli": "^10.0.0",
     "prettier": "^3.6.2",
     "turbo": "^2.9.4",

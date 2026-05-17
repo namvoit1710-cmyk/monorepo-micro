@@ -1,10 +1,13 @@
 import { Button } from "@ldc/ui/components/button";
-import { useCallback, useState, type ComponentProps } from "react";
-import type { FieldComponentProps, IButtonAction } from "../../types/schema";
-import { useBuilderContext } from "../../contexts/builder.context";
-import { useFormContext } from "react-hook-form";
 import { Loader2 } from "lucide-react";
-import { DynamicIcon, IconName } from "lucide-react/dynamic";
+import { DynamicIcon, type IconName } from "lucide-react/dynamic";
+import { useCallback, useState, type ComponentProps } from "react";
+import { useFormContext } from "react-hook-form";
+import { useBuilderContext } from "../../contexts/builder.context";
+import type { FieldComponentProps, IButtonAction } from "../../types/schema";
+
+const pascalToKebabCase = (str: string): string =>
+    str.replace(/([a-z])([A-Z])/g, "$1-$2").replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2").toLowerCase();
 
 
 export interface IButtonControlProps extends FieldComponentProps, Omit<ComponentProps<typeof Button>, "name" | "onChange" | "value"> {

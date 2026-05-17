@@ -199,6 +199,8 @@ export interface EngineContext {
   refetchRegistry?: {
     get: (key: string) => (() => Promise<void>) | undefined;
     getAll: () => Map<string, () => Promise<void>>;
+    register: (key: string, fn: () => Promise<void>) => void;
+    unregister: (key: string) => void;
   };
 
   customHandlers?: Record<string, (ctx: EngineContext) => Promise<void>>;

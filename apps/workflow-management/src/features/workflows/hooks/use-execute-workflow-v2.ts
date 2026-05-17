@@ -1,8 +1,8 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import { useMessageBox } from "@/components/containers/messagebox-provider";
+import { useLanguage } from "@/hooks/use-language";
 import { useLatestRef } from "@/hooks/use-last-ref";
 import { pushGatewaySocket } from "@/lib/socket";
-import { toast } from "@common/components/ldc-toast";
+import { toast } from "@ldc/ui/blocks/toast/toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { WorkflowEditorHandle } from "../../../../../../common/components/ldc-workflow-editor/components/workflow-editor/workflow-editor";
@@ -118,7 +118,7 @@ const useExecuteWorkflow = ({
     const onRunNode = useCallback(
         (nodeId: string) => {
             editorRef.current?.updateNodeConnectionStatus(nodeId, "idle");
-            
+
             const workflowId = latestRef.current.workflowId;
             if (!workflowId) return;
 
@@ -207,7 +207,7 @@ const useExecuteWorkflow = ({
         const socket = pushGatewaySocket.connect("");
 
         if (socket.connected) {
-           socket.emit("wait", { key: `run:${testRunId}` });
+            socket.emit("wait", { key: `run:${testRunId}` });
         }
 
         const handleConnect = () => {
@@ -258,7 +258,7 @@ const useExecuteWorkflow = ({
             workflowStartTimeRef.current = null;
             const timestamp = new Date(payload.timestamp).getTime();
             latestRef.current.onWorkflowFailed?.({ timestamp, errorMessage: payload.error });
-            
+
             if (latestRef.current.localExecution?.type === "workflow" && latestRef.current.localExecution.runId === payload.run_id) {
                 setLocalExecution(null);
                 dismissRunToast("error");
@@ -302,7 +302,7 @@ const useExecuteWorkflow = ({
                 timestamp: new Date(payload.timestamp).getTime()
             });
 
-            if (latestRef.current.localExecution?.type === "workflow" && editorRef.current.getZoomLevel?.() < 1) {
+            if (latestRef.current.localExecution?.type === "workflow" && editorRef.current?.getZoomLevel?.() < 1) {
                 await editorRef.current?.zoomByLevel(1);
             }
 
@@ -354,7 +354,7 @@ const useExecuteWorkflow = ({
             const timestamp = new Date(payload.timestamp).getTime();
 
             latestRef.current.dismiss?.(payload.node_id);
-            
+
             setNodeExecution(payload.node_id, {
                 status: "failed",
                 runId: payload.run_id,
@@ -504,7 +504,7 @@ const useExecuteWorkflow = ({
                     type: InteractionModalEnum.APPROVAL_FLOW_VIEWER,
                     ...payload
                 });
-                
+
             } catch (error) {
                 toast.error(
                     t("notification.error"),
@@ -532,7 +532,7 @@ const useExecuteWorkflow = ({
             [SocketEvent.NodeApprovalFlowResult]: onNodeApprovalFlowResult
         }
 
-        const handleDataChunk = async (socketMessage: (...args: any[]) => void) => {
+        const handleDataChunk = async (socketMessage: unknown) => {
             let nestedData: any;
             try {
                 const eventData = typeof socketMessage === "string" ? JSON.parse(socketMessage) : socketMessage;

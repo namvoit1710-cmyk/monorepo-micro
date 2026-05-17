@@ -33,7 +33,7 @@ export const removeNode = async (
       await editor.removeConnection(item.id);
     }
   }
-  editor.removeNode(nodeId);
+  await editor.removeNode(nodeId);
 };
 
 export const copyNode = async (
@@ -165,7 +165,7 @@ export const getIncomerNodes = (
     return nodes.filter((node) => incomerIds.includes(node.id));
 }
 
-export const syncNodeSizesFromDOM = (editor: NodeEditor<Schemes>, area: AreaPlugin<Schemes, any>) => {
+export const syncNodeSizesFromDOM = (editor: NodeEditor<Schemes>, area: AreaPlugin<Schemes, AreaExtra>) => {
     for (const node of editor.getNodes()) {
         const view = area.nodeViews.get(node.id);
         if (!view?.element) continue;

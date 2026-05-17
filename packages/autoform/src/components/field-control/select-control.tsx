@@ -1,7 +1,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ldc/ui/components/select";
 import React, { useMemo } from "react";
-import type { FieldComponentProps } from "../../types/schema";
 import { useServerOptions } from "../../hooks/use-server-option";
+import type { FieldComponentProps } from "../../types/schema";
 
 export interface ISelectOption {
     id: string;
@@ -53,7 +53,7 @@ const SelectControl = React.forwardRef<HTMLButtonElement, ISelectControlProps>(
                     />
                 </SelectTrigger>
                 <SelectContent position="popper">
-                    {options.map((option: ISelectOption | OptionRecord, index: number) => {
+                    {_options.map((option: ISelectOption | OptionRecord, index: number) => {
                         const optionValue = String((option as OptionRecord)[valueKey ?? "id"]);
                         const optionLabel = String((option as OptionRecord)[labelKey ?? "value"]);
                         const keyValue = 'id' in option ? option.id : optionValue;

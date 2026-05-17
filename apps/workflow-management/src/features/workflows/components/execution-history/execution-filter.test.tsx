@@ -15,11 +15,11 @@ vi.mock("../../hooks/apis/workflows", () => ({
     useWorkflowListInfinite: (...args: unknown[]) => useWorkflowListInfiniteMock(...args),
 }));
 
-vi.mock("@common/components/ui/button", () => ({
+vi.mock("@ldc/ui/components/button", () => ({
     Button: ({ children, ...props }: { children: ReactNode }) => <button {...props}>{children}</button>,
 }));
 
-vi.mock("@common/components/ui/command", () => ({
+vi.mock("@ldc/ui/components/command", () => ({
     Command: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     CommandEmpty: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     CommandInput: ({ value, onValueChange, placeholder }: { value: string; onValueChange: (value: string) => void; placeholder: string }) => (
@@ -33,7 +33,7 @@ vi.mock("@common/components/ui/command", () => ({
     CommandList: ({ children }: { children: ReactNode }) => <div>{children}</div>,
 }));
 
-vi.mock("@common/components/ui/popover", () => ({
+vi.mock("@ldc/ui/components/popover", () => ({
     Popover: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     PopoverTrigger: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     PopoverContent: ({ children, className }: { children: ReactNode; className?: string }) => (
@@ -41,7 +41,7 @@ vi.mock("@common/components/ui/popover", () => ({
     ),
 }));
 
-vi.mock("@common/components/ui/spinner", () => ({
+vi.mock("@ldc/ui/components/spinner", () => ({
     Spinner: () => <div data-testid="spinner" />,
 }));
 

@@ -9,7 +9,7 @@ import type { IEditorInstance } from "../../rete-editor";
 
 interface IBottomToolbarProps {
     readOnly?: boolean;
-    editorInstance: IEditorInstance;
+    editorInstance: IEditorInstance | undefined;
 }
 
 const BottomToolbar = (props: IBottomToolbarProps) => {

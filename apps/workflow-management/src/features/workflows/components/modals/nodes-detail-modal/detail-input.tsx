@@ -1,9 +1,9 @@
 
-import { useLanguage } from "@/components/containers/language-provider"
 import { useEditorStore } from "@/features/workflows/stores/editor-stores"
 import { IArtifactVariableSuggestionSource, IVariableSuggestionSource } from "@/features/workflows/types/workflows"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@common/components/ui/accordion"
+import { useLanguage } from "@/hooks/use-language"
 import { cn } from "@common/lib/utils"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@ldc/ui/components/accordion"
 import { useMemo } from "react"
 import { useNodeDetailContext } from "./node-detail-provider"
 import { UpstreamNodes } from "./upstream-item"

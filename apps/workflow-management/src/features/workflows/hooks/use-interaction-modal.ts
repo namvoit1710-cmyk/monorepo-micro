@@ -1,6 +1,6 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import { useMessageBox } from "@/components/containers/messagebox-provider";
-import { IField } from "@common/components/ldc-auto-form/interfaces/component.interface";
+import { useLanguage } from "@/hooks/use-language";
+import { IField } from "@ldc/autoform";
 import { useCallback, useState } from "react";
 import { SocketEvent, SocketEventFullPayload } from "../types/socket-event";
 
@@ -12,7 +12,7 @@ export enum InteractionModalEnum {
     APPROVAL_FLOW_VIEWER = "approval_flow.viewer"
 }
 
-export type IRequestedPayload = 
+export type IRequestedPayload =
     | (SocketEventFullPayload<SocketEvent.InputRequested> & { type: InteractionModalEnum.INPUT_REQUESTED })
     | (SocketEventFullPayload<SocketEvent.HumanActionRequested> & { type: InteractionModalEnum.HUMAN_ACTION_REQUESTED })
     | (SocketEventFullPayload<SocketEvent.DataEditRequested> & { type: InteractionModalEnum.DATA_EDIT_REQUESTED })

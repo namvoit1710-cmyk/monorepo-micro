@@ -5,8 +5,6 @@ import type { FieldWrapperProps, IField } from "../../types/schema";
 const TabItemWrapper = (props: FieldWrapperProps) => {
     const { children, field } = props;
 
-    console.log("Rendering TabItemWrapper for field:", field?.key);
-
     if (!field) return <>{children}</>;
 
     const className = (field.fieldConfig.wrapperProps?.className as string | undefined) ?? "";

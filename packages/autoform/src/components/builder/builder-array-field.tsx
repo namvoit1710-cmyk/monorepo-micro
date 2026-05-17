@@ -67,7 +67,7 @@ const BuilderArrayField: React.FC<{
                                     <></>
                                 )}
                             />
-                            {Object.entries(subField?.fields ?? {}).map(([_key, field]) => (
+                            {(subField?.fields ?? []).map((field) => (
                                 <div key={`${path.join(".")}.${index.toString()}.${field.key}`} className="flex-1 min-w-[150px] mb-2">
                                     <BuilderField
                                         field={field}

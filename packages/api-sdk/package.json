@@ -16,7 +16,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "axios": "catalog:"
+    "axios": "catalog:",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@ldc/eslint-config": "workspace:*",

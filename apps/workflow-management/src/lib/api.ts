@@ -1,11 +1,8 @@
-import { APISdk } from "@common/configs/axios/axios-instance";
-import { ENDPOINTS } from "@common/configs/endpoints.config";
+import { env } from "@/env";
+import { APISdk } from "@ldc/api-sdk";
 
 const api = new APISdk({
-    baseURL: import.meta.env.VITE_WORKFLOW_API_URL,
-    headers: {
-        "X-Tenant-ID": "system"
-    },
+    baseURL: env.PUBLIC_WORKFLOW_API_URL,
     timeout: 5 * 60 * 1000,
     withCredentials: false,
 
@@ -15,19 +12,19 @@ const api = new APISdk({
 });
 
 const workflowValidationRuleAgentApi = new APISdk({
-    baseURL: import.meta.env.VITE_WORKFLOW_VALIDATION_RULE_AGENT_API_URL,
+    baseURL: env.PUBLIC_WORKFLOW_VALIDATION_RULE_AGENT_API_URL,
     timeout: 5 * 60 * 1000,
     withCredentials: false,
 });
 
 const workflowProfileManagerApi = new APISdk({
-    baseURL: import.meta.env.VITE_WORKFLOW_PROFILE_MANAGER_API_URL,
+    baseURL: env.PUBLIC_WORKFLOW_PROFILE_MANAGER_API_URL,
     timeout: 5 * 60 * 1000,
     withCredentials: false,
 });
 
 const workflowAgentApi = new APISdk({
-    baseURL: import.meta.env.VITE_WORKFLOW_SUPERVISOR_AGENT_API_URL,
+    baseURL: env.PUBLIC_WORKFLOW_SUPERVISOR_AGENT_API_URL,
     timeout: 5 * 60 * 1000,
     withCredentials: false,
 });

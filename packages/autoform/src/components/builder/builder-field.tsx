@@ -47,7 +47,7 @@ const BuilderField = (props: IBuilderFieldProps) => {
     }, [field.fields, path]);
 
     const getPrimaryFieldComponent = (field: IField) => {
-        const fieldControl: IFieldComponent = field?.fieldConfig?.fieldControl;
+        const fieldControl: IFieldComponent | undefined = field?.fieldConfig?.fieldControl;
         const controlProps: Record<string, any> = field?.fieldConfig?.controlProps || {};
         const componentKey = typeof fieldControl === "string" ? fieldControl : undefined;
         const Component: React.ElementType | null | undefined = componentKey ? fieldComponent?.[componentKey] : undefined;
@@ -81,7 +81,7 @@ const BuilderField = (props: IBuilderFieldProps) => {
             case "TableWrapper":
                 return <TableWrapper field={field} path={path} />;
             case "OdataWrapper":
-                return <OdataWrapper field={field} path={path} />;
+                return <OdataWrapper field={field} path={path} name={path.join(".")}>{null}</OdataWrapper>;
             default:
                 return <BuilderArrayField field={field} path={path} />;
         }
@@ -95,21 +95,21 @@ const BuilderField = (props: IBuilderFieldProps) => {
     };
 
     const getFieldComponents = (field: IField): JSX.Element => {
-        if (EXCLUDED_OUTPUT_TYPE.has(field?.fieldConfig?.fieldControl)) return getPrimaryFieldComponent(field);
+        const fc = field?.fieldConfig?.fieldControl ?? "";
+        if (EXCLUDED_OUTPUT_TYPE.has(fc)) return getPrimaryFieldComponent(field);
         if (field.outputType === "array") return getArrayOutputTypeComponent(field);
-        if (field.outputType === "object" && !EXCLUDED_OUTPUT_TYPE.has(field?.fieldConfig?.fieldControl)) return getObjectOutputTypeComponent(field);
+        if (field.outputType === "object" && !EXCLUDED_OUTPUT_TYPE.has(fc)) return getObjectOutputTypeComponent(field);
         return getPrimaryFieldComponent(field);
     };
 
-    const fieldWrapper: IWrapperComponent = field?.fieldConfig?.fieldWrapper;
+    const fieldWrapper: string = field?.fieldConfig?.fieldWrapper ?? "";
     const wrapperProps: Record<string, any> = field?.fieldConfig?.wrapperProps || {};
-    const WrapperComponent: React.ElementType = ["TableWrapper", "OdataWrapper"].includes(fieldWrapper)
-        ? (wrapperComponent?.[fieldWrapper] || FragmentWrapper)
-        : FragmentWrapper;
+    const WrapperComponent: React.ElementType = wrapperComponent?.[fieldWrapper] || FragmentWrapper;
 
     const FieldComponent = useMemo(() => {
         return getFieldComponents(field);
-    }, [field, isDisabled, name]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [field, isDisabled, name, onFormActions]);
 
     if (invisible) {
         return null;

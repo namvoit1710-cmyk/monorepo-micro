@@ -1,6 +1,6 @@
-import { useLanguage } from "@/components/containers/language-provider"
-import { Input } from "@common/components/ui/input"
+import { useLanguage } from "@/hooks/use-language"
 import { useDebounceCallback } from "@common/hooks/use-debounce-callback"
+import { Input } from "@ldc/ui/components/input"
 import { SearchIcon } from "lucide-react"
 
 interface IPaletteSearchProps {

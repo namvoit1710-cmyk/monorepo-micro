@@ -2,12 +2,12 @@
 
 import { ChevronRight, type LucideIcon } from "lucide-react"
 
-import { useLanguage } from "@/components/containers/language-provider"
+import { useLanguage } from "@/hooks/use-language"
 import {
     Collapsible,
     CollapsibleContent,
     CollapsibleTrigger,
-} from "@common/components/ui/collapsible"
+} from "@ldc/ui/components/collapsible"
 import {
     SidebarGroup,
     SidebarMenu,
@@ -16,7 +16,7 @@ import {
     SidebarMenuSub,
     SidebarMenuSubButton,
     SidebarMenuSubItem
-} from "@common/components/ui/sidebar"
+} from "@ldc/ui/components/sidebar"
 import { Link, useLocation } from "react-router-dom"
 
 export function NavMain({

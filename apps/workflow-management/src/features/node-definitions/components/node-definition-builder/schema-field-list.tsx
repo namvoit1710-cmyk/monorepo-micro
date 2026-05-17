@@ -1,8 +1,8 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import { IWorkflowSchemaField } from "@/features/workflows/types/workflows";
-import { Button } from "@common/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@common/components/ui/tabs";
-import { useDebounceCallback } from "@common/hooks/use-debounce-callback";
+import { useLanguage } from "@/hooks/use-language";
+import { Button } from "@ldc/ui/components/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ldc/ui/components/tabs";
+import { useDebounceCallback } from "@ldc/ui/hooks/use-debounce-callback";
 import { Editor } from "@monaco-editor/react";
 import { PlusIcon } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -126,7 +126,9 @@ const SchemaFieldList = ({ title, fields, onChange, readonly }: SchemaFieldListP
         (index: number) => {
             if (index === 0) return;
             const next = [...fields];
-            [next[index - 1], next[index]] = [next[index], next[index - 1]];
+            const tmp = next[index - 1]!;
+            next[index - 1] = next[index]!;
+            next[index] = tmp;
             onChange(next);
         },
         [fields, onChange]
@@ -136,7 +138,9 @@ const SchemaFieldList = ({ title, fields, onChange, readonly }: SchemaFieldListP
         (index: number) => {
             if (index >= fields.length - 1) return;
             const next = [...fields];
-            [next[index], next[index + 1]] = [next[index + 1], next[index]];
+            const tmp = next[index]!;
+            next[index] = next[index + 1]!;
+            next[index + 1] = tmp;
             onChange(next);
         },
         [fields, onChange]
@@ -151,7 +155,7 @@ const SchemaFieldList = ({ title, fields, onChange, readonly }: SchemaFieldListP
         }
     }, 400);
 
-    function handleMount(editor: any, monaco: any) {
+    function handleMount(editor: any, _monaco: any) {
 
         editor.updateOptions({
             formatOnPaste: true,
@@ -224,7 +228,7 @@ const SchemaFieldList = ({ title, fields, onChange, readonly }: SchemaFieldListP
                                 minimap: { enabled: false }
                             }}
                             onChange={(value) => {
-                                debounceSetFormText(value);
+                                debounceSetFormText(value!);
                             }}
                         />
                     </div>

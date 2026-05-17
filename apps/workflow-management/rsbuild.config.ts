@@ -1,17 +1,33 @@
 import { pluginModuleFederation } from "@module-federation/rsbuild-plugin";
-import { defineConfig } from "@rsbuild/core";
+import { defineConfig, loadEnv } from "@rsbuild/core";
 import { pluginReact } from "@rsbuild/plugin-react";
+import path from "node:path";
+
+const { publicVars } = loadEnv({ cwd: path.resolve(__dirname, "../..") });
 
 export default defineConfig({
   plugins: [
     pluginReact(),
     pluginModuleFederation({
-      name: "workflow-management",
+      name: "workflow_management",
+      exposes: {
+        "./App": "./src/app.tsx",
+      },
       remotes: {},
       shared: {
-        react: { singleton: true, requiredVersion: "^18" },
-        "react-dom": { singleton: true, requiredVersion: "^18" },
-        "react-router-dom": { singleton: true },
+        react: { singleton: true, eager: true, requiredVersion: "^19" },
+        "react-dom": { singleton: true, eager: true, requiredVersion: "^19" },
+        "react-router-dom": { singleton: true, eager: true },
+        "react-i18next": {
+          singleton: true,
+          eager: true,
+          requiredVersion: false,
+        },
+        "i18next": {
+          singleton: true,
+          eager: true,
+          requiredVersion: false,
+        },
       },
     }),
   ],

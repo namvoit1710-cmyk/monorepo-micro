@@ -1,9 +1,9 @@
-import { useLanguage } from "@/components/containers/language-provider";
-import { Button } from "@common/components/ui/button";
-import { Input } from "@common/components/ui/input";
-import { cn } from "@common/lib/utils";
-import { ChevronDownIcon, ChevronUpIcon, PlusIcon, SparklesIcon, TrashIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useLanguage } from "@/hooks/use-language";
+import { cn } from "@ldc/ui";
+import { Button } from "@ldc/ui/components/button";
+import { Input } from "@ldc/ui/components/input";
+import { PlusIcon, SparklesIcon, TrashIcon } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ISchemaFieldItem } from "./schema-field-editor";
 import {
     HTTP_WORKER_FIELDS,
@@ -55,7 +55,7 @@ export function mappingEntriesToObject(entries: IMappingEntry[]): Record<string,
 
 export function objectToMappingEntries(obj: Record<string, any> | undefined | null): IMappingEntry[] {
     if (!obj || typeof obj !== "object") return [];
-    return Object.entries(obj).map(([key, value]) => {
+    return Object.entries(obj).filter(([key]) => getWorkerFieldMeta(key) !== undefined).map(([key, value]) => {
         const meta = getWorkerFieldMeta(key);
         const mode = meta?.mode ?? "expression";
 
@@ -131,7 +131,7 @@ const KeyValueArrayEditor = ({ items, onChange, meta, customFields }: KeyValueAr
     const handleRemove = (idx: number) => onChange(items.filter((_, i) => i !== idx));
     const handleUpdate = (idx: number, field: "name" | "value", val: string) => {
         const next = [...items];
-        next[idx] = { ...next[idx], [field]: val };
+        next[idx] = { ...next[idx], [field]: val } as { name: string; value: string };
         onChange(next);
     };
 
@@ -202,12 +202,25 @@ interface JsonTemplateEditorProps {
 
 const JsonTemplateEditor = ({ value, onChange, customFields }: JsonTemplateEditorProps) => {
     const { t } = useLanguage();
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const insertField = (fieldKey: string, fieldType: string) => {
         const expr = fieldType === "number" || fieldType === "boolean"
             ? `{{$custom.${fieldKey}}}`
             : `"{{$custom.${fieldKey}}}"`;
-        onChange(value + expr);
+        const el = textareaRef.current;
+        if (el) {
+            const start = el.selectionStart ?? value.length;
+            const end = el.selectionEnd ?? value.length;
+            const next = value.slice(0, start) + expr + value.slice(end);
+            onChange(next);
+            requestAnimationFrame(() => {
+                el.selectionStart = el.selectionEnd = start + expr.length;
+                el.focus();
+            });
+        } else {
+            onChange(value + expr);
+        }
     };
 
     const generateTemplate = () => {
@@ -260,6 +273,7 @@ const JsonTemplateEditor = ({ value, onChange, customFields }: JsonTemplateEdito
                 )}
             </div>
             <textarea
+                ref={textareaRef}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={"{\"key\": \"{{$custom.field}}\"}"}
@@ -313,13 +327,25 @@ const InputMappingEditor = ({ entries, onChange, customFields }: InputMappingEdi
     const handleUpdate = useCallback(
         (idx: number, partial: Partial<IMappingEntry>) => {
             const next = [...entries];
-            next[idx] = { ...next[idx], ...partial };
+            next[idx] = { ...next[idx], ...partial } as IMappingEntry;
             onChange(next);
         },
         [entries, onChange]
     );
 
     const [addMenuOpen, setAddMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!addMenuOpen) return;
+        const handler = (e: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+                setAddMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, [addMenuOpen]);
 
     return (
         <div className="flex flex-col gap-3">
@@ -332,7 +358,7 @@ const InputMappingEditor = ({ entries, onChange, customFields }: InputMappingEdi
                         {t("node_definition_builder.input_mapping_desc")}
                     </p>
                 </div>
-                <div className="relative">
+                <div className="relative" ref={menuRef}>
                     <Button
                         variant="outline"
                         size="sm"
@@ -373,15 +399,10 @@ const InputMappingEditor = ({ entries, onChange, customFields }: InputMappingEdi
                 {entries.map((entry, idx) => {
                     const meta = getWorkerFieldMeta(entry.workerField);
                     const mode = meta?.mode ?? "expression";
-                    const modeIcon = mode === "key_value_array"
-                        ? "list"
-                        : mode === "json_template"
-                        ? "braces"
-                        : "arrow-right";
 
                     return (
                         <div
-                            key={`${entry.workerField}-${idx}`}
+                            key={entry.workerField}
                             className="border border-gray-200 rounded-lg bg-white overflow-hidden"
                         >
                             {/* Header */}

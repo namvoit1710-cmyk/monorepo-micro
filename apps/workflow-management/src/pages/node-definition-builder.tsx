@@ -1,4 +1,3 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import Page from "@/components/containers/page";
 import BuilderHeader from "@/features/node-definitions/components/node-definition-builder/builder-header";
 import InputMappingEditor, {
@@ -33,12 +32,13 @@ import {
 import LoadingOverlay from "@/features/workflows/components/loading-overlay/loading-overlay";
 import { nodepalleteKey } from "@/features/workflows/hooks/apis/node-pallete";
 import useGenerateWorkerMenu from "@/features/workflows/hooks/use-merge-nodes";
-import Builder, { BuilderRef } from "@common/components/ldc-auto-form/components/builder/builder";
-import { toast } from "@common/components/ldc-toast";
-import DynamicNodeIcon from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/components/dynamic-node-icon";
-import { ResizablePanel, ResizablePanelGroup } from "@common/components/ui/resizeable";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@common/components/ui/tabs";
-import { useQueryClient } from "@tanstack/react-query";
+import { useLanguage } from "@/hooks/use-language";
+import { Builder, BuilderRef } from "@ldc/autoform";
+import { useQueryClient } from "@ldc/tanstack-query";
+import { toast } from "@ldc/ui/blocks/toast/toast";
+import { ResizablePanel, ResizablePanelGroup } from "@ldc/ui/components/resizable";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ldc/ui/components/tabs";
+import { DynamicNodeIcon } from "@ldc/workflow-editor";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -93,13 +93,13 @@ const NodeDefinitionBuilderPage = () => {
     // Available workers for base_worker_id dropdown
     const { nodeMenuItems } = useGenerateWorkerMenu();
     const workerNodes = useMemo(
-        () => nodeMenuItems.filter((item) => item.original.category === "worker"),
+        () => nodeMenuItems.filter((item) => item.original?.category === "worker"),
         [nodeMenuItems]
     );
     const workerOptions = useMemo(
         () => workerNodes.map((item) => ({
-            id: item.original.worker_id || item.original.id,
-            value: item.original.name,
+            id: item.original?.worker_id || item.original?.id,
+            value: item.original?.name,
         })),
         [workerNodes]
     );
@@ -108,7 +108,7 @@ const NodeDefinitionBuilderPage = () => {
     const selectedWorkerData = useMemo(() => {
         if (!selectedWorkerId || !workerNodes.length) return undefined;
         return workerNodes.find(
-            (w) => w.original.id === selectedWorkerId || w.original.worker_id === selectedWorkerId
+            (w) => w.original?.id === selectedWorkerId || w.original?.worker_id === selectedWorkerId
         )?.original;
     }, [selectedWorkerId, workerNodes]);
 
@@ -172,7 +172,7 @@ const NodeDefinitionBuilderPage = () => {
     }, [queryClient]);
 
     const { mutate: createDefinition, isPending: isCreating } = useCreateNodeDefinition({
-        onSuccess: (res) => {
+        onSuccess: (res: any) => {
             toast.success(t("notification.success"), t("node_definitions.created_successfully"));
             invalidateQueries();
             navigate(`/node-definitions/${res.data.id}`, { replace: true });

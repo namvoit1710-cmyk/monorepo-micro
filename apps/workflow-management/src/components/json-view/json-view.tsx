@@ -1,4 +1,4 @@
-import { cn } from "@common/lib/utils";
+import { cn } from "@ldc/ui";
 import UiwJsonView from "@uiw/react-json-view";
 
 interface IJsonViewProps {
@@ -45,7 +45,7 @@ const JsonView = ({
 
                             const validValue = prefix ? prefix.replace("#path", path) : `{{$${path}}}`;
                             e.dataTransfer.setData("text/plain", `${validValue}`);
-                            onKeyDragStart?.(validValue, result.keyName);
+                            onKeyDragStart?.(validValue, result.keyName!);
                         }}
                         className={cn(
                             props.className,

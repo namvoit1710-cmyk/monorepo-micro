@@ -1,10 +1,8 @@
-import { useLanguage } from "@/components/containers/language-provider";
-import Builder, { BuilderRef } from "@common/components/ldc-auto-form/components/builder/builder";
-import { IField } from "@common/components/ldc-auto-form/interfaces/component.interface";
-import { Button } from "@common/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@common/components/ui/dialog";
+import { useLanguage } from "@/hooks/use-language";
+import { Builder, BuilderRef, FieldValues, IField } from "@ldc/autoform";
+import { Button } from "@ldc/ui/components/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@ldc/ui/components/dialog";
 import { useMemo, useRef } from "react";
-import { FieldValues } from "react-hook-form";
 import { useEditorStore } from "../../stores/editor-stores";
 import { useUIPanelStore } from "../../stores/ui-panel-stores";
 

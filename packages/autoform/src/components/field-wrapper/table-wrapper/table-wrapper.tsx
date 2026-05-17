@@ -109,12 +109,10 @@ const TableWrapper = ({ field: fieldControl, path }: ITableWrapperProps) => {
 
     const handlePaginationChange = useCallback(
         (updater: PaginationState) => {
-            const next = typeof updater === "function" ? updater(pagination) : updater;
-
             if (isSyncServer) {
-                (wrapperProps?.callback || wrapperProps?.callApi)?.({ ...next });
+                (wrapperProps?.callback || wrapperProps?.callApi)?.({ ...updater });
             }
-            setPagination(next);
+            setPagination(updater);
         },
         [pagination, setPagination, isSyncServer, wrapperProps]
     );

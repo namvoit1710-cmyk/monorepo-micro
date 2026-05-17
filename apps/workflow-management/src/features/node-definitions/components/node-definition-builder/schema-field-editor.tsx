@@ -1,7 +1,6 @@
-import { useLanguage } from "@/components/containers/language-provider";
-import { Button } from "@common/components/ui/button";
-import { Input } from "@common/components/ui/input";
-import { cn } from "@common/lib/utils";
+import { useLanguage } from "@/hooks/use-language";
+import { Button } from "@ldc/ui/components/button";
+import { Input } from "@ldc/ui/components/input";
 import { ChevronDownIcon, ChevronUpIcon, GripVerticalIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 

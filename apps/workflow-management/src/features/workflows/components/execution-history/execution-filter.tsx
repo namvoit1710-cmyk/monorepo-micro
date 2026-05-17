@@ -1,13 +1,14 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import { WORKFLOW_EXECUTION_STATUS_OPTIONS } from "@/constants/workflows";
-import { Button } from "@common/components/ui/button";
-import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@common/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@common/components/ui/popover";
-import { Spinner } from "@common/components/ui/spinner";
-import { useDebounceCallback } from "@common/hooks/use-debounce-callback";
+import { useLanguage } from "@/hooks/use-language";
+import { Button } from "@ldc/ui/components/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@ldc/ui/components/popover";
+import { Spinner } from "@ldc/ui/components/spinner";
+import { useDebounceCallback } from "@ldc/ui/hooks/use-debounce-callback";
 import { ChevronDownIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useWorkflowListInfinite } from "../../hooks/apis/workflows";
+
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@ldc/ui/components/Command";
 
 export interface IExecutionFilterProps {
     isActive?: boolean;
@@ -55,7 +56,7 @@ const ExecutionFilter = ({ isActive, initialFilter, setWorkflowId, setExecutionS
         if (!el) return;
         const observer = new IntersectionObserver(
             (entries) => {
-                if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+                if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) {
                     fetchNextPage();
                 }
             },

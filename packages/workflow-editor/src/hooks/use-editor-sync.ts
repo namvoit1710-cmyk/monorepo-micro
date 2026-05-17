@@ -64,7 +64,10 @@ export function useEditorSync(
         const { area } = editorInstance ?? {};
         if (!area) return;
 
+        let areaActive = true;
         area.addPipe((context) => {
+            if (!areaActive) return context;
+
             if (context.type === "nodepicked") {
                 onNodeSelected?.(editorInstance.getNodeById(context.data.id)!);
 
@@ -88,6 +91,7 @@ export function useEditorSync(
         });
 
         return () => {
+            areaActive = false;
             if (translateDebounceRef.current) {
                 clearTimeout(translateDebounceRef.current);
             }

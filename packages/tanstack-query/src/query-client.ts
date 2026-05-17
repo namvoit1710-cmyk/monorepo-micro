@@ -20,4 +20,5 @@ const getQueryClient = (options?: QueryClientConfig) => {
   return queryClient;
 };
 
+export { getQueryClient };
 export default getQueryClient;

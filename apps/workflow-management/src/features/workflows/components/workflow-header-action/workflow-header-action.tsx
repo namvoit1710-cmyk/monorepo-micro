@@ -1,6 +1,6 @@
-import { useLanguage } from "@/components/containers/language-provider"
+import { useLanguage } from "@/hooks/use-language"
 import LoadingSpin from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/components/loading-spin/loading-spin"
-import { Button } from "@common/components/ui/button"
+import { Button } from "@ldc/ui/components/button"
 import { useQueryClient } from "@tanstack/react-query"
 import { CircleStop, MoreHorizontalIcon, PlayIcon, SaveIcon } from "lucide-react"
 import { useState } from "react"

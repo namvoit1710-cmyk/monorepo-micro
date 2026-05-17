@@ -5,19 +5,12 @@ export enum WORKFLOW_TAB_ENUM {
 }
 
 export enum WORKFLOW_EXECUTION_STATUS_ENUM {
-    /** Run has been created but not yet started */
     CREATED = "created",
-    /** Run is queued and waiting to execute */
     PENDING = "pending",
-    /** Run is actively executing nodes */
     RUNNING = "running",
-    /** Run finished successfully */
     COMPLETED = "completed",
-    /** Run terminated due to an error */
     FAILED = "failed",
-    /** Run was cancelled by user action */
     CANCELLED = "cancelled",
-    /** Run is paused, awaiting external input or resume */
     PAUSED = "paused",
 }
 
@@ -42,11 +35,11 @@ export const WORKFLOW_EXECUTION_STATUS_TEXT: Record<string, string> = {
 }
 
 export const WORKFLOW_EXECUTION_STATUS_OPTIONS = [
-    { value: WORKFLOW_EXECUTION_STATUS_ENUM.CREATED,   label: "Created" },
-    { value: WORKFLOW_EXECUTION_STATUS_ENUM.PENDING,   label: "Pending" },
-    { value: WORKFLOW_EXECUTION_STATUS_ENUM.RUNNING,   label: "Running" },
+    { value: WORKFLOW_EXECUTION_STATUS_ENUM.CREATED, label: "Created" },
+    { value: WORKFLOW_EXECUTION_STATUS_ENUM.PENDING, label: "Pending" },
+    { value: WORKFLOW_EXECUTION_STATUS_ENUM.RUNNING, label: "Running" },
     { value: WORKFLOW_EXECUTION_STATUS_ENUM.COMPLETED, label: "Completed" },
-    { value: WORKFLOW_EXECUTION_STATUS_ENUM.FAILED,    label: "Failed" },
+    { value: WORKFLOW_EXECUTION_STATUS_ENUM.FAILED, label: "Failed" },
     { value: WORKFLOW_EXECUTION_STATUS_ENUM.CANCELLED, label: "Cancelled" },
-    { value: WORKFLOW_EXECUTION_STATUS_ENUM.PAUSED,    label: "Paused" },
+    { value: WORKFLOW_EXECUTION_STATUS_ENUM.PAUSED, label: "Paused" },
 ]

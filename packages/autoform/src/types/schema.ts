@@ -1,6 +1,3 @@
-import type { ComponentType } from "react";
-import type { FieldControl } from "../components/field-control";
-import type { FieldWrapper } from "../components/field-wrapper";
 import type { IConditionConfig } from "./condition";
 import type { IServerOptionsConfig } from "./server-option-config";
 import type { IValidationRules } from "./validation";
@@ -18,8 +15,8 @@ export interface FieldWrapperProps extends FieldComponentProps {
     children: React.ReactNode;
 }
 
-export type IWrapperComponent = Record<string, ComponentType<FieldWrapperProps> | null> | keyof typeof FieldWrapper;
-export type IFieldComponent = Record<string, ComponentType<FieldComponentProps> | null> | keyof typeof FieldControl;
+export type IWrapperComponent = string;
+export type IFieldComponent = string;
 export interface ISchema {
     fields: IField[];
 }

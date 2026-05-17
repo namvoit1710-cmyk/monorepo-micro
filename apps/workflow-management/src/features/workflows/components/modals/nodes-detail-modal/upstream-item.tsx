@@ -1,13 +1,13 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import { useEditorStore } from "@/features/workflows/stores/editor-stores";
+import { useLanguage } from "@/hooks/use-language";
 import { BaseNode } from "@common/components/ldc-workflow-editor/components/rete-editor";
 import { cn } from "@common/lib/utils";
 
 import JsonView from "@/components/json-view/json-view";
 import { IVariableSuggestionSource } from "@/features/workflows/types/workflows";
-import DynamicNodeIcon from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/components/dynamic-node-icon";
-import LoadingSpin from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/components/loading-spin/loading-spin";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@common/components/ui/accordion";
+import { DynamicNodeIcon } from "@ldc/workflow-editor";
+import { LoadingSpin } from "@ldc/workflow-editor";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@ldc/ui/components/accordion";
 import { isEmpty } from "lodash-es";
 import { PlayIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";

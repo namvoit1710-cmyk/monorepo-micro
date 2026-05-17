@@ -1,5 +1,5 @@
 import { useTranslation } from "@ldc/i18n";
-import { toast } from "@ldc/ui/blocks/toast";
+import { toast } from "@ldc/ui/blocks/toast/toast";
 import type { RefObject } from "react";
 import { useCallback, useState } from "react";
 import type { IEditorInstance, IEditorValue } from "../components/rete-editor/types";

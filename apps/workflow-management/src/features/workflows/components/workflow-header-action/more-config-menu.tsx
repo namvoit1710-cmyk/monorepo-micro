@@ -1,5 +1,5 @@
-import { useLanguage } from "@/components/containers/language-provider";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@common/components/ui/dropdown-menu";
+import { useLanguage } from "@/hooks/use-language";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@ldc/ui/components/dropdown-menu";
 import { Edit, FileText, Settings } from "lucide-react";
 import { useMemo } from "react";
 

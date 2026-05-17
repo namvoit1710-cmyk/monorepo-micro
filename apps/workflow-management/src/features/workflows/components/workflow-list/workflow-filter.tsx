@@ -1,7 +1,7 @@
-import { useLanguage } from "@/components/containers/language-provider"
-import { SearchInput } from "@common/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@common/components/ui/select"
+import { useLanguage } from "@/hooks/use-language"
 import { useDebounceCallback } from "@common/hooks/use-debounce-callback"
+import { SearchInput } from "@ldc/ui/components/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ldc/ui/components/select"
 import { useCallback, useEffect, useState } from "react"
 
 type IFilter = {

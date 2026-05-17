@@ -1,7 +1,7 @@
 import { useEditorStore } from "@/features/workflows/stores/editor-stores";
-import DynamicNodeIcon from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/components/dynamic-node-icon";
-import { Button } from "@common/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@common/components/ui/tooltip";
+import { DynamicNodeIcon } from "@ldc/workflow-editor";
+import { Button } from "@ldc/ui/components/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@ldc/ui/components/tooltip";
 import { useRef } from "react";
 import { useNodeDetailContext } from "./node-detail-provider";
 

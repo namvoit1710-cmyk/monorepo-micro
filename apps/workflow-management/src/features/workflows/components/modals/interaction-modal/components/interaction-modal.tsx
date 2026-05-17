@@ -1,18 +1,14 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import { SERVICE_CONFIGS } from "@/constants/config";
-import { socketInstance } from "@/lib/socket";
-import Builder, { BuilderRef } from "@common/components/ldc-auto-form/components/builder/builder";
-import { ISchema } from "@common/components/ldc-auto-form/interfaces/component.interface";
-import { toast } from "@common/components/ldc-toast";
-import { Button } from "@common/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@common/components/ui/dialog";
-import { Spinner } from "@common/components/ui/spinner";
-import { useBuilderServices } from "@common/hooks/use-builder-services";
-import { useActionEngine } from "@common/lib/action-engine/hooks/use-action-engine";
-import { collectActions } from "@common/lib/action-engine/utils/collect-action";
-import { cn } from "@common/lib/utils";
+import { useLanguage } from "@/hooks/use-language";
+import { pushGatewaySocket } from "@/lib/socket";
+import { Builder, BuilderRef, FieldValues, ISchema, useBuilderServices } from "@ldc/autoform";
+import { useActionEngine } from "@ldc/autoform/action-engine";
+import { cn } from "@ldc/ui";
+import { toast } from "@ldc/ui/blocks/toast/toast";
+import { Button } from "@ldc/ui/components/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@ldc/ui/components/dialog";
+import { Spinner } from "@ldc/ui/components/spinner";
 import { ComponentProps, useCallback, useMemo, useRef } from "react";
-import { FieldValues } from "react-hook-form";
 import { useQueryFileById } from "../../../../hooks/apis/file";
 import { InteractionModalState } from "../../../../hooks/use-interaction-modal";
 import { isLargeWrapperSchema } from "../utils/is-large-wrapper-schema";
@@ -91,7 +87,7 @@ const WorkflowInteractionModal = ({ modalState, ...props }: IProps) => {
                     toast.info(message);
             }
         },
-        actionSocket: socketInstance
+        actionSocket: pushGatewaySocket
     });
 
     const onFormActions = useCallback(
@@ -164,3 +160,7 @@ const WorkflowInteractionModal = ({ modalState, ...props }: IProps) => {
 }
 
 export default WorkflowInteractionModal;
+
+function collectActions(schema: ISchema): any {
+    throw new Error("Function not implemented.");
+}

@@ -1,0 +1,28 @@
+{
+  "workflow": {
+    "title": "ワークフロー管理",
+    "create": "ワークフローを作成",
+    "rename": "ワークフローの名前を変更",
+    "delete": "ワークフローを削除",
+    "save": "ワークフローを保存",
+    "run": "実行",
+    "status": {
+      "running": "実行中",
+      "completed": "完了",
+      "failed": "失敗",
+      "pending": "保留中"
+    }
+  },
+  "node": {
+    "add": "ノードを追加",
+    "delete": "ノードを削除",
+    "edit": "ノードを編集",
+    "details": "ノードの詳細"
+  },
+  "execution": {
+    "history": "実行履歴",
+    "filter": "フィルター",
+    "start_date": "開始日",
+    "end_date": "終了日"
+  }
+}

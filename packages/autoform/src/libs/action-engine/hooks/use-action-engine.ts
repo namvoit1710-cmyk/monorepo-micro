@@ -38,7 +38,7 @@ export interface UseActionEngineReturn {
 }
 
 function defaultToast(message: string, variant?: string) {
-  console.log(`[Toast][${variant ?? "info"}] ${message}`);
+  console.warn(`[Toast][${variant ?? "info"}] ${message}`);
 }
 
 function defaultConfirm(message: string, _title?: string): Promise<boolean> {
@@ -126,7 +126,7 @@ export function useActionEngine(
           clearErrors: methods.clearErrors,
         },
 
-        refetchRegistry: builderRef.current?.getRefetchRegistry(),
+        refetchRegistry: builderRef.current?.getRefetchRegistry?.(),
 
         rowId: payload?.rowId as string | undefined,
         rowIndex: payload?.rowIndex as number | undefined,
@@ -145,7 +145,7 @@ export function useActionEngine(
           confirm,
           redirect,
           closeDialog,
-          refresh: refresh ?? (() => builderRef.current?.setRefresh()),
+          refresh: refresh ?? (() => { builderRef.current?.setRefresh(); }),
           emitEvent: onEvent,
         },
       };

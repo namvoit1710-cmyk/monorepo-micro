@@ -15,7 +15,7 @@ import {
     SidebarFooter,
     SidebarHeader,
     SidebarRail,
-} from "@common/components/ui/sidebar"
+} from "@ldc/ui/components/sidebar"
 
 const data = {
     user: {

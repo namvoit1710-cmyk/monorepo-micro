@@ -1,6 +1,6 @@
 import { IVariableSuggestionSource, IWorkflowArtifact } from "@/features/workflows/types/workflows"
-import { BuilderRef } from "@common/components/ldc-auto-form/components/builder/builder"
 import { BaseNode } from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/base-node"
+import { BuilderRef } from "@ldc/autoform"
 import { createContext, RefObject, useContext } from "react"
 
 interface INodeDetailContext {
@@ -8,7 +8,7 @@ interface INodeDetailContext {
     loadingNodeId?: string | null
     outputSchemaData?: Record<string, any>
     isLoadingOutputSchema?: boolean
-    builderRef?: RefObject<BuilderRef>
+    builderRef?: RefObject<BuilderRef | null>
     artifactInputs?: IVariableSuggestionSource
     outputArtifacts?: IWorkflowArtifact[]
     closeNodeDetail: () => void

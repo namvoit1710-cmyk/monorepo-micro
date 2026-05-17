@@ -1,11 +1,11 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import { useMessageBox } from "@/components/containers/messagebox-provider";
+import { useLanguage } from "@/hooks/use-language";
 import { useSeo } from "@common/components/ldc-seo/use-seo";
 import { ColumnDef, DataTable, SortableHeader } from "@common/components/ldc-table";
 import { toast } from "@common/components/ldc-toast";
-import { Button } from "@common/components/ui/button";
-import { Switch } from "@common/components/ui/switch";
 import { cn } from "@common/lib/utils";
+import { Button } from "@ldc/ui/components/button";
+import { Switch } from "@ldc/ui/components/switch";
 import { keepPreviousData, useQueryClient } from "@tanstack/react-query";
 import { PaginationState } from "@tanstack/react-table";
 import { format } from "date-fns";

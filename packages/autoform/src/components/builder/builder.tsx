@@ -19,7 +19,7 @@ import {
     useFormState, useWatch,
 } from "react-hook-form";
 import { BuilderProvider, type BuilderServices } from "../../contexts/builder.context";
-import type { FieldComponentProps, IField, ISchema } from "../../types/schema";
+import type { FieldComponentProps, FieldWrapperProps, IField, ISchema } from "../../types/schema";
 import { cleanOutput } from "../../utils/clean-output";
 import { getDefaultValues } from "../../utils/helpers";
 import { createZodSchema } from "../../utils/validation";
@@ -33,7 +33,7 @@ interface IBuilderProps {
     defaultValues?: FieldValues;
 
     fieldControl?: Record<string, ComponentType<FieldComponentProps> | null>;
-    fieldWrapper?: Record<string, ComponentType<FieldComponentProps> | null>;
+    fieldWrapper?: Record<string, ComponentType<FieldWrapperProps> | null>;
 
     onSubmit?: (values: FieldValues) => void;
     onValuesChange?: (values: FieldValues) => void;
@@ -118,8 +118,8 @@ const Builder = forwardRef<BuilderRef, IBuilderProps>((props, ref) => {
         }),
     }));
 
-    useEffect(() => onValuesChange?.(formValues), [formValues]);
-    useEffect(() => onValidChange?.(isValid), [isValid]);
+    useEffect(() => onValuesChange?.(formValues), [formValues, onValuesChange]);
+    useEffect(() => onValidChange?.(isValid), [isValid, onValidChange]);
 
     return (
         <FormProvider {...methods}>
@@ -134,7 +134,7 @@ const Builder = forwardRef<BuilderRef, IBuilderProps>((props, ref) => {
                     onFormActions: onFormActions,
                     wrapperComponent: {
                         ...customFieldWrapper,
-                        ...FieldWrapper,
+                        ...(FieldWrapper as Record<string, React.ComponentType<FieldWrapperProps> | null>),
                     },
                     fieldComponent: {
                         ...customFieldControl,

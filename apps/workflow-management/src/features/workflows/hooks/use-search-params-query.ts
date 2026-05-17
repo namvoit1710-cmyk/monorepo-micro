@@ -1,23 +1,23 @@
 import { LIMIT_DEFAULT } from "@/constants/common";
-import { SortingState } from "@tanstack/react-table";
+import { SortingState } from "@ldc/data-table";
 import { createParser, parseAsBoolean, parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 const parseAsSorting = createParser({
-  parse(queryValue) {
-    const inBetween = queryValue.split(".")
-    if (inBetween.length !== 2) return []
-    const [id, desc] = inBetween
-    return [{ id, desc: desc === "true" }]
-  },
-  serialize(value) {
-    if (!value || !value[0]) return null
-    return `${value[0]?.id}.${value[0]?.desc}`
-  }
+   parse(queryValue): SortingState {
+      const inBetween = queryValue.split(".")
+      if (inBetween.length !== 2) return []
+      const [id, desc] = inBetween
+      return [{ id: id as string, desc: desc === "true" }]
+   },
+   serialize(value) {
+      if (!value || !value[0]) return ""
+      return `${value[0]?.id}.${value[0]?.desc}`
+   }
 })
 
-const useSearchParamsQuery = ({defaultSorting}: {defaultSorting?: SortingState}) => {
+const useSearchParamsQuery = ({ defaultSorting }: { defaultSorting?: SortingState }) => {
    const [workflowId, setWorkflowId] = useQueryState("workflowId", parseAsString.withDefault("all"))
    const [search, setSearch] = useQueryState("q", parseAsString.withDefault(""))
    const [mainFlow, setMainFlow] = useQueryState("mainFlow", parseAsBoolean.withDefault(false))
@@ -36,18 +36,18 @@ const useSearchParamsQuery = ({defaultSorting}: {defaultSorting?: SortingState})
    }, [search, limit, workflowId, dateRange, executionStatus, mainFlow])
 
    useEffect(() => {
-        if (state?.listSearch) {
-            const { workflowId, search, currentPage, limit, sorting, dateRange, executionStatus, mainFlow } = state.listSearch
-            setWorkflowId(workflowId)
-            setSearch(search)
-            setLimit(limit)
-            setSorting(sorting)
-            setDateRange(dateRange)
-            setExecutionStatus(executionStatus)
-            setMainFlow(mainFlow)
+      if (state?.listSearch) {
+         const { workflowId, search, currentPage, limit, sorting, dateRange, executionStatus, mainFlow } = state.listSearch
+         setWorkflowId(workflowId)
+         setSearch(search)
+         setLimit(limit)
+         setSorting(sorting)
+         setDateRange(dateRange)
+         setExecutionStatus(executionStatus)
+         setMainFlow(mainFlow)
 
-            setCurrentPage(currentPage)
-        }
+         setCurrentPage(currentPage)
+      }
    }, [state])
 
    const resetSearchQuery = () => {
@@ -61,14 +61,14 @@ const useSearchParamsQuery = ({defaultSorting}: {defaultSorting?: SortingState})
    }
 
    const searchQueryParams = {
-        workflowId,
-        search,
-        currentPage,
-        limit,
-        sorting,
-        dateRange,
-        mainFlow,
-        executionStatus
+      workflowId,
+      search,
+      currentPage,
+      limit,
+      sorting,
+      dateRange,
+      mainFlow,
+      executionStatus
    }
 
    return {
@@ -83,21 +83,21 @@ const useSearchParamsQuery = ({defaultSorting}: {defaultSorting?: SortingState})
 
       executionStatus,
       setExecutionStatus,
-      
+
       search,
       setSearch,
-      
+
       currentPage,
       setCurrentPage,
-      
+
       limit,
       setLimit,
-      
+
       sorting,
       setSorting,
 
       searchQueryParams,
-      
+
       resetSearchQuery
    }
 }
