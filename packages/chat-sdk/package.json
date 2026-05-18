@@ -18,10 +18,14 @@
     "react": "catalog:react19"
   },
   "dependencies": {
-    "@ldc/ui": "workspace:*",
     "@assistant-ui/react": "0.12.25",
+    "@assistant-ui/react-ai-sdk": "^1.3.26",
     "@assistant-ui/react-markdown": "0.12.9",
-    "lucide-react": "catalog:"
+    "@ldc/ui": "workspace:*",
+    "class-variance-authority": "^0.7.1",
+    "lucide-react": "catalog:",
+    "react-shiki": "^0.10.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@ldc/eslint-config": "workspace:*",
