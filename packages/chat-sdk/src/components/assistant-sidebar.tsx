@@ -2,7 +2,7 @@ import {
     ResizableHandle,
     ResizablePanel,
     ResizablePanelGroup,
-} from "@/components/ui/resizable";
+} from "@ldc/ui/components/resizable";
 import type { FC, PropsWithChildren } from "react";
 
 import { Thread } from "./thread";

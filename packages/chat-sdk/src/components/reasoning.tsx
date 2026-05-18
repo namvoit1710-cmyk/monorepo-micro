@@ -15,7 +15,7 @@ import {
 import { cva, type VariantProps } from "class-variance-authority";
 import { BrainIcon, ChevronDownIcon } from "lucide-react";
 import { memo, useCallback, useRef, useState } from "react";
-import { MarkdownText } from "./markdown-text";
+import { MarkdownText } from "./markdown";
 
 const ANIMATION_DURATION = 200;
 

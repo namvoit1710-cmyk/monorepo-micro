@@ -32,19 +32,8 @@ import {
     UserMessageAttachments,
 } from "./attachment";
 import { MarkdownText } from "./markdown";
-import {
-    Reasoning,
-    ReasoningContent,
-    ReasoningRoot,
-    ReasoningText,
-    ReasoningTrigger,
-} from "./reasoning";
+import { Reasoning } from "./reasoning";
 import { ToolFallback } from "./tool-fallback";
-import {
-    ToolGroupContent,
-    ToolGroupRoot,
-    ToolGroupTrigger,
-} from "./tool-group";
 import { TooltipIconButton } from "./tooltip-icon-button";
 
 export const Thread: FC = () => {
@@ -159,7 +148,7 @@ const Composer: FC = () => {
             <ComposerPrimitive.AttachmentDropzone asChild>
                 <div
                     data-slot="aui_composer-shell"
-                    className="flex w-full flex-col gap-2 rounded-(--composer-radius) border bg-background p-(--composer-padding) transition-shadow focus-within:border-ring/75 focus-within:ring-2 focus-within:ring-ring/20 data-[dragging=true]:border-ring data-[dragging=true]:border-dashed data-[dragging=true]:bg-accent/50"
+                    className="flex w-full flex-col gap-2 rounded border bg-background p-2 transition-shadow focus-within:border-ring/75 focus-within:ring-2 focus-within:ring-ring/20 data-[dragging=true]:border-ring data-[dragging=true]:border-dashed data-[dragging=true]:bg-accent/50"
                 >
                     <ComposerAttachments />
                     <ComposerPrimitive.Input
@@ -239,53 +228,42 @@ const AssistantMessage: FC = () => {
                 data-slot="aui_assistant-message-content"
                 className="wrap-break-word px-2 text-foreground leading-relaxed"
             >
-                <MessagePrimitive.GroupedParts
-                    groupBy={(part) => {
-                        if (part.type === "reasoning")
-                            return ["group-chainOfThought", "group-reasoning"];
-                        if (part.type === "tool-call") {
-                            if (getMcpAppFromToolPart(part)) return null;
-                            return ["group-chainOfThought", "group-tool"];
+                <MessagePrimitive.Unstable_PartsGrouped
+                    groupingFunction={(parts) => {
+                        const groups: { groupKey: string | undefined; indices: number[] }[] = [];
+                        for (let i = 0; i < parts.length; i++) {
+                            const part = parts[i];
+                            const isChainOfThought =
+                                part.type === "reasoning" || part.type === "tool-call";
+                            if (isChainOfThought) {
+                                const last = groups[groups.length - 1];
+                                if (last?.groupKey === "chainOfThought") {
+                                    last.indices.push(i);
+                                } else {
+                                    groups.push({ groupKey: "chainOfThought", indices: [i] });
+                                }
+                            } else {
+                                groups.push({ groupKey: undefined, indices: [i] });
+                            }
                         }
-                        return null;
+                        return groups;
                     }}
-                >
-                    {({ part, children }) => {
-                        switch (part.type) {
-                            case "group-chainOfThought":
-                                return <div data-slot="aui_chain-of-thought">{children}</div>;
-                            case "group-reasoning": {
-                                const running = part.status.type === "running";
+                    components={{
+                        Text: () => <MarkdownText />,
+                        Reasoning: (part) => <Reasoning {...part} />,
+                        tools: { Fallback: (part) => <ToolFallback {...part} /> },
+                        Group: ({ groupKey, children }) => {
+                            if (groupKey === "chainOfThought") {
                                 return (
-                                    <ReasoningRoot defaultOpen={running}>
-                                        <ReasoningTrigger active={running} />
-                                        <ReasoningContent aria-busy={running}>
-                                            <ReasoningText>{children}</ReasoningText>
-                                        </ReasoningContent>
-                                    </ReasoningRoot>
+                                    <div data-slot="aui_chain-of-thought">
+                                        {children}
+                                    </div>
                                 );
                             }
-                            case "group-tool":
-                                return (
-                                    <ToolGroupRoot>
-                                        <ToolGroupTrigger
-                                            count={part.indices.length}
-                                            active={part.status.type === "running"}
-                                        />
-                                        <ToolGroupContent>{children}</ToolGroupContent>
-                                    </ToolGroupRoot>
-                                );
-                            case "text":
-                                return <MarkdownText />;
-                            case "reasoning":
-                                return <Reasoning {...part} />;
-                            case "tool-call":
-                                return part.toolUI ?? <ToolFallback {...part} />;
-                            default:
-                                return null;
-                        }
+                            return <>{children}</>;
+                        },
                     }}
-                </MessagePrimitive.GroupedParts>
+                />
                 <MessageError />
             </div>
 

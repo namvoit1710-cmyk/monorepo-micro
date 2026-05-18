@@ -37,6 +37,7 @@
     "@ldc/i18n": "workspace:^",
     "@ldc/workflow-editor": "workspace:^",
     "@ldc/autoform": "workspace:^",
+    "@ldc/chat-sdk": "workspace:*",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "react-router-dom": "catalog:",

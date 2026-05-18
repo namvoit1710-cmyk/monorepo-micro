@@ -3,7 +3,8 @@
 import type { SourceMessagePartComponent } from "@assistant-ui/react";
 import { cn } from "@ldc/ui";
 import { Badge, badgeVariants } from "@ldc/ui/components/badge";
-import { FileTextIcon } from "lucide-react";
+import { type VariantProps } from "class-variance-authority";
+
 import { memo, useState, type ComponentProps } from "react";
 
 const extractDomain = (url: string): string => {
@@ -68,22 +69,8 @@ function SourceTitle({ className, ...props }: ComponentProps<"span">) {
     );
 }
 
-function DocumentSourceIcon({ className, ...props }: ComponentProps<"span">) {
-    return (
-        <span
-            data-slot="source-document-icon"
-            className={cn(
-                "flex size-3 shrink-0 items-center justify-center text-muted-foreground",
-                className,
-            )}
-            {...props}
-        >
-            <FileTextIcon className="size-3" />
-        </span>
-    );
-}
 
-export type SourceProps = Omit<BadgeProps, "asChild"> &
+export type SourceProps = VariantProps<typeof badgeVariants> &
     ComponentProps<"a"> & {
         asChild?: boolean;
     };
@@ -91,7 +78,6 @@ export type SourceProps = Omit<BadgeProps, "asChild"> &
 function Source({
     className,
     variant,
-    size,
     asChild = false,
     target = "_blank",
     rel = "noopener noreferrer",
@@ -101,7 +87,6 @@ function Source({
         <Badge
             asChild
             variant={variant}
-            size={size}
             className={cn(
                 "cursor-pointer outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
                 className,
@@ -127,20 +112,6 @@ const SourcesImpl: SourceMessagePartComponent = (part) => {
                 <SourceIcon url={part.url} />
                 <SourceTitle>{displayTitle}</SourceTitle>
             </Source>
-        );
-    }
-
-    if (part.sourceType === "document") {
-        return (
-            <Badge
-                variant="secondary"
-                className="outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-            >
-                <span data-slot="source" className="inline-flex items-center gap-1.5">
-                    <DocumentSourceIcon />
-                    <SourceTitle>{part.title}</SourceTitle>
-                </span>
-            </Badge>
         );
     }
 
