@@ -22,7 +22,8 @@ const StandardContent = () => {
                             className={cn(
                                 cell.column.columnDef.meta?.align === "center" && "text-center",
                                 cell.column.columnDef.meta?.align === "right" && "text-right",
-                                getPinningStyles(cell.column).className
+                                getPinningStyles(cell.column).className,
+                                "border-r border-r-slate-200 last:border-0",
                             )}
                             style={getPinningStyles(cell.column).style}
                         >
@@ -34,5 +35,6 @@ const StandardContent = () => {
         </>
     )
 }
+
 
 export default StandardContent

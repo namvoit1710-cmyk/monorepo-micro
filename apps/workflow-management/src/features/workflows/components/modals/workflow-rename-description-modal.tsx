@@ -1,10 +1,12 @@
 import { useLanguage } from "@/hooks/use-language";
+import type { BuilderRef, FieldValues } from "@ldc/autoform";
+import { Builder } from "@ldc/autoform";
 import { toast } from "@ldc/ui/blocks/toast/toast";
-import { LoadingSpin } from "@ldc/workflow-editor";
-import Builder, { BuilderRef } from "@ldc/autoform";
 import { Button } from "@ldc/ui/components/button";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@ldc/ui/components/dialog";
-import { ComponentProps, useRef } from "react";
+import { LoadingSpin } from "@ldc/workflow-editor";
+import type { ComponentProps } from "react";
+import { useRef } from "react";
 import { useUpdateWorkflowPatch } from "../../hooks/apis/workflows";
 
 interface IWorkflowRenameDescriptionModalProps extends ComponentProps<typeof Dialog> {
@@ -27,9 +29,11 @@ const WorkflowRenameDescriptionModal = ({ defaultValues, onSaved, ...props }: IW
         }
     })
 
-    const handleSubmitReplaceName = (data: { description: string }) => {
+    const handleSubmitReplaceName = (data: FieldValues) => {
+        if (!defaultValues?.id) return;
+
         mutate({
-            workflowId: defaultValues?.id,
+            workflowId: defaultValues.id,
             payload: {
                 description: data.description
             }

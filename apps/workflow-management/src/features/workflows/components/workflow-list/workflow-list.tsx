@@ -1,13 +1,12 @@
 import { useMessageBox } from "@/components/containers/messagebox-provider";
 import { useLanguage } from "@/hooks/use-language";
-import { useSeo } from "@common/components/ldc-seo/use-seo";
-import { ColumnDef, DataTable, SortableHeader } from "@common/components/ldc-table";
-import { toast } from "@common/components/ldc-toast";
-import { cn } from "@common/lib/utils";
+import type { ColumnDef, PaginationState } from "@ldc/data-table";
+import { DataTable, SortableHeader } from "@ldc/data-table";
+import { keepPreviousData, useQueryClient } from "@ldc/tanstack-query";
+import { cn } from "@ldc/ui";
+import { toast } from "@ldc/ui/blocks/toast/toast";
 import { Button } from "@ldc/ui/components/button";
 import { Switch } from "@ldc/ui/components/switch";
-import { keepPreviousData, useQueryClient } from "@tanstack/react-query";
-import { PaginationState } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { enGB } from "date-fns/locale";
 import { MoreHorizontalIcon, Trash2Icon } from "lucide-react";
@@ -15,7 +14,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDeleteWorkflow, useModifyMainFlowWorkflow, useWorkflowList, workflowKey } from "../../hooks/apis/workflows";
 import useSearchParamsQuery from "../../hooks/use-search-params-query";
-import { IWorkflow, IWorkflowListResponse, IWorkflowParams } from "../../types/workflows";
+import type { IWorkflow, IWorkflowListResponse, IWorkflowParams } from "../../types/workflows";
 import WorkflowRenameDescriptionModal from "../modals/workflow-rename-description-modal";
 import WorkflowRenameModal from "../modals/workflow-rename-modal";
 import WorkflowRenameRoutingPathModal from "../modals/workflow-rename-routing-modal";
@@ -25,6 +24,8 @@ import WorkflowFilter from "./workflow-filter";
 export interface IWorkflowListProps {
     isActive?: boolean
 }
+
+interface IWorkflowColumnDef extends IWorkflow, Record<"_id", string> { }
 
 const WorkflowList = ({ isActive }: IWorkflowListProps) => {
 
@@ -49,9 +50,8 @@ const WorkflowList = ({ isActive }: IWorkflowListProps) => {
                 : `main_flow eq true`;
         }
 
-        if (sorting && sorting.length > 0) {
-            const sort = sorting[0];
-            queryParams.$orderby = `${sort.id} ${sort.desc ? "desc" : "asc"}`;
+        if (sorting?.length > 0) {
+            queryParams.$orderby = sorting.map((s) => `${s.id} ${s.desc ? "desc" : "asc"}`).join(", ");
         }
 
         return queryParams;
@@ -72,19 +72,19 @@ const WorkflowList = ({ isActive }: IWorkflowListProps) => {
 
     const tableData = useMemo(() => {
         const search = searchQueryParams.search?.toLowerCase() ?? "";
-        if (!search) {
-            return workflowResponse?.data?.items || []
+        let data = workflowResponse?.data?.items || []
+        if (search) {
+            data = data.filter((workflow) => workflow.name.toLowerCase().includes(search))
         }
-
-        return workflowResponse?.data?.items?.filter((workflow) => workflow.name.toLowerCase().includes(search)) || []
+        return data.map(i => ({ ...i, _id: i.id }))
     }, [workflowResponse, searchQueryParams.search, isActive])
 
     const queryClient = useQueryClient()
     const { mutate: deleteWorkflow, isPending: isDeleting } = useDeleteWorkflow({
         onSuccess: () => {
             const { currentPage } = searchQueryParams;
-            const currentWorkflowData = queryClient.getQueryData(workflowKey.getAllWorkflows({})) as IWorkflowListResponse
-            if (currentWorkflowData?.data?.items?.length === 1 && currentPage > 1) {
+            const currentWorkflowData: IWorkflowListResponse = queryClient.getQueryData(workflowKey.getAllWorkflows({}))!
+            if (currentWorkflowData.data.items.length === 1 && currentPage > 1) {
                 setCurrentPage(Math.max(1, currentPage - 1))
                 return
             }
@@ -167,7 +167,7 @@ const WorkflowList = ({ isActive }: IWorkflowListProps) => {
         })
     }, [params])
 
-    const columns = useMemo((): ColumnDef<IWorkflow>[] => [
+    const columns = useMemo((): ColumnDef<IWorkflowColumnDef>[] => [
         {
             accessorKey: "name",
             header: () => t("workflow_name"),
@@ -232,11 +232,6 @@ const WorkflowList = ({ isActive }: IWorkflowListProps) => {
         },
     ], [t, isDeleting, searchQueryParams])
 
-    useSeo({
-        title: t("workflows_tab_title"),
-        description: t("workflows_seo_description")
-    })
-
     return (
         <>
             <section className="flex flex-col h-full overflow-hidden gap-4 p-4">
@@ -258,7 +253,7 @@ const WorkflowList = ({ isActive }: IWorkflowListProps) => {
                     {(isLoading || isFetching || isDeleting) && (
                         <div className="loader-bar w-full" />
                     )}
-                    <DataTable<IWorkflow>
+                    <DataTable
                         data={tableData}
                         columns={columns}
 
@@ -276,7 +271,7 @@ const WorkflowList = ({ isActive }: IWorkflowListProps) => {
 
             <WorkflowRenameModal
                 open={rowAction?.action === MenuActionEnum.ReplaceName}
-                defaultValues={{ name: rowAction?.row?.name ?? "", id: rowAction?.row?.id }}
+                defaultValues={{ name: rowAction?.row?.name ?? "", id: rowAction?.row?.id! }}
                 onOpenChange={(open) => {
                     if (open) return;
 
@@ -291,7 +286,7 @@ const WorkflowList = ({ isActive }: IWorkflowListProps) => {
 
             <WorkflowRenameDescriptionModal
                 open={rowAction?.action === MenuActionEnum.ReplaceDescription}
-                defaultValues={{ id: rowAction?.row?.id, description: rowAction?.row?.description ?? "" }}
+                defaultValues={{ id: rowAction?.row?.id!, description: rowAction?.row?.description ?? "" }}
                 onOpenChange={(open) => {
                     if (open) return;
 
@@ -306,7 +301,7 @@ const WorkflowList = ({ isActive }: IWorkflowListProps) => {
 
             <WorkflowRenameRoutingPathModal
                 open={rowAction?.action === MenuActionEnum.SettingRoutingPath}
-                defaultValues={{ id: rowAction?.row?.id, routing_path: rowAction?.row?.routing_path ?? "" }}
+                defaultValues={{ id: rowAction?.row?.id!, routing_path: rowAction?.row?.routing_path ?? "" }}
                 onOpenChange={(open) => {
                     if (open) return;
 

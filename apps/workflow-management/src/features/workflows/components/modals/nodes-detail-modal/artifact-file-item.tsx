@@ -1,4 +1,4 @@
-import { IWorkflowArtifact } from "@/features/workflows/types/workflows"
+import type { IWorkflowArtifact } from "@/features/workflows/types/workflows"
 import { File, FileSpreadsheet, FileText } from "lucide-react"
 
 interface ArtifactFileItemProps {
@@ -28,7 +28,7 @@ const ArtifactFileItem = ({ artifact, isDownloading, onDownload }: ArtifactFileI
             <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3 flex-1">
                     <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-blue-50 text-blue-600">
-                        <ArtifactIcon contentType={artifact.content_type} className="size-5" />
+                        <ArtifactIcon contentType={artifact.content_type ?? ''} className="size-5" />
                     </div>
 
                     <div className="min-w-0 flex-1">

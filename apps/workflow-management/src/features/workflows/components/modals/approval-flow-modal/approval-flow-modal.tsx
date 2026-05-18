@@ -2,9 +2,12 @@ import { useLanguage } from "@/hooks/use-language";
 import { Badge } from "@ldc/ui/components/badge";
 import { Button } from "@ldc/ui/components/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@ldc/ui/components/dialog";
-import { WorkflowEditor, WorkflowEditorHandle } from "@ldc/workflow-editor";
-import { ComponentProps, useCallback, useMemo, useRef } from "react";
-import { InteractionModalEnum, InteractionModalState } from "../../../hooks/use-interaction-modal";
+import type { WorkflowEditorHandle } from "@ldc/workflow-editor";
+import { WorkflowEditor } from "@ldc/workflow-editor";
+import type { ComponentProps } from "react";
+import { useCallback, useMemo, useRef } from "react";
+import type { InteractionModalState } from "../../../hooks/use-interaction-modal";
+import { InteractionModalEnum } from "../../../hooks/use-interaction-modal";
 import { mapApprovalFlowToEditorValue } from "../../../utils/approval-flow-mapper";
 import ApprovalFlowErrorBoundary from "./approval-flow-error-boundary";
 

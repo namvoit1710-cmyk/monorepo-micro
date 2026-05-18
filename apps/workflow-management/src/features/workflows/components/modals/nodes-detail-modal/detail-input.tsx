@@ -1,8 +1,8 @@
 
 import { useEditorStore } from "@/features/workflows/stores/editor-stores"
-import { IArtifactVariableSuggestionSource, IVariableSuggestionSource } from "@/features/workflows/types/workflows"
+import type { IArtifactVariableSuggestionSource, IVariableSuggestionSource } from "@/features/workflows/types/workflows"
 import { useLanguage } from "@/hooks/use-language"
-import { cn } from "@common/lib/utils"
+import { cn } from "@ldc/ui"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@ldc/ui/components/accordion"
 import { useMemo } from "react"
 import { useNodeDetailContext } from "./node-detail-provider"
@@ -72,7 +72,7 @@ const NodeDetailInput = () => {
                                 </span>
                             </AccordionTrigger>
                             <AccordionContent className="px-3">
-                                <VariablesContextGroup artifacts={artifactInputs} />
+                                <VariablesContextGroup artifacts={artifactInputs!} />
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>

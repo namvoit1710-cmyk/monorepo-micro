@@ -38,7 +38,7 @@ const TableProvider = <TData extends { _id: string },>({
             table, emptyState, enableVirtualization, scrollContainerRef, getRowClassName
         }}
         >
-            <div className={cn("flex flex-col overflow-hidden h-full w-full", className)}>
+            <div className={cn("flex flex-col overflow-hidden max-h-full w-full", className)}>
                 {children}
             </div>
         </Context.Provider>

@@ -1,74 +1,49 @@
 import { SERVICE_CONFIGS } from "@/constants/config";
+import { useInteractionNodeData } from "@/features/workflows/hooks/use-interaction-node-data";
+import { useInteractionSubmit } from "@/features/workflows/hooks/use-interaction-submit";
 import { useLanguage } from "@/hooks/use-language";
 import { pushGatewaySocket } from "@/lib/socket";
-import { Builder, BuilderRef, FieldValues, ISchema, useBuilderServices } from "@ldc/autoform";
-import { useActionEngine } from "@ldc/autoform/action-engine";
+import type { BuilderRef } from "@ldc/autoform";
+import { Builder, useBuilderServices } from "@ldc/autoform";
+import { collectActions, useActionEngine } from "@ldc/autoform/action-engine";
 import { cn } from "@ldc/ui";
 import { toast } from "@ldc/ui/blocks/toast/toast";
 import { Button } from "@ldc/ui/components/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@ldc/ui/components/dialog";
 import { Spinner } from "@ldc/ui/components/spinner";
-import { ComponentProps, useCallback, useMemo, useRef } from "react";
-import { useQueryFileById } from "../../../../hooks/apis/file";
-import { InteractionModalState } from "../../../../hooks/use-interaction-modal";
-import { isLargeWrapperSchema } from "../utils/is-large-wrapper-schema";
+import type { ComponentProps } from "react";
+import { useCallback, useMemo, useRef } from "react";
+import type { InteractionModalState } from "../../../../hooks/use-interaction-modal";
 
 interface IProps extends ComponentProps<typeof Dialog> {
     modalState: InteractionModalState;
 }
 
 const WorkflowInteractionModal = ({ modalState, ...props }: IProps) => {
-
     const { t } = useLanguage();
-
     const builderRef = useRef<BuilderRef>(null);
 
     const { title, payload, resolve } = modalState ?? {};
 
-    const schema = useMemo<ISchema>(() => {
-        let inputSchema = payload?.input_schema;
-        if (typeof inputSchema === "string") {
-            try {
-                inputSchema = JSON.parse(inputSchema)
-            } catch (error) {
-                inputSchema = []
-            }
+    const {
+        schema,
+        defaultValues,
+        root,
+        rootDefaultRow,
+        isLargeWrapperInput,
+        isLoading,
+        refetchOutputData,
+    } = useInteractionNodeData(payload);
 
-            if (Array.isArray(inputSchema)) {
-                return {
-                    fields: inputSchema
-                }
-            }
-
-            if (typeof inputSchema === "object" && !!(inputSchema as ISchema).fields.length) {
-                return inputSchema;
-            }
-        }
-
-        return { fields: inputSchema };
-    }, [payload?.input_schema]);
-
-    const sourceFileId = useMemo(() => {
-        return (payload && "source_file_id" in payload) ? (payload as any).source_file_id : null;
-    }, [payload]);
-    const { data: sourceFileUrl, isLoading: isLoadingSourceFileUrl } = useQueryFileById(sourceFileId);
-
-    const defaultData = useMemo(() => {
-        if (!sourceFileId) return null;
-
-        const dataKey = schema.fields.length > 1 ? "" : schema?.fields[0]?.key ?? "";
-        const dataValue = sourceFileUrl?.data?.data ?? null;
-
-        return dataKey ? { [dataKey]: dataValue } : dataValue;
-    }, [sourceFileUrl, sourceFileId, schema]);
-
-    const isLargeWrapperInput = useMemo(() => isLargeWrapperSchema(schema.fields), [schema.fields]);
-
-    const handleBuilderSubmit = useCallback((values: FieldValues) => {
-        resolve?.(values);
-    }, [resolve]);
+    const { handleBuilderSubmit } = useInteractionSubmit({
+        root,
+        rootDefaultRow,
+        refetchOutputData,
+        resolve,
+    });
 
     const services = useBuilderServices(SERVICE_CONFIGS);
+
     const actionConfigs = useMemo(() => collectActions(schema), [schema]);
 
     const { handleFormActions, hasAction } = useActionEngine({
@@ -87,7 +62,7 @@ const WorkflowInteractionModal = ({ modalState, ...props }: IProps) => {
                     toast.info(message);
             }
         },
-        actionSocket: pushGatewaySocket
+        actionSocket: pushGatewaySocket,
     });
 
     const onFormActions = useCallback(
@@ -100,67 +75,61 @@ const WorkflowInteractionModal = ({ modalState, ...props }: IProps) => {
     );
 
     return (
-        <Dialog
-            {...props}
-        >
-            <DialogContent
-                showCloseButton={false}
-                className={cn(
-                    "min-w-[600px] flex flex-col max-h-[90vh] overflow-hidden",
-                    isLargeWrapperInput ? "sm:max-w-[95vw]!" : ""
-                )}
-            >
-                <DialogHeader>
-                    <DialogTitle>{title}</DialogTitle>
-                    <DialogDescription>
-                        {payload?.instruction ?? ""}
-                    </DialogDescription>
-                </DialogHeader>
+        <>
+            <Dialog {...props}>
+                <DialogContent
+                    showCloseButton={false}
+                    className={cn(
+                        "min-w-150 flex flex-col max-h-[90vh] overflow-hidden",
+                        isLargeWrapperInput ? "sm:max-w-[95vw]!" : ""
+                    )}
+                >
+                    <DialogHeader>
+                        <DialogTitle>{title}</DialogTitle>
+                        <DialogDescription>
+                            {payload?.instruction ?? ""}
+                        </DialogDescription>
+                    </DialogHeader>
 
-                <div className={cn(
-                    "flex-2 overflow-auto",
-                    isLargeWrapperInput && "overflow-hidden flex flex-col [&>div]:flex-2 [&>div]:overflow-hidden"
-                )}>
-                    {
-                        !!isLoadingSourceFileUrl && <div className="w-full h-[150px] flex items-center justify-center">
-                            <Spinner />
-                        </div>
-                    }
-                    {!isLoadingSourceFileUrl &&
-                        <Builder
-                            ref={builderRef}
-                            schema={schema}
-                            defaultValues={defaultData}
-                            onSubmit={handleBuilderSubmit}
-                            onFormActions={onFormActions}
-                        />}
-                </div>
+                    <div className={cn(
+                        "flex-2 overflow-auto",
+                        isLargeWrapperInput && "overflow-hidden flex flex-col [&>div]:flex-2 [&>div]:overflow-hidden"
+                    )}>
+                        {isLoading ? (
+                            <div className="w-full h-37.5 flex items-center justify-center">
+                                <Spinner />
+                            </div>
+                        ) : (
+                            <Builder
+                                ref={builderRef}
+                                schema={schema}
+                                defaultValues={defaultValues}
+                                onValuesChange={(values) => console.log("value", values)}
+                                onSubmit={handleBuilderSubmit}
+                                onFormActions={onFormActions}
+                                services={services}
+                            />
+                        )}
+                    </div>
 
-                <DialogFooter className="py-1">
-                    <Button
-                        variant="outline"
-                        onClick={() => {
-                            resolve?.(null);
-                        }}
-                    >
-                        {t("cancel")}
-                    </Button>
-                    <Button
-                        type="submit"
-                        onClick={() => {
-                            builderRef.current?.onSubmit();
-                        }}
-                    >
-                        {t("continue")}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                    <DialogFooter className="py-1">
+                        <Button
+                            variant="outline"
+                            onClick={() => resolve?.(null)}
+                        >
+                            {t("cancel")}
+                        </Button>
+                        <Button
+                            type="submit"
+                            onClick={() => builderRef.current?.onSubmit()}
+                        >
+                            {t("continue")}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
     );
-}
+};
 
 export default WorkflowInteractionModal;
-
-function collectActions(schema: ISchema): any {
-    throw new Error("Function not implemented.");
-}

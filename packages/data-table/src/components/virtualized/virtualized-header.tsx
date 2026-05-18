@@ -39,7 +39,9 @@ const VirtualizedHeader = () => {
                                     "flex items-center",
                                     header.column.columnDef.meta?.align === "center" && "justify-center",
                                     header.column.columnDef.meta?.align === "right" && "justify-end",
-                                    getPinningStyles(header.column).className
+                                    getPinningStyles(header.column).className,
+                                    "bg-slate-100",
+                                    "border-r border-r-slate-200 last:border-0"
                                 )}
                                 style={{
                                     ...getPinningStyles(header.column).style,
@@ -56,7 +58,7 @@ const VirtualizedHeader = () => {
                         ))}
 
                         <TableHead
-                            className="relative flex-2 shrink-0 overflow-hidden bg-muted p-0 h-10"
+                            className="relative flex-2 shrink-0 overflow-hidden bg-slate-100 p-0 h-10"
                             style={{ width: totalColumnsWidth }}
                         >
                             {virtualColumns.map((vc) => {
@@ -70,6 +72,7 @@ const VirtualizedHeader = () => {
                                             "absolute top-0 h-10 flex items-center truncate whitespace-nowrap px-2 text-xs font-medium",
                                             header.column.columnDef.meta?.align === "center" && "justify-center",
                                             header.column.columnDef.meta?.align === "right" && "justify-end",
+                                            "border-r border-r-slate-200 last:border-0",
                                         )}
                                         style={{
                                             width: vc.size,
@@ -95,7 +98,9 @@ const VirtualizedHeader = () => {
                                     "flex items-center",
                                     header.column.columnDef.meta?.align === "center" && "justify-center",
                                     header.column.columnDef.meta?.align === "right" && "justify-end",
-                                    getPinningStyles(header.column).className
+                                    getPinningStyles(header.column).className,
+                                    "bg-slate-100",
+                                    "border-l border-l-slate-200 first:border-0"
                                 )}
                                 style={{
                                     ...getPinningStyles(header.column).style,

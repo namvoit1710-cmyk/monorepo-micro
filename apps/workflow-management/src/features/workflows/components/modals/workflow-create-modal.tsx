@@ -1,11 +1,13 @@
-import { useLanguage } from "@/hooks/use-language"
-import { toast } from "@common/components/ldc-toast"
-import Builder, { BuilderRef } from "@ldc/autoform"
-import { Button } from "@ldc/ui/components/button"
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@ldc/ui/components/dialog"
-import { ComponentProps, useRef } from "react"
-import { useCreateWorkflow } from "../../hooks/apis/workflows"
-import { ICreateWorkflowPayload } from "../../types/workflows"
+import { useLanguage } from "@/hooks/use-language";
+import type { BuilderRef, FieldValues } from "@ldc/autoform";
+import { Builder } from "@ldc/autoform";
+import { toast } from "@ldc/ui/blocks/toast/toast";
+import { Button } from "@ldc/ui/components/button";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@ldc/ui/components/dialog";
+import type { ComponentProps } from "react";
+import { useRef } from "react";
+import { useCreateWorkflow } from "../../hooks/apis/workflows";
+import type { ICreateWorkflowPayload } from "../../types/workflows";
 
 interface IWorkflowCreateModalProps extends ComponentProps<typeof Dialog> {
     onSave?: (workflowId: string) => void
@@ -25,7 +27,7 @@ const WorkflowCreateModal = (props: IWorkflowCreateModalProps) => {
         }
     })
 
-    const handleCreateWorkflow = async (formData) => {
+    const handleCreateWorkflow = async (formData: FieldValues) => {
         if (!formData.name) {
             return
         }

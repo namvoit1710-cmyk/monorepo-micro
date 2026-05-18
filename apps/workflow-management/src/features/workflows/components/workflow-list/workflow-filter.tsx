@@ -1,10 +1,10 @@
 import { useLanguage } from "@/hooks/use-language"
-import { useDebounceCallback } from "@common/hooks/use-debounce-callback"
-import { SearchInput } from "@ldc/ui/components/input"
+import { SearchInput } from "@ldc/ui/blocks/search-input/search-input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ldc/ui/components/select"
+import { useDebounceCallback } from "@ldc/ui/hooks/use-debounce-callback"
 import { useCallback, useEffect, useState } from "react"
 
-type IFilter = {
+interface IFilter {
     search: string,
     mainFlow: boolean
 }

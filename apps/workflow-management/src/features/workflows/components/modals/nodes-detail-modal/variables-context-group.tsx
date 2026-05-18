@@ -1,6 +1,6 @@
 import JsonView from "@/components/json-view/json-view"
 import { useEditorStore } from "@/features/workflows/stores/editor-stores"
-import { IVariableSuggestionSource } from "@/features/workflows/types/workflows"
+import type { IVariableSuggestionSource } from "@/features/workflows/types/workflows"
 import { useLanguage } from "@/hooks/use-language"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@ldc/ui/components/accordion"
 import { Paperclip, SquarePlay, Workflow } from "lucide-react"
@@ -28,9 +28,11 @@ const VariablesContextGroup = ({ artifacts }: IVariablesContextGroupProps) => {
                         <div className="flex flex-col gap-2">
                             <JsonView
                                 value={artifacts.paths.reduce((acc, path) => {
+                                    if (!path.label) return acc
+
                                     acc[path.label] = path.sample
                                     return acc
-                                }, {})}
+                                }, {} as Record<string, unknown>)}
                                 draggableKeys={true}
                                 prefix={`${artifacts.expression_prefix}.#path}}`}
                             />

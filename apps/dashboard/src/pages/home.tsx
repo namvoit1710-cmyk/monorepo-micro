@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { Builder } from "@ldc/autoform";
 import { useTranslation } from "@ldc/i18n";
 import { Upload, UploadDropzone, UploadFileList } from "@ldc/ui/components/upload";
@@ -13,6 +14,8 @@ const HomePage = () => {
                 <h1 className="text-3xl font-bold text-primary">{t("greeting")}</h1>
                 <p className="text-lg text-muted-foreground">{t("welcome")}</p>
             </div>
+
+            {env.PUBLIC_WORKFLOW_API_URL}
 
             <Builder
                 schema={{

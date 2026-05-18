@@ -1,5 +1,6 @@
-import { ReactNode } from "react";
-import { ErrorBoundary, FallbackProps } from "react-error-boundary";
+import type { ErrorInfo, ReactNode } from "react";
+import type { FallbackProps } from "react-error-boundary";
+import { ErrorBoundary } from "react-error-boundary";
 
 interface ApprovalFlowErrorBoundaryProps {
     children: ReactNode;
@@ -57,9 +58,12 @@ function ApprovalFlowErrorBoundary({
     fallback,
     onError,
 }: ApprovalFlowErrorBoundaryProps) {
-    const handleError = (error: Error, errorInfo: { componentStack: string }) => {
+    const handleError = (error: unknown, errorInfo: ErrorInfo) => {
         console.error("[ApprovalFlowErrorBoundary] Error caught:", error, errorInfo);
-        onError?.(error, errorInfo);
+
+        if (error instanceof Error) {
+            onError?.(error, { componentStack: errorInfo.componentStack ?? "" });
+        }
     };
 
     return (

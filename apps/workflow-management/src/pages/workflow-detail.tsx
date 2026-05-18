@@ -8,6 +8,7 @@ import NodesDetailModal from "@/features/workflows/components/modals/nodes-detai
 import NodePalette from "@/features/workflows/components/node-palette/node-palette";
 import NodePaletteContent from "@/features/workflows/components/node-palette/palette-content";
 import WorkflowDetailHeaderAction from "@/features/workflows/components/workflow-header-action/workflow-header-action";
+import LogSection from "@/features/workflows/components/workflow-logs/logs";
 import useExecuteWorkflowV2 from "@/features/workflows/hooks/use-execute-workflow-v2";
 import { InteractionModalEnum, useInteractionModal } from "@/features/workflows/hooks/use-interaction-modal";
 import useSaveWorkflow from "@/features/workflows/hooks/use-save-workflow";
@@ -16,11 +17,12 @@ import { useWorkflowDetail } from "@/features/workflows/hooks/use-workflow-detai
 import { useWorkflowLogSync } from "@/features/workflows/hooks/use-workflow-log-sync";
 import { useEditorStore } from "@/features/workflows/stores/editor-stores";
 import { useUIPanelStore } from "@/features/workflows/stores/ui-panel-stores";
-import { INodePallete } from "@/features/workflows/types/node-pallete";
+import type { INodePallete } from "@/features/workflows/types/node-pallete";
 import { mapNodeToEditorNode } from "@/features/workflows/utils/node-mapper-utils";
 import { cn } from "@ldc/ui";
 import { Badge } from "@ldc/ui/components/badge";
-import { BaseNode, IEditorValue, WorkflowEditor, WorkflowEditorHandle } from "@ldc/workflow-editor";
+import type { BaseNode, IEditorValue, WorkflowEditorHandle } from "@ldc/workflow-editor";
+import { WorkflowEditor } from "@ldc/workflow-editor";
 import { useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 
@@ -188,7 +190,7 @@ const WorkflowDetailPage = () => {
                         </NodePalette>
                     </div>
 
-                    {/* <LogSection workflowId={workflowId!} /> */}
+                    <LogSection workflowId={workflowId!} />
 
                     <LoadingOverlay isLoading={isLoading} />
                 </div>
@@ -204,17 +206,23 @@ const WorkflowDetailPage = () => {
                 loadingNodeId={loadingNodeId}
             />
 
-            {modalState?.payload?.type === InteractionModalEnum.APPROVAL_FLOW_VIEWER ? (
-                <ApprovalFlowModal
-                    modalState={modalState}
-                    open={!!modalState}
-                />
-            ) : (
-                <WorkflowInteractionModal
-                    modalState={modalState!}
-                    open={!!modalState}
-                />
-            )}
+            {modalState &&
+                <>
+                    {
+                        modalState.payload.type === InteractionModalEnum.APPROVAL_FLOW_VIEWER ? (
+                            <ApprovalFlowModal
+                                modalState={modalState}
+                                open={!!modalState}
+                            />
+                        ) : (
+                            <WorkflowInteractionModal
+                                modalState={modalState}
+                                open={!!modalState}
+                            />
+                        )
+                    }
+                </>
+            }
 
             <NodeEditInfoModal />
         </>

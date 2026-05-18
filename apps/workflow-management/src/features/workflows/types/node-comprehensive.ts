@@ -1,6 +1,7 @@
-import { BaseNode } from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/base-node"
-import { NodeExecutionStatus } from "./execution"
-import { IArtifactVariableSuggestionSource, IVariableSuggestionSource } from "./workflows"
+import type { BaseNode } from "@ldc/workflow-editor"
+import type { NodeExecutionStatus } from "./execution"
+import type { INodeCatalogDetail } from "./node-pallete"
+import type { IArtifactVariableSuggestionSource, IVariableSuggestionSource } from "./workflows"
 
 
 export type IOutputSchemaHierarchical = unknown
@@ -18,10 +19,13 @@ export interface IUseNodeDetailReturn {
     outputArtifacts: any[]
     isLoadingOutputSchema: boolean
 
-    artifactInputs: IArtifactVariableSuggestionSource
+    artifactInputs: IArtifactVariableSuggestionSource | undefined
     isLoadingInput?: boolean
     refetchVariableInput: () => void
     variablesInputs: IVariableSuggestionSource[]
+
+    nodeDetail: INodeCatalogDetail | undefined
+    isNodeDetailLoading: boolean
 }
 
 export interface INodeComprehensiveQueryParams {

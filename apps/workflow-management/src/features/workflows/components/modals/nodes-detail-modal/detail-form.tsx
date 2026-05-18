@@ -1,43 +1,27 @@
 import { WORKER_TYPE_UPDATE_PORT } from "@/constants/config";
 import useFormDropZone from "@/features/workflows/hooks/use-form-dropzone";
-import useGenerateWorkerMenu from "@/features/workflows/hooks/use-merge-nodes";
 import { useEditorStore } from "@/features/workflows/stores/editor-stores";
+import { convertKeys } from "@/features/workflows/utils/parse-string";
 import { useLanguage } from "@/hooks/use-language";
-import { IField } from "@common/components/ldc-auto-form/interfaces/component.interface";
-import { useDebounceCallback } from "@common/hooks/use-debounce-callback";
-import Builder from "@ldc/autoform";
+import type { FieldValues, IField } from "@ldc/autoform";
+import { Builder } from "@ldc/autoform";
+import { useDebounceCallback } from "@ldc/ui/hooks/use-debounce-callback";
+import { LoadingSpin } from "@ldc/workflow-editor";
 import { useMemo } from "react";
-import { FieldValues } from "react-hook-form";
 import { useNodeDetailContext } from "./node-detail-provider";
 
 const NodeDetailForm = () => {
     const { t } = useLanguage();
-    const { builderRef, removeConnection, updateNodeView } = useNodeDetailContext()
+    const { builderRef, removeConnection, updateNodeView, nodeDetail, isNodeDetailLoading } = useNodeDetailContext()
 
     const formRef = useFormDropZone()
 
     const selectedNode = useEditorStore(s => s.selectedNode);
-    const workflowData = useEditorStore(s => s.workflowData);
-    const { nodeMenuItems } = useGenerateWorkerMenu()
-
-    const selectedNodeData = useMemo(() => {
-        const nodeDefId = selectedNode?.original.node_definition_id;
-        const workerType = selectedNode?.original.worker_type || selectedNode?.original.worker_id;
-
-        const node = nodeMenuItems.find((item) => {
-            if (nodeDefId && item.original.node_definition_id) {
-                return item.original.node_definition_id === nodeDefId;
-            }
-            return (item.original.id === workerType) || (item.original.worker_id === workerType);
-        });
-
-        return node?.original;
-    }, [nodeMenuItems, selectedNode])
 
     const inputFormSchema: IField[] = useMemo(() => {
-        if (!selectedNodeData) return []
+        if (!nodeDetail) return []
 
-        return ((selectedNodeData.input_schema as IField[]) ?? []).map(field => {
+        return ((convertKeys(nodeDetail.input_schema) as IField[]) ?? []).map(field => {
             const outputType = !field.fields?.length && field.outputType === "object" ? "string" : field.outputType
 
             return {
@@ -46,38 +30,39 @@ const NodeDetailForm = () => {
                 fields: field.fields,
                 fieldConfig: {
                     ...field.fieldConfig,
-                    fieldWrapper: field.fieldConfig.fieldWrapper,
+                    fieldWrapper: field.fieldConfig?.fieldWrapper,
                     wrapperProps: {
-                        ...field.fieldConfig.wrapperProps,
-                        ...((field.fieldConfig.fieldWrapper === "FormItemWrapper") ? { labelSpan: "xl-12 lg-12 md-12 xs-12", fieldSpan: "xl-12 lg-12 md-12 xs-12" } : {})
+                        ...field.fieldConfig?.wrapperProps,
+                        ...((field.fieldConfig?.fieldWrapper === "FormItemWrapper") ? { labelSpan: "xl-12 lg-12 md-12 xs-12", fieldSpan: "xl-12 lg-12 md-12 xs-12" } : {})
                     },
 
-                    fieldControl: field.fieldConfig.fieldControl,
+                    fieldControl: field.fieldConfig?.fieldControl,
                     controlProps: {
-                        ...field.fieldConfig.controlProps,
+                        ...field.fieldConfig?.controlProps,
                         className: "w-full",
                     }
                 }
             }
         })
-    }, [selectedNodeData])
-
+    }, [nodeDetail])
 
     const defaultValues = useMemo(() => {
         return { parameters: selectedNode?.original.parameters ?? {} }
     }, [selectedNode])
 
     const handleUpdateParameters = (data: FieldValues) => {
-        let parameters = data.parameters ?? {}
+        const parameters = data.parameters ?? {}
+        if (!selectedNode) return
+
         if (selectedNode.original.worker_type === WORKER_TYPE_UPDATE_PORT.SWITCH) {
             const { data: cases } = data.parameters;
 
-            const newPorts = cases?.map((caseItem, index) => ({
+            const newPorts = cases?.map((caseItem: { port_id?: string, field_id?: string, branch?: string }, index: number) => ({
                 id: caseItem.port_id || caseItem.field_id,
                 label: caseItem.branch ?? `${index}`,
             })) ?? [];
 
-            const parameterData = parameters.data.map(({ field_id, port_id, ...rest }) => ({ ...rest, port_id: port_id || field_id }))
+            const parameterData = parameters.data.map(({ field_id, port_id, ...rest }: { field_id?: string, port_id?: string }) => ({ ...rest, port_id: port_id || field_id }))
             parameters.data = parameterData
 
             selectedNode.syncOutputSockets(newPorts, (portId) => {
@@ -98,7 +83,13 @@ const NodeDetailForm = () => {
             </div>
 
             <div ref={formRef} className="relative h-full flex-2 overflow-y-auto px-4">
-                {!!selectedNodeData && (
+                {isNodeDetailLoading && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70">
+                        <LoadingSpin />
+                    </div>
+                )}
+
+                {!!nodeDetail && !isNodeDetailLoading && (
                     <Builder
                         key={selectedNode?.id}
                         ref={builderRef}
@@ -122,7 +113,7 @@ const NodeDetailForm = () => {
                     />
                 )}
 
-                {!selectedNodeData && (
+                {!nodeDetail && !isNodeDetailLoading && (
                     <div className="flex-2 flex flex-col items-center justify-center h-full">
                         <p className="text-sm text-gray-500 text-center">{t("nodes.node_not_found")}</p>
                     </div>

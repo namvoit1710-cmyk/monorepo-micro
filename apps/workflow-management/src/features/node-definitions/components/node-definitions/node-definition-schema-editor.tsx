@@ -1,5 +1,5 @@
 import { useLanguage } from "@/hooks/use-language";
-import { cn } from "@common/lib/utils";
+import { cn } from "@ldc/ui";
 import { Button } from "@ldc/ui/components/button";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useCallback, useState } from "react";

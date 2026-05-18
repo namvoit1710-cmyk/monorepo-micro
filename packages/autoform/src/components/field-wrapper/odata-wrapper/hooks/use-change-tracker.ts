@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-export type RowAction = "insert" | "update" | "delete";
+export type RowAction = "insert" | "edit" | "delete";
 
 export interface ChangeRecord {
     _id: string;
@@ -10,7 +10,7 @@ export interface ChangeRecord {
 }
 
 export interface OperationRecord {
-    operation: "insert" | "update" | "delete";
+    operation: "insert" | "edit" | "delete";
     row_id: string | null;
     data: Record<string, unknown>;
 }
@@ -54,10 +54,10 @@ export const useChangeTracker = ({ name }: UseChangeTrackerOptions) => {
     const trackUpdate = useCallback((rowId: string, rowData: Record<string, any>) => {
         const existing = changeMapRef.current.get(rowId);
 
-        if (existing && existing._action === "insert") {
+        if (existing?._action === "insert") {
             changeMapRef.current.set(rowId, { ...existing, ...rowData, _id: rowId, _action: "insert" });
         } else {
-            changeMapRef.current.set(rowId, { ...rowData, _id: rowId, _action: "update" });
+            changeMapRef.current.set(rowId, { ...rowData, _id: rowId, _action: "edit" });
         }
         syncToRHF();
     }, [syncToRHF]);
@@ -65,7 +65,7 @@ export const useChangeTracker = ({ name }: UseChangeTrackerOptions) => {
     const trackDelete = useCallback((rowId: string) => {
         const existing = changeMapRef.current.get(rowId);
 
-        if (existing && existing._action === "insert") {
+        if (existing?._action === "insert") {
             changeMapRef.current.delete(rowId);
         } else {
             changeMapRef.current.set(rowId, { _id: rowId, _action: "delete" });
@@ -76,7 +76,7 @@ export const useChangeTracker = ({ name }: UseChangeTrackerOptions) => {
     const trackDeleteBatch = useCallback((rowIds: string[]) => {
         rowIds.forEach((id) => {
             const existing = changeMapRef.current.get(id);
-            if (existing && existing._action === "insert") {
+            if (existing?._action === "insert") {
                 changeMapRef.current.delete(id);
             } else {
                 changeMapRef.current.set(id, { _id: id, _action: "delete" });

@@ -2,7 +2,27 @@ import { env } from "@/env";
 import { APISdk } from "@ldc/api-sdk";
 
 const api = new APISdk({
-    baseURL: env.PUBLIC_WORKFLOW_API_URL,
+    baseURL: env.PUBLIC_URL_AI_WORKFLOW_CONTROL_PLANE + "/api/v1",
+    timeout: 5 * 60 * 1000,
+    withCredentials: false,
+
+    onSessionExpired: () => {
+        window.location.href = "/login";
+    }
+});
+
+const fileApi = new APISdk({
+    baseURL: env.PUBLIC_URL_FILE_SERVICE + "/api/v1",
+    timeout: 5 * 60 * 1000,
+    withCredentials: false,
+
+    onSessionExpired: () => {
+        window.location.href = "/login";
+    }
+});
+
+const apiV2 = new APISdk({
+    baseURL: env.PUBLIC_URL_AI_WORKFLOW_CONTROL_PLANE + "/api/v2",
     timeout: 5 * 60 * 1000,
     withCredentials: false,
 
@@ -29,6 +49,6 @@ const workflowAgentApi = new APISdk({
     withCredentials: false,
 });
 
-export { api, workflowAgentApi, workflowProfileManagerApi, workflowValidationRuleAgentApi };
+export { api, apiV2, fileApi, workflowAgentApi, workflowProfileManagerApi, workflowValidationRuleAgentApi };
 
 export default api;

@@ -49,7 +49,7 @@ export const useTableData = ({
                 return { ...row, _id: String(id), _status: "deleted", _disabled: true };
             }
 
-            if (change._action === "update") {
+            if (change._action === "edit") {
                 const { _id, _action, ...updatedFields } = change;
                 return { ...row, ...updatedFields, _id: String(id), _status: "updated", _disabled: false };
             }

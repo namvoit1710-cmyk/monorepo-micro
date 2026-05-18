@@ -26,7 +26,7 @@ const TablePagination = () => {
                 <PaginationContent>
                     <PaginationItem>
                         <PaginationPrevious
-                            size="default"
+                            size="sm"
                             onClick={() => table.previousPage()}
                             aria-disabled={!table.getCanPreviousPage()}
                             className={!table.getCanPreviousPage() ? "pointer-events-none opacity-50" : "cursor-pointer"}
@@ -41,7 +41,7 @@ const TablePagination = () => {
                         ) : (
                             <PaginationItem key={item}>
                                 <PaginationLink
-                                    size="default"
+                                    size="sm"
                                     isActive={item === pageIndex}
                                     onClick={() => table.setPageIndex(item)}
                                     className="cursor-pointer"
@@ -54,7 +54,7 @@ const TablePagination = () => {
 
                     <PaginationItem>
                         <PaginationNext
-                            size="default"
+                            size="sm"
                             onClick={() => table.nextPage()}
                             aria-disabled={!table.getCanNextPage()}
                             className={!table.getCanNextPage() ? "pointer-events-none opacity-50" : "cursor-pointer"}

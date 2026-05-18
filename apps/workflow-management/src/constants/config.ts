@@ -17,15 +17,15 @@ export enum WORKER_TYPE_UPDATE_PORT {
 
 export const SERVICE_CONFIGS = {
     governance: {
-        baseUrl: env.PUBLIC_GOVERNANCE_API_URL,
+        baseUrl: env.PUBLIC_URL_GOVERNANCE_API,
         basePath: "api/v1",
     },
     odata: {
-        baseUrl: env.PUBLIC_FILE_SERVICE_URL,
+        baseUrl: env.PUBLIC_URL_FILE_SERVICE,
         basePath: "api/v1",
     },
     workflow: {
-        baseUrl: env.PUBLIC_WORKFLOW_API_URL,
+        baseUrl: env.PUBLIC_URL_AI_WORKFLOW_CONTROL_PLANE,
         basePath: "api/v1",
     },
     "workflow-validate": {

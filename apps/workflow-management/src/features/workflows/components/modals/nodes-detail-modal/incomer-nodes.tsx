@@ -1,7 +1,7 @@
 import { useEditorStore } from "@/features/workflows/stores/editor-stores";
-import { DynamicNodeIcon } from "@ldc/workflow-editor";
 import { Button } from "@ldc/ui/components/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@ldc/ui/components/tooltip";
+import { DynamicNodeIcon } from "@ldc/workflow-editor";
 import { useRef } from "react";
 import { useNodeDetailContext } from "./node-detail-provider";
 
@@ -23,7 +23,7 @@ const IncomerNodes = () => {
                                 className="shadow border border-gray-200"
                                 onClick={() => onSelectNode(node)}
                             >
-                                <DynamicNodeIcon name={node.original.icon} color={node.original.color} className="size-5" />
+                                <DynamicNodeIcon name={node.original.icon ?? ""} color={node.original.color} className="size-5" />
                             </Button>
 
                         </TooltipTrigger>

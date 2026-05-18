@@ -2,13 +2,14 @@ import useNodeDetail from "@/features/workflows/hooks/use-node-detail";
 import { useEditorStore } from "@/features/workflows/stores/editor-stores";
 import { useUIPanelStore } from "@/features/workflows/stores/ui-panel-stores";
 import { useLanguage } from "@/hooks/use-language";
-import { BuilderRef } from "@ldc/autoform";
+import type { BuilderRef } from "@ldc/autoform";
 import { Button } from "@ldc/ui/components/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@ldc/ui/components/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@ldc/ui/components/tooltip";
-import { BaseNode, LoadingSpin } from "@ldc/workflow-editor";
+import type { BaseNode } from "@ldc/workflow-editor";
+import { LoadingSpin } from "@ldc/workflow-editor";
 import { InfoIcon, PenIcon, PlayIcon } from "lucide-react";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import NodesPopupContent from "./detail-content";
 import NodeDetailProvider from "./node-detail-provider";
 
@@ -35,15 +36,18 @@ const NodesDetailModal = ({
 
     const builderRef = useRef<BuilderRef>(null);
 
-    const {
-        artifactInputs,
-        outputArtifacts,
-        outputSchemaData,
-        isLoadingOutputSchema,
-        variablesInputs,
-        isLoadingInput,
-        refetchVariableInput
-    } = useNodeDetail();
+    const inputTitleRef = useRef<HTMLInputElement>(null);
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+
+    const handleChangeInputTitle = (e: HTMLInputElement) => {
+        const value = e.value;
+        if (!selectedNode) return;
+        selectedNode.updateNodeLabel(value.trim());
+
+        setIsEditingTitle(false);
+    }
+
+    const nodeDetailData = useNodeDetail();
 
     const isOpenNodesPopup = useUIPanelStore(s => s.isOpenNodesPopup);
     const setIsOpenNodesPopup = useUIPanelStore(s => s.setIsOpenNodesPopup);
@@ -71,140 +75,130 @@ const NodesDetailModal = ({
         removeConnection,
         updateNodeView,
         closeNodeDetail: handleClose,
-        outputSchemaData,
-        isLoadingOutputSchema,
+
         isRunNodeLoading,
         loadingNodeId,
         builderRef,
-        variablesInputs,
-        isLoadingInput,
-        outputArtifacts,
-        artifactInputs,
-        refetchVariableInput,
+
+        ...nodeDetailData
     }), [
         onExecuteNode,
         onSelectNode,
         removeConnection,
         updateNodeView,
-        outputSchemaData,
-        isLoadingOutputSchema,
+
         isRunNodeLoading,
         loadingNodeId,
         builderRef,
-        variablesInputs,
-        isLoadingInput,
-        artifactInputs,
-        outputArtifacts,
-        refetchVariableInput,
-        handleClose
+
+        handleClose,
+        nodeDetailData
     ]);
 
     return (
-        <>
-            <Dialog
-                open={isOpenNodesPopup}
+        <Dialog
+            open={isOpenNodesPopup}
 
-                onOpenChange={(open) => {
-                    if (!open) {
-                        handleClose();
-                    }
-                }}
+            onOpenChange={(open) => {
+                if (!open) {
+                    handleClose();
+                }
+            }}
+        >
+            <DialogContent
+                showCloseButton={false}
+                onEscapeKeyDown={(e) => e.preventDefault()}
+                onPointerDownOutside={(e) => e.preventDefault()}
+                className="min-w-[95vw] h-[95vh] flex flex-col p-0 gap-0"
             >
-                <DialogContent
-                    showCloseButton={false}
-                    onEscapeKeyDown={(e) => e.preventDefault()}
-                    onPointerDownOutside={(e) => e.preventDefault()}
-                    className="min-w-[95vw] h-[95vh] flex flex-col p-0 gap-0"
-                >
-                    <DialogHeader>
-                        <div className="flex items-center justify-between w-full h-12 border-b border-gray-200 gap-4 px-4">
-                            <div className="flex-2 flex justify-between items-center group overflow-hidden">
-                                <div className="flex items-center gap-2">
-                                    <DialogTitle className="scroll-m-20 text-lg font-semibold tracking-tight uppercase flex-2 gap-2">
-                                        {!isOpenNodeInfoEditorModal && (selectedNode?.original?.title ?? selectedNode?.original?.name ?? t("nodes.nodes_popup_header"))}
+                <DialogHeader>
+                    <div className="flex items-center justify-between w-full h-12 border-b border-gray-200 gap-4 px-4">
+                        <div className="flex-2 flex justify-between items-center group overflow-hidden">
+                            <div className="flex items-center gap-2">
+                                <DialogTitle className="scroll-m-20 text-lg font-semibold tracking-tight uppercase flex-2 gap-2">
+                                    {!isOpenNodeInfoEditorModal && (selectedNode?.original?.title ?? selectedNode?.original?.name ?? t("nodes.nodes_popup_header"))}
 
-                                    </DialogTitle>
+                                </DialogTitle>
 
-                                    {(selectedNode?.original?.description || selectedNode?.original?.instruction) && (
-                                        <TooltipProvider>
-                                            <Tooltip defaultOpen={false}>
-                                                <TooltipTrigger asChild>
-                                                    <InfoIcon className="size-4 text-primary" />
-                                                </TooltipTrigger>
+                                {(selectedNode?.original?.description || selectedNode?.original?.instruction) && (
+                                    <TooltipProvider>
+                                        <Tooltip defaultOpen={false}>
+                                            <TooltipTrigger asChild>
+                                                <InfoIcon className="size-4 text-primary" />
+                                            </TooltipTrigger>
 
-                                                <TooltipContent>
-                                                    <div className="max-w-xs flex flex-col gap-2">
-                                                        {selectedNode?.original?.description && (
-                                                            <div className="font-medium text-sm">
-                                                                <span>{t("nodes.description")}</span>
-                                                                <p className="text-sm text-gray-500">
-                                                                    {selectedNode.original.description}
-                                                                </p>
-                                                            </div>
-                                                        )}
-                                                        {selectedNode?.original?.instruction && (
-                                                            <div className="font-medium text-sm">
-                                                                <span>{t("nodes.instruction")}</span>
-                                                                <p className="text-sm text-gray-500">
-                                                                    {selectedNode.original.instruction}
-                                                                </p>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
-                                    )}
-
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="hover:bg-gray-200 hover:text-gray-700"
-                                        onClick={() => {
-                                            setIsOpenNodeInfoEditorModal(true);
-                                        }}
-                                    >
-                                        <PenIcon className="size-4 text-primary" />
-                                    </Button>
-
-                                </div>
+                                            <TooltipContent>
+                                                <div className="max-w-xs flex flex-col gap-2">
+                                                    {selectedNode?.original?.description && (
+                                                        <div className="font-medium text-sm">
+                                                            <span>{t("nodes.description")}</span>
+                                                            <p className="text-sm text-gray-500">
+                                                                {selectedNode.original.description}
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                    {selectedNode?.original?.instruction && (
+                                                        <div className="font-medium text-sm">
+                                                            <span>{t("nodes.instruction")}</span>
+                                                            <p className="text-sm text-gray-500">
+                                                                {selectedNode.original.instruction}
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                )}
 
                                 <Button
-                                    variant="default"
-                                    disabled={isCurrentNodeLoading || isExecuting}
-                                    onClick={() => onExecuteNode?.(selectedNode?.id ?? "")}
+                                    variant="ghost"
+                                    size="icon"
+                                    className="hover:bg-gray-200 hover:text-gray-700"
+                                    onClick={() => {
+                                        setIsOpenNodeInfoEditorModal(true);
+                                    }}
                                 >
-                                    <div className="flex items-center gap-2">
-                                        <span className="size-4 inline-flex items-center justify-center text-white">
-                                            {(isCurrentNodeLoading || isExecuting) ? <LoadingSpin /> : <PlayIcon className="size-4" />}
-                                        </span>
-
-                                        <span className="text-sm inline-block">
-                                            {t("nodes.execute_step")}
-                                        </span>
-                                    </div>
+                                    <PenIcon className="size-4 text-primary" />
                                 </Button>
+
                             </div>
+
+                            <Button
+                                variant="default"
+                                disabled={isCurrentNodeLoading || isExecuting}
+                                onClick={() => onExecuteNode?.(selectedNode?.id ?? "")}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <span className="size-4 inline-flex items-center justify-center text-white">
+                                        {(isCurrentNodeLoading || isExecuting) ? <LoadingSpin /> : <PlayIcon className="size-4" />}
+                                    </span>
+
+                                    <span className="text-sm inline-block">
+                                        {t("nodes.execute_step")}
+                                    </span>
+                                </div>
+                            </Button>
                         </div>
-                    </DialogHeader>
+                    </div>
+                </DialogHeader>
 
-                    <section className="w-full flex-2 overflow-hidden p-4">
-                        <NodeDetailProvider value={contextValue}>
-                            <NodesPopupContent />
-                        </NodeDetailProvider>
-                    </section>
+                <section className="w-full flex-2 overflow-hidden p-4">
+                    <NodeDetailProvider value={contextValue}>
+                        <NodesPopupContent />
+                    </NodeDetailProvider>
+                </section>
 
-                    <section className="w-full border-t border-gray-200 flex items-center justify-end px-4 py-2 gap-4">
-                        <Button
-                            variant="outline"
-                            onClick={handleClose}
-                        >
-                            {t("close")}
-                        </Button>
-                    </section>
-                </DialogContent>
-            </Dialog>
-        </>
+                <section className="w-full border-t border-gray-200 flex items-center justify-end px-4 py-2 gap-4">
+                    <Button
+                        variant="outline"
+                        onClick={handleClose}
+                    >
+                        {t("close")}
+                    </Button>
+                </section>
+            </DialogContent>
+        </Dialog>
     )
 }
 

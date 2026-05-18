@@ -7,7 +7,7 @@ import {
     useAui,
     useAuiState,
 } from "@assistant-ui/react";
-import { cn } from "@common/lib/utils";
+import { cn } from "@ldc/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@ldc/ui/components/avatar";
 import {
     Dialog,
@@ -21,7 +21,8 @@ import {
     TooltipTrigger,
 } from "@ldc/ui/components/tooltip";
 import { FileText, PlusIcon, XIcon } from "lucide-react";
-import { PropsWithChildren, useEffect, useState, type FC } from "react";
+import type { FC, PropsWithChildren } from "react";
+import { useEffect, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { TooltipIconButton } from "./tooltip-icon-button";
 
@@ -60,9 +61,9 @@ const useAttachmentSrc = () => {
     return useFileSrc(file) ?? src;
 };
 
-type AttachmentPreviewProps = {
+interface AttachmentPreviewProps {
     src: string;
-};
+}
 
 const AttachmentPreview: FC<AttachmentPreviewProps> = ({ src }) => {
     const [isLoaded, setIsLoaded] = useState(false);

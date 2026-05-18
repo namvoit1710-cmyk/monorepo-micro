@@ -1,8 +1,8 @@
 import { useMessageBox } from "@/components/containers/messagebox-provider";
 import { useLanguage } from "@/hooks/use-language";
-import { IField } from "@ldc/autoform";
+import type { IField } from "@ldc/autoform";
 import { useCallback, useState } from "react";
-import { SocketEvent, SocketEventFullPayload } from "../types/socket-event";
+import type { SocketEvent, SocketEventFullPayload } from "../types/socket-event";
 
 export enum InteractionModalEnum {
     WORKFLOW_EXECUTION = "workflow_execution",
@@ -44,7 +44,7 @@ export function useInteractionModal() {
     const showMessageBox = useMessageBox();
 
     const handleAction = useCallback(
-        (resolve) => (result: InteractionResultType) => {
+        (resolve: (result: InteractionResultType) => void) => (result: InteractionResultType) => {
             resolve(result);
             setModalState(null);
         },

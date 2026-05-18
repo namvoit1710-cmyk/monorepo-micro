@@ -1,9 +1,10 @@
-import { useMemo } from "react"
 import { useEditorStore } from "../stores/editor-stores"
 import { useUIPanelStore } from "../stores/ui-panel-stores"
-import { NodeExecutionStatus } from "../types/execution"
-import { IUseNodeDetailReturn } from "../types/node-comprehensive"
-import { useGetNodeOutput, useGetNodeVariableSuggestions } from "./apis/workflows"
+import type { NodeExecutionStatus } from "../types/execution"
+import type { IUseNodeDetailReturn } from "../types/node-comprehensive"
+import { useGetNodeDataInfo } from "./apis/node-data"
+import { useQueryNodeCatalogDetail } from "./apis/node-pallete"
+import { useGetNodeVariableSuggestions } from "./apis/workflows"
 
 const useNodeDetail = (): IUseNodeDetailReturn => {
     const selectedNode = useEditorStore(s => s.selectedNode)
@@ -13,40 +14,54 @@ const useNodeDetail = (): IUseNodeDetailReturn => {
 
     const currentNodeId = selectedNode?.id
 
+    const { data: nodeCatalogDetail, isLoading: isNodeDetailLoading } = useQueryNodeCatalogDetail(
+        { ref: selectedNode?.original.worker_type ?? "" },
+        {
+            enabled: !!selectedNode?.original.worker_type,
+        }
+    )
+
     const currentNodeStatus: NodeExecutionStatus =
         nodeExecutionMap[currentNodeId ?? ""]?.status ?? "idle"
 
     const showOutputSchema = currentNodeStatus === "completed" || currentNodeStatus === "failed"
 
-    const {
-        data: outputSchema,
-        isLoading: isLoadingOutputSchema,
-    } = useGetNodeOutput(
+    // const {
+    //     data: outputSchema,
+    //     isLoading: isLoadingOutputSchema,
+    // } = useGetNodeOutput(
+    //     {
+    //         nodeId: currentNodeId ?? "",
+    //         runId: runId ?? "",
+    //     },
+    //     { 
+    //         enabled: showOutputSchema && !!currentNodeId && !!runId,
+    //         staleTime: 0
+    //      }
+    // )
+    const { data: outputSchema, isLoading: isLoadingOutputSchema } = useGetNodeDataInfo(
+        { runId: runId ?? "", nodeId: currentNodeId ?? "", side: "output" },
         {
-            nodeId: currentNodeId ?? "",
-            runId: runId ?? "",
-        },
-        { 
             enabled: showOutputSchema && !!currentNodeId && !!runId,
-            staleTime: 0
-         }
+            staleTime: 0,
+        }
     )
 
-    const outputArtifacts = useMemo(() => {
-        return outputSchema?.data?.artifacts ?? []
-    }, [outputSchema])
+    // const outputArtifacts = useMemo(() => {
+    //     return outputSchema?.data?.artifacts ?? []
+    // }, [outputSchema])
 
-    const outputSchemaData = useMemo<Record<string, any>>(() => {
-        if (!outputSchema) return {}
+    // const outputSchemaData = useMemo<Record<string, any>>(() => {
+    //     if (!outputSchema) return {}
 
-        const outputSchemaData = outputSchema.data
+    //     const outputSchemaData = outputSchema.data
 
-        return outputSchemaData.columns.reduce((acc, column) => {
-            acc[column] = outputSchemaData.preview_rows[0][column]
-            return acc
-        }, {} as Record<string, any>)
-        
-    }, [outputSchema])
+    //     return outputSchemaData.columns.reduce((acc, column) => {
+    //         acc[column] = outputSchemaData.preview_rows[0][column]
+    //         return acc
+    //     }, {} as Record<string, any>)
+
+    // }, [outputSchema])
 
     const { data: nodeVariableResponse, isLoading: isLoadingVariable, refetch } = useGetNodeVariableSuggestions({
         runId: runId || "",
@@ -55,6 +70,7 @@ const useNodeDetail = (): IUseNodeDetailReturn => {
         enabled: !!isOpenNodesPopup && !!runId && !!currentNodeId,
     })
 
+
     return {
         runId,
         selectedNode,
@@ -62,8 +78,11 @@ const useNodeDetail = (): IUseNodeDetailReturn => {
         currentNodeStatus,
         showOutputSchema,
 
-        outputSchemaData,
-        outputArtifacts,
+        outputSchemaData: {},
+        outputArtifacts: [],
+
+        nodeDetail: nodeCatalogDetail?.data,
+        isNodeDetailLoading,
 
         refetchVariableInput: refetch,
         artifactInputs: nodeVariableResponse?.data?.artifacts,

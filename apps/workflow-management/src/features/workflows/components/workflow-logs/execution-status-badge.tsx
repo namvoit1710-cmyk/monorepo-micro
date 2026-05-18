@@ -1,6 +1,6 @@
-import { useLanguage } from "@/components/containers/language-provider";
-import { ExecutionStatus } from "@/features/workflows/types/workflow-log";
-import { cn } from "@common/lib/utils";
+import type { ExecutionStatus } from "@/features/workflows/types/workflow-log";
+import { useLanguage } from "@/hooks/use-language";
+import { cn } from "@ldc/ui";
 
 const EXECUTION_STATUS_CLASS: Record<ExecutionStatus, string> = {
     PROCESSING: "bg-yellow-100 text-yellow-700",

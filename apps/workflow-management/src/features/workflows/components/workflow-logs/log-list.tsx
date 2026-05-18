@@ -1,4 +1,4 @@
-import { IWorkflowLogs } from "@/features/workflows/types/workflow-log";
+import type { IWorkflowLogs } from "@/features/workflows/types/workflow-log";
 import { useEffect, useRef } from "react";
 import LogItem from "./log-item";
 

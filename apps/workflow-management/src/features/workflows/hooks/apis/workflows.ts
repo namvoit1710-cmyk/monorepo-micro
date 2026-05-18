@@ -1,10 +1,12 @@
 import api, { workflowAgentApi } from "@/lib/api";
-import { AxiosError } from "@ldc/api-sdk";
-import { QueryKey, queryKeyFactory, useInfiniteQuery, useMutation, UseMutationOptions, useQuery, UseQueryOptions } from "@ldc/tanstack-query";
-import { IApiErrorBody } from "../../types/api";
-import { IGetNodeOutputResponse, IResumeTaskPayload, IWorkflowExecutionHistoryResponse, IWorkflowExecutionParams } from "../../types/execution";
-import { IWorkflowSessionResponse } from "../../types/workflow-session";
-import { ICreateWorkflowPayload, ICreateWorkflowResponse, ICreateWorkflowWithAIResponse, IExecuteAIPayload, IExecuteAIResponse, IVariableSuggestionResponse, IWorkflowDetailResponse, IWorkflowListResponse, IWorkflowParams, IWorkflowSavePayload } from "../../types/workflows";
+import type { AxiosError } from "@ldc/api-sdk";
+import type { QueryKey, UseMutationOptions, UseQueryOptions } from "@ldc/tanstack-query";
+import { queryKeyFactory, useInfiniteQuery, useMutation, useQuery } from "@ldc/tanstack-query";
+import type { IApiErrorBody } from "../../types/api";
+import type { IGetNodeOutputResponse, IResumeTaskPayload, IWorkflowExecutionHistoryResponse, IWorkflowExecutionParams } from "../../types/execution";
+import type { PatchDataResponse, PatchNodeDataParams } from "../../types/run-workflow";
+import type { IWorkflowSessionResponse } from "../../types/workflow-session";
+import type { ICreateWorkflowPayload, ICreateWorkflowResponse, ICreateWorkflowWithAIResponse, IExecuteAIPayload, IExecuteAIResponse, IVariableSuggestionResponse, IWorkflowDetailResponse, IWorkflowListResponse, IWorkflowParams, IWorkflowSavePayload } from "../../types/workflows";
 
 const _workflowKey = queryKeyFactory("workflows");
 
@@ -275,7 +277,7 @@ export const useRunWorkflow = (
             AxiosError<IApiErrorBody>,
             {
                 workflowId: string,
-                config: Record<"input_data", Record<string, any>>
+                config?: Record<"input_data", Record<string, unknown>>
             }
         >, "mutationFn"
     >
@@ -284,7 +286,7 @@ export const useRunWorkflow = (
         mutationFn: (
             { workflowId, config }: {
                 workflowId: string,
-                config?: Record<"input_data", Record<string, any>>
+                config?: Record<"input_data", Record<string, unknown>>
             }
         ): Promise<{ ok: boolean }> => {
             return api.post(`/workflows/${workflowId}/test/full`, { ...config })
@@ -398,6 +400,48 @@ export const useExecuteAI = (
                 tenant_id: payload.tenant_id || "default",
                 source: payload.source || "api",
             })
+        },
+        ...options
+    })
+}
+
+export const usePatchNodeData = (options?: Omit<
+    UseMutationOptions<
+        PatchDataResponse,
+        AxiosError<IApiErrorBody>,
+        PatchNodeDataParams
+    >, "mutationFn"
+>) => {
+    return useMutation({
+        mutationFn: async ({ run_id, node_id, task_id, etag, data }) => {
+            return api.patch<PatchDataResponse>(
+                `/runs/${run_id}/nodes/${node_id}/data${task_id ? `?taskId=${task_id}` : ""}`,
+                data,
+                {
+                    headers: { "If-Match": `${etag}` },
+                }
+            );
+        },
+        ...options
+    });
+};
+
+export const useSubmitNodeData = (
+    options?: Omit<
+        UseMutationOptions<
+            { ok: boolean },
+            AxiosError<IApiErrorBody>,
+            { runId: string, nodeId: string, taskId?: string }
+        >, "mutationFn"
+    >
+) => {
+    return useMutation({
+        mutationFn: (
+            { runId, nodeId, taskId }:
+                {
+                    runId: string, nodeId: string, taskId?: string
+                }): Promise<{ ok: boolean }> => {
+            return api.post(`/runs/${runId}/nodes/${nodeId}/submit${taskId ? `?taskId=${taskId}` : ""}`)
         },
         ...options
     })

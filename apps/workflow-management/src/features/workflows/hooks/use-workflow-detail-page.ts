@@ -1,9 +1,10 @@
-import { usePrefetchQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { usePrefetchQuery } from "@ldc/tanstack-query";
 import { useEditorStore } from "../stores/editor-stores";
 import { mapApiToWorkflowValue } from "../utils/node-mapper-utils";
 import { queryNodePalleteOptions } from "./apis/node-pallete";
 import { useWorkflowById } from "./apis/workflows";
+import type { IEditorValue } from "@ldc/workflow-editor";
 
 export function useWorkflowDetail(workflowId: string) {
     const workflowInfo = useEditorStore((s) => s.workflowInfo);
@@ -19,7 +20,9 @@ export function useWorkflowDetail(workflowId: string) {
 
     useEffect(() => {
         if (response?.data) {
-            setWorkflowData(mapApiToWorkflowValue(response.data));
+            const workflowData = mapApiToWorkflowValue(response.data) as IEditorValue;
+
+            setWorkflowData(workflowData);
             setWorkflowInfo(response.data);
         }
     }, [response, setWorkflowData]);

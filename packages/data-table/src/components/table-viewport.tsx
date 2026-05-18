@@ -23,7 +23,7 @@ const TableViewPort = ({
         <>
             <div
                 ref={scrollContainerRef}
-                className={cn("w-full overflow-auto flex-1 min-h-0", className)}
+                className={cn("w-full overflow-auto flex-1 min-h-0 border border-slate-200 rounded-sm", className)}
             >
                 <VirtualizationProvider>
                     <Table
@@ -41,7 +41,7 @@ const TableViewPort = ({
             </div>
 
             {enablePagination && (
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-end">
                     <TablePagination />
                 </div>
             )}

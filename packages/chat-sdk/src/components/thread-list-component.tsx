@@ -1,4 +1,3 @@
-import { ThreadList } from "@/components/assistant-ui/thread-list";
 import {
     Sidebar,
     SidebarContent,
@@ -10,6 +9,7 @@ import {
 } from "@ldc/ui/components/sidebar";
 import { MessagesSquare } from "lucide-react";
 import type * as React from "react";
+import { ThreadList } from "./thread-list";
 
 export function ThreadListSidebar({
     ...props

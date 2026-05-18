@@ -1,7 +1,7 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import { useWorkflowLogStore } from "@/features/workflows/stores/log-store";
-import { Button } from "@common/components/ui/button";
-import { cn } from "@common/lib/utils";
+import { useLanguage } from "@/hooks/use-language";
+import { cn } from "@ldc/ui";
+import { Button } from "@ldc/ui/components/button";
 import { ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import LogEmptyState from "./log-empty-state";

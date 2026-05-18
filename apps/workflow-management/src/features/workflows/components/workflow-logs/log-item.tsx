@@ -1,12 +1,11 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import { LOG_ACTION_ICON } from "@/constants/log";
-import { IWorkflowLogs } from "@/features/workflows/types/workflow-log";
+import type { IWorkflowLogs } from "@/features/workflows/types/workflow-log";
 import { formatDuration, formatLogTime, getExecutionDuration } from "@/features/workflows/utils/workflow-log-utils";
-import DynamicNodeIcon from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/components/dynamic-node-icon";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@common/components/ui/collapsible";
+import { useLanguage } from "@/hooks/use-language";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@ldc/ui/components/collapsible";
+import { DynamicNodeIcon } from "@ldc/workflow-editor";
 import { memo, useState } from "react";
 import ExecutionStatusBadge from "./execution-status-badge";
-import { ChevronDown } from "lucide-react";
 
 interface LogItemProps {
     log: IWorkflowLogs;

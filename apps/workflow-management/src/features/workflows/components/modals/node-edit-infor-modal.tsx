@@ -1,12 +1,13 @@
 import { useLanguage } from "@/hooks/use-language";
-import { Builder, BuilderRef, FieldValues, IField } from "@ldc/autoform";
+import type { BuilderRef, FieldValues, IField } from "@ldc/autoform";
+import { Builder } from "@ldc/autoform";
 import { Button } from "@ldc/ui/components/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@ldc/ui/components/dialog";
 import { useMemo, useRef } from "react";
 import { useEditorStore } from "../../stores/editor-stores";
 import { useUIPanelStore } from "../../stores/ui-panel-stores";
 
-type NodeInfoType = {
+interface NodeInfoType {
     label: string;
     description?: string;
     instruction?: string;

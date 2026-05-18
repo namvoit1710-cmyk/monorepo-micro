@@ -1,6 +1,5 @@
 "use client";
 
-import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
 import {
     AuiIf,
     useVoiceControls,
@@ -11,6 +10,7 @@ import { cn } from "@ldc/ui";
 import { Button } from "@ldc/ui/components/button";
 import { MicIcon, MicOffIcon, PhoneIcon, PhoneOffIcon } from "lucide-react";
 import { type FC, memo, useCallback, useEffect, useRef, useState } from "react";
+import { TooltipIconButton } from "./tooltip-icon-button";
 
 export type VoiceOrbState =
     | "idle"

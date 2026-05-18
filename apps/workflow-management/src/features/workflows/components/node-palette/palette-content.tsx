@@ -1,7 +1,7 @@
 import useGenerateWorkerMenu from "@/features/workflows/hooks/use-merge-nodes";
-import { IMenuItem, INodePallete } from "@/features/workflows/types/node-pallete";
+import type { IMenuItem, INodePallete } from "@/features/workflows/types/node-pallete";
+import { cn } from "@ldc/ui";
 import { DynamicNodeIcon } from "@ldc/workflow-editor";
-import { cn } from "@common/lib/utils";
 import { ChevronRightIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { mapNodeToEditorNode } from "../../utils/node-mapper-utils";
@@ -37,7 +37,7 @@ const NodePaletteContent = (props: INodePaletteContentProps) => {
 
     const filteredMenuGroups = useMemo(() => {
         if (searchString) {
-            return nodeMenuItems.filter((node) => node.original.description.toLowerCase().includes(
+            return nodeMenuItems.filter((node) => node.original?.description.toLowerCase().includes(
                 searchString.toLowerCase()) || node.text.toLowerCase().includes(searchString.toLowerCase())
             )
         }
@@ -47,7 +47,7 @@ const NodePaletteContent = (props: INodePaletteContentProps) => {
 
     const filterMenuNodes = useMemo(() => {
         if (searchString) {
-            return (selectedGroupItem?.nodes ?? [])?.filter((node) => node.original.description.toLowerCase().includes(
+            return (selectedGroupItem?.nodes ?? [])?.filter((node) => node.original?.description.toLowerCase().includes(
                 searchString.toLowerCase()) || node.text.toLowerCase().includes(searchString.toLowerCase())
             )
         }
@@ -60,7 +60,7 @@ const NodePaletteContent = (props: INodePaletteContentProps) => {
             <div className="flex flex-col gap-3 h-full overflow-hidden py-3">
                 <PaletteSearch onChange={(value) => setSearchString(value)} />
 
-                <div className="flex-[2] overflow-y-auto py-1 overflow-x-hidden">
+                <div className="flex-2 overflow-y-auto py-1 overflow-x-hidden">
                     {!!isLoading && (
                         <div className="flex flex-col px-4 gap-6">
                             {Array.from({ length: 6 }).map((_, index) => (
@@ -87,15 +87,25 @@ const NodePaletteContent = (props: INodePaletteContentProps) => {
                                 }
 
                                 if (group.type === "Node") {
-                                    onSelectNode?.(group.original)
                                     onCloseDrawer?.()
+
+                                    if (!group.original) {
+                                        return
+                                    }
+
+                                    onSelectNode?.(group.original)
                                 }
                             }}
                             onDragStart={(e) => {
                                 if (group.type === "Node") {
+                                    onCloseDrawer?.()
+
+                                    if (!group.original) {
+                                        return
+                                    }
+
                                     const editorNode = mapNodeToEditorNode(group.original);
                                     e.dataTransfer.setData("nodeType", JSON.stringify(editorNode))
-                                    onCloseDrawer?.()
                                 }
                             }}
 
@@ -109,7 +119,7 @@ const NodePaletteContent = (props: INodePaletteContentProps) => {
                                         backgroundColor: group?.original?.color ? `color-mix(in srgb, ${group?.original?.color} 10%, transparent)` : undefined
                                     }}
                                 >
-                                    <DynamicNodeIcon name={group.icon} fallbackIconName="group" className="size-5" />
+                                    <DynamicNodeIcon name={group.icon ?? ""} fallbackIconName="group" className="size-5" />
                                 </div>
                                 <h3>{group.text}</h3>
                             </div>
@@ -139,11 +149,20 @@ const NodePaletteContent = (props: INodePaletteContentProps) => {
                                 className="flex items-center justify-between hover:bg-gray-100 cursor-pointer px-4"
                                 key={`${node.text}-${index}`}
                                 onClick={() => {
-                                    onSelectNode?.(node.original)
                                     onCloseDrawer?.()
+
+                                    if (!node.original) {
+                                        return
+                                    }
+
+                                    onSelectNode?.(node.original)
                                 }}
                                 draggable
                                 onDragStart={(e) => {
+                                    if (!node.original) {
+                                        return
+                                    }
+
                                     e.dataTransfer.setData("nodeType", JSON.stringify(mapNodeToEditorNode(node.original)))
                                 }}
                                 onDragEnd={() => {
@@ -154,13 +173,13 @@ const NodePaletteContent = (props: INodePaletteContentProps) => {
                                     <div
                                         className="p-1 rounded-md"
                                         style={{
-                                            color: node.original.color,
-                                            backgroundColor: node.original.color ? `color-mix(in srgb, ${node.original.color} 10%, transparent)` : undefined
+                                            color: node.original?.color,
+                                            backgroundColor: node.original?.color ? `color-mix(in srgb, ${node.original.color} 10%, transparent)` : undefined
                                         }}
                                     >
                                         <DynamicNodeIcon
                                             className="size-5"
-                                            name={node.icon}
+                                            name={node.icon ?? "group"}
                                             strokeWidth={1}
                                         />
                                     </div>

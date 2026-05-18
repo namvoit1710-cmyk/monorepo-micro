@@ -1,4 +1,4 @@
-import NumberInput from "@ldc/ui/components/input";
+import { NumberInput } from "@ldc/ui/components/number-input";
 import { forwardRef } from "react";
 
 export interface INumberControlProps extends Omit<React.ComponentProps<typeof NumberInput>, "onChange"> {

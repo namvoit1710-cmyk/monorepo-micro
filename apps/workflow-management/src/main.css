@@ -1,6 +1,10 @@
 @import "@ldc/tailwind-config/core";
-@import "@ldc/tailwind-config/themes/olive-orange";
+@import "@ldc/tailwind-config/themes/ldc-default";
 
 @source "../../../packages/ui/src/**/*.{ts,tsx}";
+@source "../../../packages/ui/dist/**/*.{js,mjs}";
 @source "../../../packages/workflow-editor/src/**/*.{ts,tsx}";
 @source "../../../packages/autoform/src/**/*.{ts,tsx}";
+@source "../../../packages/data-table/src/**/*.{ts,tsx}";
+
+@source "../../../packages/ui/src/**/*.{ts,tsx}";

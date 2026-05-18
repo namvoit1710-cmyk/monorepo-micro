@@ -3,7 +3,7 @@ import JsonView from "@/components/json-view/json-view"
 import { useDownloadArtifact } from "@/features/workflows/hooks/use-download-artifact"
 import { useEditorStore } from "@/features/workflows/stores/editor-stores"
 import { useLanguage } from "@/hooks/use-language"
-import { cn } from "@common/lib/utils"
+import { cn } from "@ldc/ui"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@ldc/ui/components/accordion"
 import { isEmpty } from "lodash-es"
 import { Paperclip } from "lucide-react"
@@ -36,7 +36,7 @@ const NodeDetailOutput = () => {
                         isEmpty(outputSchemaData) && "overflow-hidden"
                     )}
                 >
-                    {isEmpty(outputSchemaData) && !outputArtifacts.length && (
+                    {isEmpty(outputSchemaData) && !outputArtifacts?.length && (
                         <div className="flex-2 flex flex-col items-center justify-center h-full">
                             <span className="text-sm text-gray-500 text-center">{t("nodes.nodes_popup_no_output_data")}</span>
                             <span className="text-sm text-gray-500 text-center">{t("nodes.let_run_the_node_to_view_output_data")}</span>
@@ -67,7 +67,7 @@ const NodeDetailOutput = () => {
                             </AccordionItem>
                         }
 
-                        {!!outputArtifacts.length && (<AccordionItem value="artifacts-value" className="border-0">
+                        {!!outputArtifacts?.length && (<AccordionItem value="artifacts-value" className="border-0">
                             <AccordionTrigger className="justify-start [&>svg]:order-first hover:no-underline cursor-pointer hover:bg-gray-100 py-1 rounded-md">
                                 <span className="pl-2 flex items-center gap-2">
                                     <Paperclip className="size-4" />

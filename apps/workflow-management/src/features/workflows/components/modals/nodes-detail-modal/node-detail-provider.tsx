@@ -1,25 +1,18 @@
-import { IVariableSuggestionSource, IWorkflowArtifact } from "@/features/workflows/types/workflows"
-import { BaseNode } from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/base-node"
-import { BuilderRef } from "@ldc/autoform"
-import { createContext, RefObject, useContext } from "react"
+import type { IUseNodeDetailReturn } from "@/features/workflows/types/node-comprehensive";
+import type { BuilderRef } from "@ldc/autoform";
+import type { BaseNode } from "@ldc/workflow-editor";
+import type { RefObject } from "react";
+import { createContext, useContext } from "react";
 
-interface INodeDetailContext {
+interface INodeDetailContext extends IUseNodeDetailReturn {
     isRunNodeLoading?: boolean
     loadingNodeId?: string | null
-    outputSchemaData?: Record<string, any>
-    isLoadingOutputSchema?: boolean
     builderRef?: RefObject<BuilderRef | null>
-    artifactInputs?: IVariableSuggestionSource
-    outputArtifacts?: IWorkflowArtifact[]
     closeNodeDetail: () => void
     onSelectNode: (node: BaseNode) => void
     onExecuteNode: (nodeId: string) => void
     removeConnection: ({ sourceId, targetId }: { sourceId?: string, targetId?: string }) => void
     updateNodeView: (nodeId: string) => void
-
-    variablesInputs: IVariableSuggestionSource[]
-    isLoadingInput?: boolean
-    refetchVariableInput: () => void
 }
 
 interface INodeDetailProviderProps {
@@ -28,13 +21,21 @@ interface INodeDetailProviderProps {
 }
 
 const Context = createContext<INodeDetailContext>({
-    variablesInputs: [],
+    selectedNode: null,
+    currentNodeStatus: "idle",
+    showOutputSchema: false,
     outputArtifacts: [],
+    isLoadingOutputSchema: false,
+    artifactInputs: undefined,
+    refetchVariableInput: () => { },
+    variablesInputs: [],
+    nodeDetail: {} as any,
+    isNodeDetailLoading: false,
+
     onSelectNode: () => { },
     onExecuteNode: () => { },
     removeConnection: () => { },
     closeNodeDetail: () => { },
-    refetchVariableInput: () => { },
     updateNodeView: () => { },
 })
 

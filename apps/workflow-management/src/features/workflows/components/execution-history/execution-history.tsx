@@ -1,7 +1,8 @@
 import CopyUtils from "@/components/utils/copy-utils";
 import { WORKFLOW_EXECUTION_STATUS_ENUM, WORKFLOW_EXECUTION_STATUS_TEXT } from "@/constants/workflows";
 import { useLanguage } from "@/hooks/use-language";
-import { ColumnDef, DataTable, PaginationState, SortableHeader } from "@ldc/data-table";
+import type { ColumnDef, PaginationState } from "@ldc/data-table";
+import { DataTable, SortableHeader } from "@ldc/data-table";
 import { keepPreviousData } from "@ldc/tanstack-query";
 import { cn } from "@ldc/ui";
 import { Badge } from "@ldc/ui/components/badge";
@@ -10,7 +11,7 @@ import { enGB } from "date-fns/locale";
 import { useCallback, useMemo } from "react";
 import { useWorkflowExecutionList } from "../../hooks/apis/workflows";
 import useSearchParamsQuery from "../../hooks/use-search-params-query";
-import { IWorkflowExecutionHistory } from "../../types/execution";
+import type { IWorkflowExecutionHistory } from "../../types/execution";
 import ExecutionFilter from "./execution-filter";
 
 export interface IWorkflowExecutionHistoryProps {

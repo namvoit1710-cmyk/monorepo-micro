@@ -29,20 +29,43 @@ export default defineConfig({
           requiredVersion: false,
         },
       },
+      // dts: {
+      //   generateTypes: {
+      //     abortOnError: false,
+      //   },
+      //   consumeTypes: {
+      //     abortOnError: false,
+      //   },
+      // },
+      dts: false,
     }),
   ],
   tools: {
     postcss: {
       postcssOptions: {
-        plugins: [require("@tailwindcss/postcss")],
+        plugins: [
+          require("@tailwindcss/postcss")
+        ],
       },
     },
   },
+
   resolve: {
     alias: { "@": "./src" },
   },
   source: {
+    define: publicVars,
     entry: { index: "./src/main.tsx" },
   },
   server: { port: 3004 },
+
+  dev: {
+    client: {
+      overlay: false,
+    },
+    lazyCompilation: {
+      entries: true,
+      imports: false,
+    },
+  },
 });

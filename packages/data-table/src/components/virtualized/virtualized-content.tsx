@@ -17,9 +17,9 @@ const VirtualizedContent = () => {
 
     return (
         <>
-            {virtualRows.length > 0 && virtualRows[0] && (
+            {virtualRows.length > 0 && (
                 <TableRow
-                    style={{ height: virtualRows[0]?.start ?? 0, display: "block", border: "none" }}
+                    style={{ height: virtualRows[0]?.start, display: "block", border: "none" }}
                 />
             )}
 
@@ -60,7 +60,8 @@ const VirtualizedContent = () => {
                                     "center" && "justify-center",
                                     cell.column.columnDef.meta?.align ===
                                     "right" && "justify-end",
-                                    getPinningStyles(cell.column).className
+                                    getPinningStyles(cell.column).className,
+                                    "border-r border-r-slate-200 last:border-0",
                                 )}
                                 style={{
                                     ...getPinningStyles(cell.column).style,
@@ -75,7 +76,7 @@ const VirtualizedContent = () => {
                         ))}
 
                         <TableCell
-                            className="min-h-12 flex-2 relative shrink-0 p-0"
+                            className="min-h-12 flex-2 relative shrink-0 p-0 bg-background"
                             style={{ width: totalColumnsWidth }}
                         >
                             {virtualColumns.map((vc) => {
@@ -86,13 +87,15 @@ const VirtualizedContent = () => {
                                         key={cell.id}
                                         data-index={vc.index}
                                         className={cn(
-                                            "absolute top-0 h-full flex items-center px-2 overflow-hidden",
+                                            "virtualized-table-cell",
+                                            "absolute top-0 h-full flex items-center px-2 overflow-hidden bg-background",
                                             cell.column.columnDef.meta
                                                 ?.align === "center" &&
                                             "justify-center",
                                             cell.column.columnDef.meta
                                                 ?.align === "right" &&
-                                            "justify-end"
+                                            "justify-end",
+                                            "border-r border-r-slate-200 last:border-0",
                                         )}
                                         style={{
                                             width: vc.size,
@@ -117,7 +120,8 @@ const VirtualizedContent = () => {
                                     "center" && "text-center",
                                     cell.column.columnDef.meta?.align ===
                                     "right" && "text-right",
-                                    getPinningStyles(cell.column).className
+                                    getPinningStyles(cell.column).className,
+                                    "border-l border-l-slate-200 first:border-0"
                                 )}
                                 style={{
                                     ...getPinningStyles(cell.column).style,

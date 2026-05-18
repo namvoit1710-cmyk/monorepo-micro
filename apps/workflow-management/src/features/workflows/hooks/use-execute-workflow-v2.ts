@@ -2,19 +2,24 @@ import { useMessageBox } from "@/components/containers/messagebox-provider";
 import { useLanguage } from "@/hooks/use-language";
 import { useLatestRef } from "@/hooks/use-last-ref";
 import { pushGatewaySocket } from "@/lib/socket";
+import { useQueryClient } from "@ldc/tanstack-query";
 import { toast } from "@ldc/ui/blocks/toast/toast";
-import { useQueryClient } from "@tanstack/react-query";
-import { RefObject, useCallback, useEffect, useRef, useState } from "react";
-import { WorkflowEditorHandle } from "../../../../../../common/components/ldc-workflow-editor/components/workflow-editor/workflow-editor";
+import type { WorkflowEditorHandle } from "@ldc/workflow-editor";
+import type { RefObject } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { workflowInputData } from "../config/workflow-input-data";
 import { useEditorStore } from "../stores/editor-stores";
-import { SocketEvent, SocketEventFullPayload } from "../types/socket-event";
-import { INodeLogData, IWorkflowLogData } from "../types/workflow-log";
-import { useResumeTask, useRunNode, useRunWorkflow, useStopWorkflow, workflowKey } from "./apis/workflows";
-import {
-    InteractionModalEnum,
+import type { SocketEventFullPayload } from "../types/socket-event";
+import { SocketEvent } from "../types/socket-event";
+import type { INodeLogData, IWorkflowLogData } from "../types/workflow-log";
+import { createConfirmRejectPayload } from "../utils/buil-submit-operation";
+import { usePatchNodeData, useResumeTask, useRunNode, useRunWorkflow, useStopWorkflow, useSubmitNodeData, workflowKey } from "./apis/workflows";
+import type {
     InteractionResultType,
     IRequestedPayload
+} from "./use-interaction-modal";
+import {
+    InteractionModalEnum
 } from "./use-interaction-modal";
 
 interface IUseExecuteWorkflowProps {
@@ -117,12 +122,12 @@ const useExecuteWorkflow = ({
     });
     const onRunNode = useCallback(
         (nodeId: string) => {
-            editorRef.current?.updateNodeConnectionStatus(nodeId, "idle");
+            editorRef.current?.updateNodeConnectionStatus?.(nodeId, "idle");
 
             const workflowId = latestRef.current.workflowId;
             if (!workflowId) return;
 
-            // latestRef.current.onSaveWorkflow?.();
+            latestRef.current.onSaveWorkflow?.();
             setLocalExecution({ type: "node", nodeId });
             runNode({ workflowId, nodeId });
         },
@@ -133,7 +138,7 @@ const useExecuteWorkflow = ({
     const { mutate: stopWorkflow } = useStopWorkflow({
         onSuccess: () => {
             resetRunToast();
-            editorRef.current?.resetAllNodeStatus();
+            editorRef.current?.resetAllNodeStatus?.();
         }
     });
 
@@ -147,8 +152,8 @@ const useExecuteWorkflow = ({
         useRunWorkflow({
             onSuccess: () => {
                 if (!testRunId) {
-                    queryClient.invalidateQueries({
-                        queryKey: workflowKey.getWorkflowById(workflowId!)
+                    void queryClient.invalidateQueries({
+                        queryKey: workflowKey.getWorkflowById(workflowId)
                     });
                 }
             },
@@ -159,7 +164,7 @@ const useExecuteWorkflow = ({
         });
 
     const onRunWorkflow = useCallback(async () => {
-        editorRef.current?.resetAllNodeStatus();
+        editorRef.current?.resetAllNodeStatus?.();
 
         const formValue = await latestRef.current.prompt({
             type: InteractionModalEnum.WORKFLOW_EXECUTION,
@@ -197,12 +202,44 @@ const useExecuteWorkflow = ({
         return;
     }, [workflowId]);
 
+    const { mutateAsync: submitInteractionResult } = useSubmitNodeData();
+    const { mutateAsync: patchInteractionResult } = usePatchNodeData();
+
     const { mutate: rerunTask } = useResumeTask();
 
     const showMessageBox = useMessageBox();
 
     useEffect(() => {
         if (!testRunId) return;
+
+        const reRunNode = async ({ nodeId, runId, taskId, payload }: {
+            nodeId: string;
+            runId: string;
+            taskId: string;
+            payload: Record<string, any>;
+        }) => {
+
+            try {
+                const { eTag, ...rest } = payload ?? {};
+
+                await patchInteractionResult({
+                    node_id: nodeId,
+                    run_id: runId,
+                    task_id: taskId,
+                    etag: eTag,
+                    data: rest
+                })
+
+            } catch (error) {
+                //
+            }
+
+            await submitInteractionResult({
+                runId,
+                nodeId,
+                taskId,
+            })
+        }
 
         const socket = pushGatewaySocket.connect("");
 
@@ -228,12 +265,10 @@ const useExecuteWorkflow = ({
         const onRunStarted = () => {
             if (!latestRef.current.localExecution) return;
 
-            if (!runToastIdRef.current) {
-                runToastIdRef.current = toast.loading(
-                    t("notification.loading"),
-                    t("notification.workflow_executing")
-                );
-            }
+            runToastIdRef.current ??= toast.loading(
+                t("notification.loading"),
+                t("notification.workflow_executing")
+            );
             workflowStartTimeRef.current = Date.now();
         };
 
@@ -247,7 +282,7 @@ const useExecuteWorkflow = ({
             if (latestRef.current.localExecution?.type === "workflow" && latestRef.current.localExecution.runId === payload.run_id) {
                 setLocalExecution(null);
                 dismissRunToast("success");
-                editorRef.current?.zoomToFit();
+                editorRef.current?.zoomToFit?.();
             }
 
         };
@@ -274,11 +309,11 @@ const useExecuteWorkflow = ({
                 timestamp: new Date(payload.timestamp).getTime()
             });
 
-            if (!editorRef.current?.isNodeInViewport(payload.parent_node_id)) {
-                await editorRef.current?.centerOnNode(payload.parent_node_id);
+            if (!editorRef.current?.isNodeInViewport?.(payload.parent_node_id)) {
+                await editorRef.current?.centerOnNode?.(payload.parent_node_id);
             }
 
-            editorRef.current?.setNodeStatus(payload.parent_node_id, "executing");
+            editorRef.current?.setNodeStatus?.(payload.parent_node_id, "executing");
         };
 
         const onRunChildRunCompleted = (payload: SocketEventFullPayload<SocketEvent.ChildRunCompleted>) => {
@@ -290,7 +325,7 @@ const useExecuteWorkflow = ({
                 timestamp: new Date(payload.timestamp).getTime()
             });
 
-            editorRef.current?.setNodeStatus(payload.parent_node_id, "completed");
+            editorRef.current?.setNodeStatus?.(payload.parent_node_id, "completed");
         }
 
         const onTaskDispatched = async (payload: SocketEventFullPayload<SocketEvent.TaskDispatched>) => {
@@ -302,15 +337,15 @@ const useExecuteWorkflow = ({
                 timestamp: new Date(payload.timestamp).getTime()
             });
 
-            if (latestRef.current.localExecution?.type === "workflow" && editorRef.current?.getZoomLevel?.() < 1) {
-                await editorRef.current?.zoomByLevel(1);
+            if (latestRef.current.localExecution?.type === "workflow" && !!editorRef.current?.getZoomLevel?.() && editorRef.current.getZoomLevel() < 1) {
+                await editorRef.current?.zoomByLevel?.(1);
             }
 
-            if (!editorRef.current?.isNodeInViewport(payload.node_id)) {
-                await editorRef.current?.centerOnNode(payload.node_id);
+            if (!editorRef.current?.isNodeInViewport?.(payload.node_id)) {
+                await editorRef.current?.centerOnNode?.(payload.node_id);
             }
 
-            editorRef.current?.setNodeStatus(payload.node_id, "executing");
+            editorRef.current?.setNodeStatus?.(payload.node_id, "executing");
         };
 
         const onTaskCompleted = (payload: SocketEventFullPayload<SocketEvent.TaskCompleted>) => {
@@ -329,7 +364,7 @@ const useExecuteWorkflow = ({
                 hasLargeOutput: false
             });
 
-            editorRef.current?.setNodeStatus(payload.node_id, "completed");
+            editorRef.current?.setNodeStatus?.(payload.node_id, "completed");
             latestRef.current.onNodeCompleted?.({
                 nodeId: payload.node_id,
                 nodeName: getNodeName(payload.node_id),
@@ -364,7 +399,7 @@ const useExecuteWorkflow = ({
                 hasLargeOutput: false
             });
 
-            editorRef.current?.setNodeStatus(payload.node_id, "failed");
+            editorRef.current?.setNodeStatus?.(payload.node_id, "failed");
 
             latestRef.current.onNodeFailed?.({
                 nodeId: payload.node_id,
@@ -405,20 +440,26 @@ const useExecuteWorkflow = ({
                 timestamp: new Date(payload.timestamp).getTime()
             });
 
-            editorRef.current?.setNodeStatus(payload.node_id, "executing");
+            editorRef.current?.setNodeStatus?.(payload.node_id, "executing");
 
             const result = await latestRef.current.prompt({
                 type: InteractionModalEnum.INPUT_REQUESTED,
                 ...payload
             });
 
-            rerunTask({
+            // rerunTask({
+            //     runId: payload.run_id,
+            //     taskId: payload.task_id,
+            //     payload: {
+            //         updated_input: result ? result as Record<string, any> : {}
+            //     }
+            // });
+            void reRunNode({
+                nodeId: payload.node_id,
                 runId: payload.run_id,
                 taskId: payload.task_id,
-                payload: {
-                    updated_input: result ? result as Record<string, any> : {}
-                }
-            });
+                payload: result ? result as Record<string, any> : createConfirmRejectPayload("reject")
+            })
         };
 
         const onHumanActionRequested = async (
@@ -431,24 +472,30 @@ const useExecuteWorkflow = ({
                 timestamp: new Date(payload.timestamp).getTime()
             });
 
-            editorRef.current?.setNodeStatus(payload.node_id, "executing");
+            editorRef.current?.setNodeStatus?.(payload.node_id, "executing");
 
             const result = await latestRef.current.prompt({
                 type: InteractionModalEnum.HUMAN_ACTION_REQUESTED,
                 ...payload
             });
 
-            rerunTask({
+            // rerunTask({
+            //     runId: payload.run_id,
+            //     taskId: payload.task_id,
+            //     payload: {
+            //         updated_input: result ? {
+            //             confirm: result
+            //         } : {
+            //             reject: true
+            //         }
+            //     }
+            // });
+            void reRunNode({
+                nodeId: payload.node_id,
                 runId: payload.run_id,
                 taskId: payload.task_id,
-                payload: {
-                    updated_input: result ? {
-                        confirm: result
-                    } : {
-                        reject: true
-                    }
-                }
-            });
+                payload: result ? createConfirmRejectPayload("confirm") : createConfirmRejectPayload("reject")
+            })
         };
 
         const onDataEditRequested = async (payload: SocketEventFullPayload<SocketEvent.DataEditRequested>) => {
@@ -459,20 +506,26 @@ const useExecuteWorkflow = ({
                 timestamp: new Date(payload.timestamp).getTime()
             });
 
-            editorRef.current?.setNodeStatus(payload.node_id, "executing");
+            editorRef.current?.setNodeStatus?.(payload.node_id, "executing");
 
             const result = await latestRef.current.prompt({
                 type: InteractionModalEnum.DATA_EDIT_REQUESTED,
                 ...payload
             });
 
-            rerunTask({
+            // rerunTask({
+            //     runId: payload.run_id,
+            //     taskId: payload.task_id,
+            //     payload: {
+            //         updated_input: result ? result as Record<string, any> : {}
+            //     }
+            // });
+            void reRunNode({
+                nodeId: payload.node_id,
                 runId: payload.run_id,
                 taskId: payload.task_id,
-                payload: {
-                    updated_input: result ? result as Record<string, any> : {}
-                }
-            });
+                payload: result ? result as Record<string, any> : createConfirmRejectPayload("reject")
+            })
         };
 
         const onConditionEvaluated = (payload: SocketEventFullPayload<SocketEvent.ConditionEvaluated>) => {
@@ -487,18 +540,18 @@ const useExecuteWorkflow = ({
                 hasLargeOutput: false
             });
 
-            editorRef.current?.setNodeStatus(payload.node_id, "completed");
+            editorRef.current?.setNodeStatus?.(payload.node_id, "completed");
         };
 
         const onEdgeTraversed = (payload: SocketEventFullPayload<SocketEvent.EdgeTraversed>) => {
             if (!latestRef.current.localExecution) return;
 
-            editorRef.current?.setConnectionStatusBySourcePort(payload.source_node_id, payload.source_port_id, "completed");
+            editorRef.current?.setConnectionStatusBySourcePort?.(payload.source_node_id, payload.source_port_id, "completed");
         };
 
         const onNodeApprovalFlowResult = async (payload: SocketEventFullPayload<SocketEvent.NodeApprovalFlowResult>) => {
             try {
-                editorRef.current?.setNodeStatus(payload.node_id, "completed");
+                editorRef.current?.setNodeStatus?.(payload.node_id, "completed");
 
                 await latestRef.current.prompt({
                     type: InteractionModalEnum.APPROVAL_FLOW_VIEWER,
@@ -553,7 +606,8 @@ const useExecuteWorkflow = ({
 
             const payload = nestedData?.data || nestedData;
 
-            const handler = methodByEvent[event as SocketEvent];
+
+            const handler = methodByEvent[event as keyof typeof methodByEvent];
             if (handler) {
                 handler(payload);
             }
@@ -575,7 +629,7 @@ const useExecuteWorkflow = ({
 
     useEffect(() => {
         return () => {
-            editorRef.current?.resetAllNodeStatus();
+            editorRef.current?.resetAllNodeStatus?.();
             resetRunToast();
         }
     }, []);

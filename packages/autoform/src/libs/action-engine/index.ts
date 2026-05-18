@@ -12,4 +12,5 @@ export type {
 } from "./types";
 
 export { evalExpr, getByPath, interpolate, interpolateDeep, resolveBody } from "./utils";
+export { collectActions } from "./utils/collect-action";
 

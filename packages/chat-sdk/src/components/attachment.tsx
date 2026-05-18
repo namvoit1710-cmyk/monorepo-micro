@@ -1,6 +1,5 @@
 "use client";
 
-import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     AttachmentPrimitive,
@@ -15,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@ldc/ui/components/tool
 import { FileText, PlusIcon, XIcon } from "lucide-react";
 import { useEffect, useState, type FC, type PropsWithChildren } from "react";
 import { useShallow } from "zustand/shallow";
+import { TooltipIconButton } from "./tooltip-icon-button";
 
 const useFileSrc = (file: File | undefined) => {
     const [src, setSrc] = useState<string | undefined>(undefined);

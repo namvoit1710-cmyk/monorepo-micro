@@ -1,6 +1,5 @@
-import { IEditorConnectionValue, IEditorNode, IEditorNodeValue, IEditorValue } from "@common/components/ldc-workflow-editor/components/rete-editor/types";
-import { createEditorNode, generatePortId, isValidConnection } from "@common/lib/workflow-mappers";
-import { IApprovalFlowEdge, IApprovalFlowNode, IApprovalFlowPayload } from "../types/socket-event";
+import type { IEditorConnectionValue, IEditorNode, IEditorNodeValue, IEditorValue } from "@common/components/ldc-workflow-editor/components/rete-editor/types";
+import type { IApprovalFlowEdge, IApprovalFlowNode, IApprovalFlowPayload } from "../types/socket-event";
 
 function getRoleIcon(role: string): string {
   const roleIconMap: Record<string, string> = {

@@ -46,11 +46,11 @@ const WorkflowsPage = () => {
                             description={t("overview_description")}
                             actions={
                                 <div className="flex gap-2">
-                                    <Button size="lg" variant="outline" onClick={() => setIsCreateWorkflowPopup(true)}>
+                                    <Button size="sm" variant="outline" onClick={() => setIsCreateWorkflowPopup(true)}>
                                         <PlusIcon />
                                         <span>{t("create_manually")}</span>
                                     </Button>
-                                    <Button size="lg" onClick={() => setIsCreateWorkflowChatbotOpen(true)}>
+                                    <Button size="sm" onClick={() => setIsCreateWorkflowChatbotOpen(true)}>
                                         <SparklesIcon className="w-5 h-5" />
                                         <span>{t("create_with_ai")}</span>
                                     </Button>

@@ -14,10 +14,11 @@ const StandardHeader = () => {
                         <TableHead
                             key={header.id}
                             className={cn(
-                                "h-10 truncate whitespace-nowrap bg-muted/50 px-2 text-xs font-medium",
+                                "h-10 truncate whitespace-nowrap bg-slate-100! px-2 text-xs font-medium",
                                 getPinningStyles(header.column).className,
                                 header.column.columnDef.meta?.align === "center" && "text-center",
                                 header.column.columnDef.meta?.align === "right" && "text-right",
+                                "border-r border-r-slate-200 last:border-0"
                             )}
                             style={{
                                 width: header.column.getSize(),
