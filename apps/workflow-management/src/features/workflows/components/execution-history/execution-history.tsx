@@ -30,26 +30,26 @@ const STATUS_BADGE_CLASS: Record<string, string> = {
     [WORKFLOW_EXECUTION_STATUS_ENUM.PAUSED]: "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400 border-yellow-500/30",
 };
 
+const PAGE_SIZE = 20
+
 const WorkflowExecutionHistory = ({ isActive }: IWorkflowExecutionHistoryProps) => {
     const { t } = useLanguage();
     const {
         currentPage,
+
         setCurrentPage,
         workflowId,
         setWorkflowId,
-        resetSearchQuery,
         executionStatus,
         sorting,
         setSorting,
         setExecutionStatus,
     } = useSearchParamsQuery({ defaultSorting: [{ id: "started_at", desc: true }] });
 
-    const limit = 10;
-
     const params = useMemo(() => {
         const queryParams: Record<string, any> = {
-            $skip: (currentPage - 1) * limit,
-            $top: limit,
+            $skip: (currentPage - 1) * PAGE_SIZE,
+            $top: PAGE_SIZE,
         };
         const filterParts: string[] = [];
         if (workflowId && workflowId !== "all") {
@@ -65,7 +65,7 @@ const WorkflowExecutionHistory = ({ isActive }: IWorkflowExecutionHistoryProps) 
             queryParams.$orderby = sorting.map((s) => `${s.id} ${s.desc ? "desc" : "asc"}`).join(", ");
         }
         return queryParams;
-    }, [currentPage, limit, workflowId, executionStatus, sorting]);
+    }, [currentPage, workflowId, executionStatus, sorting]);
 
     const { data: executionResponse, isLoading, isFetching } = useWorkflowExecutionList(params, {
         enabled: !!isActive,
@@ -79,8 +79,8 @@ const WorkflowExecutionHistory = ({ isActive }: IWorkflowExecutionHistoryProps) 
 
     const pagination: PaginationState = useMemo(() => ({
         pageIndex: currentPage - 1,
-        pageSize: limit,
-    }), [currentPage, limit]);
+        pageSize: PAGE_SIZE,
+    }), [currentPage]);
 
     const handlePaginationChange = useCallback((state: PaginationState) => {
         setCurrentPage(state.pageIndex + 1);
