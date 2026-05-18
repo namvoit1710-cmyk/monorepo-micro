@@ -1,15 +1,14 @@
 import {
     AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
-    AlertDialogTitle,
-} from "@common/components/ui/alert-dialog";
+    AlertDialogTitle
+} from "@ldc/ui/components/alert-dialog";
+import { Button } from "@ldc/ui/components/button";
 import { createContext, useCallback, useContext, useRef, useState } from "react";
-import { useLanguage } from "./language-provider";
+import { useLanguage } from "../../hooks/use-language";
 
 const Ctx = createContext<(msg: string, title?: string) => Promise<boolean>>(null!);
 
@@ -45,12 +44,12 @@ export function MessageBoxProvider({ children }: { children: React.ReactNode }) 
                         <AlertDialogDescription>{config.message}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="py-1">
-                        <AlertDialogCancel onClick={() => handleClose(false)}>
+                        <Button onClick={() => handleClose(false)}>
                             {t("cancel")}
-                        </AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleClose(true)}>
+                        </Button>
+                        <Button onClick={() => handleClose(true)}>
                             {t("confirm")}
-                        </AlertDialogAction>
+                        </Button>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

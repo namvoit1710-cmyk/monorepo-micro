@@ -1,0 +1,28 @@
+{
+  "workflow": {
+    "title": "Workflow Management",
+    "create": "Create Workflow",
+    "rename": "Rename Workflow",
+    "delete": "Delete Workflow",
+    "save": "Save Workflow",
+    "run": "Run",
+    "status": {
+      "running": "Running",
+      "completed": "Completed",
+      "failed": "Failed",
+      "pending": "Pending"
+    }
+  },
+  "node": {
+    "add": "Add Node",
+    "delete": "Delete Node",
+    "edit": "Edit Node",
+    "details": "Node Details"
+  },
+  "execution": {
+    "history": "Execution History",
+    "filter": "Filter",
+    "start_date": "Start Date",
+    "end_date": "End Date"
+  }
+}

@@ -1,8 +1,6 @@
 import api, { workflowAgentApi } from "@/lib/api";
-import apiWorkflowControlPlane from "@/lib/api-workflow-control-plane";
-import { queryKeyFactory } from "@common/configs/tanstack-query/query-key-factory";
-import { QueryKey, useInfiniteQuery, useMutation, UseMutationOptions, useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { AxiosError } from "@ldc/api-sdk";
+import { QueryKey, queryKeyFactory, useInfiniteQuery, useMutation, UseMutationOptions, useQuery, UseQueryOptions } from "@ldc/tanstack-query";
 import { IApiErrorBody } from "../../types/api";
 import { IGetNodeOutputResponse, IResumeTaskPayload, IWorkflowExecutionHistoryResponse, IWorkflowExecutionParams } from "../../types/execution";
 import { IWorkflowSessionResponse } from "../../types/workflow-session";
@@ -91,7 +89,7 @@ export const useCreateWorkflowSession = (options?: Omit<UseMutationOptions<{ ok:
     return useMutation({
         mutationFn: (
             { workflowId, draftGraphVersion }: { workflowId: string, draftGraphVersion: string }): Promise<{ ok: boolean }> => {
-                return api.post("/dev-sessions", { workflow_id: workflowId, draft_graph_version: draftGraphVersion })
+            return api.post("/dev-sessions", { workflow_id: workflowId, draft_graph_version: draftGraphVersion })
         },
         ...options
     })
@@ -129,7 +127,7 @@ export const useCreateWorkflow = (
 //         mutationFn: async (payload: ICreateWorkflowWithAIPayload): Promise<ICreateWorkflowWithAIResponse> => {
 //             const agentUrl = import.meta.env.VITE_WORKFLOW_AGENT_URL || 
 //                 "https://smdg-ai-dev-ai-workflow-workflow-supervisor-agent-qas.cfapps.br10.hana.ondemand.com";
-            
+
 //             const response = await fetch(`${agentUrl}/api/v1/execute`, {
 //                 method: "POST",
 //                 headers: {
@@ -274,19 +272,19 @@ export const useRunWorkflow = (
     options?: Omit<
         UseMutationOptions<
             { ok: boolean },
-            AxiosError<IApiErrorBody>, 
-            { 
-                workflowId: string, 
-                config: Record<"input_data", Record<string, any>> 
+            AxiosError<IApiErrorBody>,
+            {
+                workflowId: string,
+                config: Record<"input_data", Record<string, any>>
             }
         >, "mutationFn"
     >
 ) => {
     return useMutation({
         mutationFn: (
-            { workflowId, config }: { 
-                workflowId: string, 
-                config?: Record<"input_data", Record<string, any>> 
+            { workflowId, config }: {
+                workflowId: string,
+                config?: Record<"input_data", Record<string, any>>
             }
         ): Promise<{ ok: boolean }> => {
             return api.post(`/workflows/${workflowId}/test/full`, { ...config })
@@ -299,7 +297,7 @@ export const useStopWorkflow = (
     options?: Omit<
         UseMutationOptions<
             { ok: boolean },
-            AxiosError<IApiErrorBody>, 
+            AxiosError<IApiErrorBody>,
             string
         >, "mutationFn"
     >
@@ -316,7 +314,7 @@ export const useResumeTask = (
     options?: Omit<
         UseMutationOptions<
             { ok: boolean },
-            AxiosError<IApiErrorBody>, 
+            AxiosError<IApiErrorBody>,
             { runId: string, taskId: string, payload?: IResumeTaskPayload }
         >, "mutationFn"
     >
@@ -393,7 +391,7 @@ export const useExecuteAI = (
 ) => {
     return useMutation({
         mutationFn: (payload: IExecuteAIPayload): Promise<IExecuteAIResponse> => {
-            return apiWorkflowControlPlane.post("/api/v1/execute", {
+            return api.post("/api/v1/execute", {
                 message: payload.message,
                 conv_id: payload.conv_id || "2",
                 user_id: payload.user_id || "anonymous",

@@ -101,7 +101,7 @@ const LdcCodeEditor = forwardRef<HTMLDivElement, LdcCodeEditorProps>(({
         });
 
         setTimeout(() => {
-            editor.getAction("editor.action.formatDocument").run();
+            editor.getAction("editor.action.formatDocument")?.run();
         }, 100);
 
         const editorContainer = editor.getContainerDomNode();

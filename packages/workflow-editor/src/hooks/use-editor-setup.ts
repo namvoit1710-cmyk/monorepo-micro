@@ -18,7 +18,7 @@ export function useEditorSetup(value: IEditorValue, options: UseEditorSetupOptio
         readOnly,
         direction,
         additionalConfig: { openNodeContext, onOpenNodePopup },
-    }), [direction]);
+    }), [direction, readOnly]);
 
     const factoryEditor = useMemo(() => makeCreateEditor(editorConfig), [editorConfig]);
     const [ref, editorInstance] = useRete(factoryEditor);
@@ -47,7 +47,6 @@ export function useEditorSetup(value: IEditorValue, options: UseEditorSetupOptio
             }
 
             if (!editorInstance.getNodes().length) {
-                console.log("Initial load of nodes:", value);
                 await editorInstance.initialLoadNodes(value);
             }
 

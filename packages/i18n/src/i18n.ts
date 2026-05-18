@@ -12,8 +12,19 @@ import jpCommon from './locales/jp/common.json';
 import enDashboard from './locales/en/dashboard.json';
 import jpDashboard from './locales/jp/dashboard.json';
 
-export const initializeI18n = async (): Promise<I18nInstance> => {
-    if (i18n.isInitialized) return i18n;
+type ExtraResources = Record<string, Record<string, unknown>>;
+
+export const initializeI18n = async (extraResources?: ExtraResources): Promise<I18nInstance> => {
+    if (i18n.isInitialized) {
+        if (extraResources) {
+            Object.entries(extraResources).forEach(([lang, nsByName]) => {
+                Object.entries(nsByName).forEach(([ns, messages]) => {
+                    i18n.addResourceBundle(lang, ns, messages, true, false);
+                });
+            });
+        }
+        return i18n;
+    }
 
     await i18n.use(initReactI18next).init({
         lng: 'vi',
@@ -33,5 +44,16 @@ export const initializeI18n = async (): Promise<I18nInstance> => {
         interpolation: { escapeValue: false },
     });
 
+    if (extraResources) {
+        Object.entries(extraResources).forEach(([lang, nsByName]) => {
+            Object.entries(nsByName).forEach(([ns, messages]) => {
+                i18n.addResourceBundle(lang, ns, messages, true, false);
+            });
+        });
+    }
+
     return i18n;
 }
+
+export { I18nextProvider } from "react-i18next";
+

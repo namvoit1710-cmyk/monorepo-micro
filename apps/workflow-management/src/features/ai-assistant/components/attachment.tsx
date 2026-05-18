@@ -7,19 +7,19 @@ import {
     useAui,
     useAuiState,
 } from "@assistant-ui/react";
-import { Avatar, AvatarFallback, AvatarImage } from "@common/components/ui/avatar";
+import { cn } from "@common/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@ldc/ui/components/avatar";
 import {
     Dialog,
     DialogContent,
     DialogTitle,
     DialogTrigger,
-} from "@common/components/ui/dialog";
+} from "@ldc/ui/components/dialog";
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
-} from "@common/components/ui/tooltip";
-import { cn } from "@common/lib/utils";
+} from "@ldc/ui/components/tooltip";
 import { FileText, PlusIcon, XIcon } from "lucide-react";
 import { PropsWithChildren, useEffect, useState, type FC } from "react";
 import { useShallow } from "zustand/shallow";

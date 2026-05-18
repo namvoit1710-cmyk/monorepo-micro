@@ -14,7 +14,6 @@ import { cn } from "@ldc/ui";
 import { SearchInput } from "@ldc/ui/blocks/search-input/search-input";
 import { Button } from "@ldc/ui/components/button";
 import { useFormContext } from "react-hook-form";
-import type { BuilderServices } from "../../../../contexts/builder.context";
 import { useBuilderContext } from "../../../../contexts/builder.context";
 import { Slot } from "../../../../contexts/slot.context";
 import type { FieldWrapperProps, IField } from "../../../../types/schema";
@@ -65,7 +64,7 @@ const OdataWrapper = (props: IODataWrapperProps) => {
     } = useODataState();
 
     const odataService = useODataFetch({
-        odataService: services?.odata as unknown as BuilderServices["odata"],
+        odataService: services?.["odata"] as import("../../../../hooks/use-builder-services").ServiceHandler | undefined,
         endpoint: fileId ? `odata/${fileId}/data` : field?.fieldConfig?.wrapperProps?.endpoint,
         pagination,
         defaultOrderBy: getOrderByString(),
@@ -235,7 +234,7 @@ const OdataWrapper = (props: IODataWrapperProps) => {
 
                         sortState={
                             sortState?.field
-                                ? { field: sortState.field, order: sortState.order }
+                                ? { field: sortState.field, order: sortState.order ?? "asc" }
                                 : { field: "", order: "asc" }
                         }
                         onSortChange={setSort}

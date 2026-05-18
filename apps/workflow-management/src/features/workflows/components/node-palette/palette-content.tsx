@@ -1,6 +1,6 @@
 import useGenerateWorkerMenu from "@/features/workflows/hooks/use-merge-nodes";
 import { IMenuItem, INodePallete } from "@/features/workflows/types/node-pallete";
-import DynamicNodeIcon from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/components/dynamic-node-icon";
+import { DynamicNodeIcon } from "@ldc/workflow-editor";
 import { cn } from "@common/lib/utils";
 import { ChevronRightIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";

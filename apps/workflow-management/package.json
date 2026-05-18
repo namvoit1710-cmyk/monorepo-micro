@@ -20,7 +20,7 @@
     "@ldc/prettier-config": "workspace:^",
     "@ldc/tailwind-config": "workspace:^",
     "@ldc/tsconfig": "workspace:^",
-    "@module-federation/rsbuild-plugin": "^2.3.1",
+    "@module-federation/rsbuild-plugin": "^2.4.0",
     "@rsbuild/core": "^1.7.5",
     "@rsbuild/plugin-react": "^1.4.6",
     "@tailwindcss/postcss": "catalog:",
@@ -32,12 +32,28 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@assistant-ui/react": "^0.14.5",
+    "@assistant-ui/react-markdown": "^0.14.0",
+    "@ldc/api-sdk": "workspace:^",
+    "@ldc/data-table": "workspace:^",
+    "@ldc/autoform": "workspace:^",
     "@ldc/env": "workspace:^",
+    "@ldc/i18n": "workspace:^",
+    "@ldc/tanstack-query": "workspace:^",
     "@ldc/ui": "workspace:^",
+    "@ldc/workflow-editor": "workspace:^",
+    "@monaco-editor/react": "^4.7.0",
+    "@uiw/react-json-view": "^2.0.0-alpha.42",
+    "lucide-react": "catalog:",
+    "nuqs": "2.8.9",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "react-router-dom": "catalog:",
-    "zod": "catalog:"
+    "remark-gfm": "^4.0.1",
+    "zod": "catalog:",
+    "zustand": "catalog:",
+    "date-fns": "catalog:",
+    "react-error-boundary": "catalog:"
   },
   "prettier": "@ldc/prettier-config"
 }

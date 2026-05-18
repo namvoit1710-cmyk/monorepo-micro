@@ -106,13 +106,15 @@ const WorkflowEditor = forwardRef<WorkflowEditorHandle, IWorkflowEditorProps>(
             setNodeContext({ nodeRef: ref, nodeId });
         };
 
-        const { ref: editorDomRef, editorInstance, isLoadingRef } = useEditorSetup(value, {
+        const { ref: editorDomRef, editorInstance: editorInstanceOrNull, isLoadingRef } = useEditorSetup(value, {
             openNodeContext,
             onOpenNodePopup,
             readOnly,
             onLoadedData,
             direction: direction
         });
+
+        const editorInstance = editorInstanceOrNull ?? undefined;
 
         useEditorSync(editorInstance, isLoadingRef, { onChange, onNodeSelected, onNodeAdded, onConnectionAdded });
 
@@ -138,14 +140,14 @@ const WorkflowEditor = forwardRef<WorkflowEditorHandle, IWorkflowEditorProps>(
                     await editorInstance?.copyNode(nodeId);
                     break;
                 case NodeContextMenuAction.Open: {
-                    const node = editorInstance.getNodeById(nodeId);
+                    const node = editorInstance?.getNodeById(nodeId);
                     if (node) {
                         onOpenNodePopup?.(node);
                     }
                     break;
                 }
                 case NodeContextMenuAction.Replace: {
-                    const node = editorInstance.getNodeById(nodeId);
+                    const node = editorInstance?.getNodeById(nodeId);
                     if (node) {
                         onEditNode?.(node);
                     }
@@ -161,7 +163,9 @@ const WorkflowEditor = forwardRef<WorkflowEditorHandle, IWorkflowEditorProps>(
             setNodeContext(null);
         }, [editorInstance]);
 
-        const addNode = useCallback(async (editorNode?: IEditorNode) => {
+        const addNode = useCallback(async (editorNode: IEditorNode) => {
+            if (!editorInstance) return;
+
             const node = new BaseNode(generateUUID(), editorNode.name, editorNode.ports, getNodeSize(editorNode.name), editorNode);
 
             await editorInstance.addNode(node);
@@ -200,10 +204,10 @@ const WorkflowEditor = forwardRef<WorkflowEditorHandle, IWorkflowEditorProps>(
         }, [onAddNode])
 
         const handleEmitChange = useCallback(() => {
-            if (onChange) {
-                const nodes = editorInstance?.serializeNodes();
-                onChange?.(nodes!);
-            }
+            if (!onChange) return;
+            const nodes = editorInstance?.serializeNodes();
+            if (!nodes) return;
+            onChange(nodes);
         }, [onChange, editorInstance])
 
         useImperativeHandle(
@@ -255,7 +259,7 @@ const WorkflowEditor = forwardRef<WorkflowEditorHandle, IWorkflowEditorProps>(
                     },
 
                     zoomByLevel(zoomLevel: number) {
-                        return editorInstance?.zoomByLevel(zoomLevel);
+                        return editorInstance?.zoomByLevel(zoomLevel) ?? Promise.resolve();
                     },
 
                     isNodeInViewport(nodeId: string) {
@@ -263,7 +267,7 @@ const WorkflowEditor = forwardRef<WorkflowEditorHandle, IWorkflowEditorProps>(
                     },
 
                     centerOnNode(nodeId: string) {
-                        return editorInstance?.centerOnNode(nodeId);
+                        return editorInstance?.centerOnNode(nodeId) ?? Promise.resolve();
                     },
 
                     resetAllNodeStatus() {
@@ -363,7 +367,7 @@ const WorkflowEditor = forwardRef<WorkflowEditorHandle, IWorkflowEditorProps>(
                     onOpenChange={() => setNodeContext(null)}
                     anchorEl={nodeContext?.nodeRef}
                     onAction={(action) => {
-                        handleContextMenuAction(action, nodeContext?.nodeId)
+                        handleContextMenuAction(action, nodeContext!.nodeId)
                     }}
                 />
 

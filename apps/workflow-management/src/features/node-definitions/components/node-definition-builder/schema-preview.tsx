@@ -1,6 +1,5 @@
-import { useLanguage } from "@/components/containers/language-provider";
-import Builder from "@common/components/ldc-auto-form/components/builder/builder";
-import { IField } from "@common/components/ldc-auto-form/interfaces/component.interface";
+import { useLanguage } from "@/hooks/use-language";
+import { Builder, IField } from "@ldc/autoform";
 import { EyeIcon } from "lucide-react";
 import { useMemo } from "react";
 import { IWorkflowSchemaField } from "../../../workflows/types/workflows";

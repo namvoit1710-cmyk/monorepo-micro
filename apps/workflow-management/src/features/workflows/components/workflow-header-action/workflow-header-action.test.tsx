@@ -19,7 +19,7 @@ vi.mock("@tanstack/react-query", () => ({
     useQueryClient: () => ({ invalidateQueries: invalidateQueriesMock }),
 }));
 
-vi.mock("@common/components/ui/button", () => ({
+vi.mock("@ldc/ui/components/button", () => ({
     Button: ({ children, ...props }: { children: React.ReactNode }) => <button {...props}>{children}</button>,
 }));
 

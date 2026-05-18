@@ -29,7 +29,7 @@ export async function executeApiCall(
 
   if (step.service && ctx.services?.[step.service]) {
     data = await serviceRequest(
-      ctx.services[step.service],
+      ctx.services[step.service]!,
       step.method,
       url,
       body,
@@ -157,7 +157,7 @@ export async function executePoll(
     let data: unknown;
 
     if (step.service && ctx.services?.[step.service]) {
-      data = await ctx.services[step.service].fetch(url);
+      data = await ctx.services[step.service]!.fetch(url);
     } else {
       const res = await fetch(url);
       if (!res.ok) throw new Error(`[ActionEngine] Poll request failed: ${res.status}`);

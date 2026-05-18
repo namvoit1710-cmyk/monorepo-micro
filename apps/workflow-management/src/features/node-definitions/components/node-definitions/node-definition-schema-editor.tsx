@@ -1,6 +1,6 @@
-import { useLanguage } from "@/components/containers/language-provider";
-import { Button } from "@common/components/ui/button";
+import { useLanguage } from "@/hooks/use-language";
 import { cn } from "@common/lib/utils";
+import { Button } from "@ldc/ui/components/button";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 

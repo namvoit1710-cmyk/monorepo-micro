@@ -1,7 +1,6 @@
 import Page from "@/components/containers/page";
 import { EXECUTION_STATUS, LOG_ACTION } from "@/constants/log";
 import LoadingOverlay from "@/features/workflows/components/loading-overlay/loading-overlay";
-import LogSection from "@/features/workflows/components/logs/logs";
 import ApprovalFlowModal from "@/features/workflows/components/modals/approval-flow-modal/approval-flow-modal";
 import WorkflowInteractionModal from "@/features/workflows/components/modals/interaction-modal/components/interaction-modal";
 import NodeEditInfoModal from "@/features/workflows/components/modals/node-edit-infor-modal";
@@ -19,11 +18,9 @@ import { useEditorStore } from "@/features/workflows/stores/editor-stores";
 import { useUIPanelStore } from "@/features/workflows/stores/ui-panel-stores";
 import { INodePallete } from "@/features/workflows/types/node-pallete";
 import { mapNodeToEditorNode } from "@/features/workflows/utils/node-mapper-utils";
-import LdcSeo from "@common/components/ldc-seo/ldc-seo";
-import { BaseNode, IEditorValue } from "@common/components/ldc-workflow-editor/components/rete-editor";
-import WorkflowEditor, { WorkflowEditorHandle } from "@common/components/ldc-workflow-editor/components/workflow-editor/workflow-editor";
-import { Badge } from "@common/components/ui/badge";
-import { cn } from "@common/lib/utils";
+import { cn } from "@ldc/ui";
+import { Badge } from "@ldc/ui/components/badge";
+import { BaseNode, IEditorValue, WorkflowEditor, WorkflowEditorHandle } from "@ldc/workflow-editor";
 import { useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 
@@ -97,7 +94,7 @@ const WorkflowDetailPage = () => {
 
     const handleAddNodeFromList = useCallback((nodePallete: INodePallete) => {
         const editorNode = mapNodeToEditorNode(nodePallete);
-        workflowEditorRef.current.addNode(editorNode);
+        workflowEditorRef.current?.addNode?.(editorNode);
     }, []);
 
     const handleAddNodeClick = useCallback(() => {
@@ -106,34 +103,32 @@ const WorkflowDetailPage = () => {
 
     const removeConnection = useCallback(({ sourceId, targetId }: { sourceId?: string, targetId?: string }) => {
         if (sourceId) {
-            workflowEditorRef.current?.removeConnectionBySource(sourceId);
+            workflowEditorRef.current?.removeConnectionBySource?.(sourceId);
         }
         if (targetId) {
-            workflowEditorRef.current?.removeConnectionByTarget(targetId);
+            workflowEditorRef.current?.removeConnectionByTarget?.(targetId);
         }
     }, []);
 
     const updateNodeView = useCallback((nodeId: string) => {
-        workflowEditorRef.current?.updateNodeView(nodeId);
-        workflowEditorRef.current?.serializeAndEmitChange();
+        workflowEditorRef.current?.updateNodeView?.(nodeId);
+        workflowEditorRef.current?.serializeAndEmitChange?.();
     }, []);
 
     const handleRunNode = useCallback(async (nodeId: string) => {
-        // await onSave(workflowId!)
         onRunNode(nodeId)
-    }, [onSave, onRunNode])
+    }, [onRunNode])
 
     const handleRunWorkflow = useCallback(async () => {
-        // await onSave(workflowId!)
         onRunWorkflow()
-    }, [onSave, onRunWorkflow, workflow])
+    }, [onRunWorkflow])
 
     return (
         <>
-            <LdcSeo
+            {/* <LdcSeo
                 title={workflow?.name ? `AI Workflow: ${workflow.name}` : "Workflow Detail - AI Workflow Management"}
                 description={workflow?.description || "Workflow Detail Page"}
-            />
+            /> */}
 
             <Page className="gap-0">
                 <Page.Header
@@ -193,7 +188,7 @@ const WorkflowDetailPage = () => {
                         </NodePalette>
                     </div>
 
-                    <LogSection workflowId={workflowId!} />
+                    {/* <LogSection workflowId={workflowId!} /> */}
 
                     <LoadingOverlay isLoading={isLoading} />
                 </div>
@@ -216,7 +211,7 @@ const WorkflowDetailPage = () => {
                 />
             ) : (
                 <WorkflowInteractionModal
-                    modalState={modalState}
+                    modalState={modalState!}
                     open={!!modalState}
                 />
             )}

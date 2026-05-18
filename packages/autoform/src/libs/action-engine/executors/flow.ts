@@ -13,6 +13,9 @@ export async function executeCondition(
   step: { type: "condition"; expr: string; then: ActionStep[]; else?: ActionStep[] },
   ctx: EngineContext
 ): Promise<boolean> {
+  if (!executePipelineFn) {
+    throw new Error("[ActionEngine] Pipeline runner not injected. Call injectPipelineRunner before executing conditions.");
+  }
   const result = evalExpr(step.expr, ctx);
   const branch = result ? step.then : (step.else ?? []);
   return executePipelineFn(branch, ctx);

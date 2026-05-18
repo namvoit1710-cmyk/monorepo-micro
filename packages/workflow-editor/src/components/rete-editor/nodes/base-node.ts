@@ -56,13 +56,17 @@ export class BaseNode extends ClassicPreset.Node {
     }
 
     public updateInputSocketLabel(portId: string, label: string) {
-        this.original.ports.inputs.find((port) => port.id === portId)!.label = label;
-        this.inputs[portId]!.label = label;
+        const port = this.original.ports.inputs.find((p) => p.id === portId);
+        if (port) port.label = label;
+        const input = this.inputs[portId];
+        if (input) input.label = label;
     }
 
     public updateOutputSocketLabel(portId: string, label: string) {
-        this.original.ports.outputs.find((port) => port.id === portId)!.label = label;
-        this.outputs[portId]!.label = label;
+        const port = this.original.ports.outputs.find((p) => p.id === portId);
+        if (port) port.label = label;
+        const output = this.outputs[portId];
+        if (output) output.label = label;
     }
 
     public addOutputSocket(key: string, label: string) {

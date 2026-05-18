@@ -26,10 +26,10 @@ export interface BaseNodeShellProps<S extends ClassicScheme> {
     onContextMenu?: (ref: HTMLDivElement, nodeId: string) => void;
 }
 
-function sortByIndex<T extends [string, undefined | { index?: number }][]>(
-    entries: T
-) {
-    entries.sort((a, b) => {
+function sortByIndex<T extends [string, undefined | { index?: number }]>(
+    entries: T[]
+): T[] {
+    return [...entries].sort((a, b) => {
         const ai = a[1]?.index ?? 0;
         const bi = b[1]?.index ?? 0;
         return ai - bi;
@@ -53,11 +53,8 @@ const BaseNodeShell = <S extends ClassicScheme>({
 }: BaseNodeShellProps<S>) => {
     const { t } = useTranslation(RETE_EDITOR_I18N_NAMESPACE);
 
-    const inputs = Object.entries(data.inputs);
-    const outputs = Object.entries(data.outputs);
-
-    sortByIndex(inputs);
-    sortByIndex(outputs);
+    const inputs = sortByIndex(Object.entries(data.inputs));
+    const outputs = sortByIndex(Object.entries(data.outputs));
 
     const nodeRef = useRef<HTMLDivElement>(null);
 
@@ -66,9 +63,7 @@ const BaseNodeShell = <S extends ClassicScheme>({
     const status: NodeExecutionStatus = (data as any).executionStatus ?? "idle";
     const icon = original.icon;
     const description = original.description ?? "";
-    const intruction = original.instruction ?? "";
-
-    console.log(original);
+    const instruction = original.instruction ?? "";
 
     const isHorizontal = direction === "horizontal";
     const hasInput = inputs.length > 0;
@@ -176,7 +171,7 @@ const BaseNodeShell = <S extends ClassicScheme>({
                     <span className="text-center line-clamp-2 max-w-[200px]">{original?.title ?? label}</span>
                 </div>
 
-                {(description || intruction) && (
+                {(description || instruction) && (
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -192,10 +187,10 @@ const BaseNodeShell = <S extends ClassicScheme>({
                                             <p className="text-gray-500">{description}</p>
                                         </div>
                                     )}
-                                    {intruction && (
+                                    {instruction && (
                                         <div>
                                             <span className="font-semibold">{t("instruction")}</span>
-                                            <p className="text-gray-500">{intruction}</p>
+                                            <p className="text-gray-500">{instruction}</p>
                                         </div>
                                     )}
                                 </div>

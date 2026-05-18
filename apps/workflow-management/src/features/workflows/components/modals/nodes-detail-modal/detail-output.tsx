@@ -1,10 +1,10 @@
 
-import { useLanguage } from "@/components/containers/language-provider"
 import JsonView from "@/components/json-view/json-view"
 import { useDownloadArtifact } from "@/features/workflows/hooks/use-download-artifact"
 import { useEditorStore } from "@/features/workflows/stores/editor-stores"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@common/components/ui/accordion"
+import { useLanguage } from "@/hooks/use-language"
 import { cn } from "@common/lib/utils"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@ldc/ui/components/accordion"
 import { isEmpty } from "lodash-es"
 import { Paperclip } from "lucide-react"
 import { useCallback } from "react"

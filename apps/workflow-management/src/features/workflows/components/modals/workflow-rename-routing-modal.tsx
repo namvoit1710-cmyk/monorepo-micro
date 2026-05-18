@@ -1,9 +1,9 @@
-import { useLanguage } from "@/components/containers/language-provider";
-import Builder, { BuilderRef } from "@common/components/ldc-auto-form/components/builder/builder";
-import { toast } from "@common/components/ldc-toast";
-import LoadingSpin from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/components/loading-spin/loading-spin";
-import { Button } from "@common/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@common/components/ui/dialog";
+import { useLanguage } from "@/hooks/use-language";
+import { toast } from "@ldc/ui/blocks/toast/toast";
+import { LoadingSpin } from "@ldc/workflow-editor";
+import Builder, { BuilderRef } from "@ldc/autoform";
+import { Button } from "@ldc/ui/components/button";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@ldc/ui/components/dialog";
 import { ComponentProps, useRef } from "react";
 import { useUpdateWorkflowPatch } from "../../hooks/apis/workflows";
 

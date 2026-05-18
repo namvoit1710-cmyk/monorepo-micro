@@ -1,16 +1,8 @@
-import { toast } from "@common/components/ldc-toast";
-import getQueryClient from "@common/configs/tanstack-query/query-client";
-import { MutationCache, QueryCache, QueryClientProvider } from "@tanstack/react-query";
-import { isAxiosError } from "axios";
+import { MutationCache, QueryCache, QueryClientProvider, getQueryClient } from "@ldc/tanstack-query";
+import { toast } from "@ldc/ui/blocks/toast/toast";
+import { isAxiosError } from "@ldc/api-sdk";
 import { useState } from "react";
-import { useLanguage } from "./language-provider";
-
-declare module "@tanstack/react-query" {
-    interface Register {
-        mutationMeta: { silent?: boolean };
-        queryMeta: { silent?: boolean };
-    }
-}
+import { useLanguage } from "@/hooks/use-language";
 
 const QueryProvider = ({ children }: { children: React.ReactNode }) => {
     const { t } = useLanguage();

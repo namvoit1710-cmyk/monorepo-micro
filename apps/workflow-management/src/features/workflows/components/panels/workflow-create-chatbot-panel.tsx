@@ -12,12 +12,12 @@
 // không chứa business logic.
 // =============================================================================
 
-import { useLanguage } from "@/components/containers/language-provider";
 import { AIAssistantThread } from "@/features/ai-assistant/components/thread";
 import { AIAssistantProvider } from "@/features/ai-assistant/context/assistant-context";
 import { useAIAssistantRuntime } from "@/features/ai-assistant/hooks/use-ai-asssistant-runtime";
+import { useLanguage } from "@/hooks/use-language";
 import { AssistantRuntimeProvider } from "@assistant-ui/react";
-import { Button } from "@common/components/ui/button";
+import { Button } from "@ldc/ui/components/button";
 import { XIcon } from "lucide-react";
 
 interface WorkflowCreateChatbotPanelProps {

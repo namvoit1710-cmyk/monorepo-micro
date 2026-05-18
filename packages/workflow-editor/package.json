@@ -21,8 +21,8 @@
   "devDependencies": {
     "@ldc/eslint-config": "workspace:*",
     "@ldc/prettier-config": "workspace:*",
+    "@ldc/tailwind-config": "workspace:^",
     "@ldc/tsconfig": "workspace:*",
-    "@ldc/tailwind-config": "workspace:*",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "eslint": "catalog:",

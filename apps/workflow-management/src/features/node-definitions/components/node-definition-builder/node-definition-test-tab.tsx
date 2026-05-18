@@ -1,15 +1,14 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import JsonView from "@/components/json-view/json-view";
 import { useTestNodeDefinition } from "@/features/node-definitions/hooks/apis/node-definitions";
 import { ITestNodeDefinitionDataResponse, ITestNodeDefinitionResponse } from "@/features/node-definitions/types/node-definition";
 import { IWorkflowSchemaField } from "@/features/workflows/types/workflows";
-import Builder, { BuilderRef } from "@common/components/ldc-auto-form/components/builder/builder";
-import { IField } from "@common/components/ldc-auto-form/interfaces/component.interface";
-import { toast } from "@common/components/ldc-toast";
-import { Badge } from "@common/components/ui/badge";
-import { Button } from "@common/components/ui/button";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@common/components/ui/resizeable";
-import { Spinner } from "@common/components/ui/spinner";
+import { useLanguage } from "@/hooks/use-language";
+import { Builder, BuilderRef, IField } from "@ldc/autoform";
+import { toast } from "@ldc/ui/blocks/toast/toast";
+import { Badge } from "@ldc/ui/components/badge";
+import { Button } from "@ldc/ui/components/button";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@ldc/ui/components/resizable";
+import { Spinner } from "@ldc/ui/components/spinner";
 import { PlayIcon } from "lucide-react";
 import { useCallback, useMemo, useRef, useState } from "react";
 
@@ -150,11 +149,11 @@ const NodeDefinitionTestTab = ({
     }, [inputSchema]);
 
     const { mutate: testDefinition, isPending: isTesting } = useTestNodeDefinition({
-        onSuccess: (data) => {
+        onSuccess: (data: any) => {
             setResult(data);
             setError(null);
         },
-        onError: (err) => {
+        onError: (err: any) => {
             setResult(null);
             const errorBody = err.response?.data;
             const message =
@@ -237,7 +236,7 @@ const NodeDefinitionTestTab = ({
                 <ResizablePanel defaultSize={60} minSize={30}>
                     <div className="h-full overflow-y-auto pl-4">
                         <TestResultPanel
-                            result={result?.data}
+                            result={result?.data!}
                             error={error}
                             isTesting={isTesting}
                             t={t}

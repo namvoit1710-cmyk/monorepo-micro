@@ -1,11 +1,10 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import CopyUtils from "@/components/utils/copy-utils";
 import { WORKFLOW_EXECUTION_STATUS_ENUM, WORKFLOW_EXECUTION_STATUS_TEXT } from "@/constants/workflows";
-import { ColumnDef, DataTable, SortableHeader } from "@common/components/ldc-table";
-import { Badge } from "@common/components/ui/badge";
-import { cn } from "@common/lib/utils";
-import { keepPreviousData } from "@tanstack/react-query";
-import { PaginationState } from "@tanstack/react-table";
+import { useLanguage } from "@/hooks/use-language";
+import { ColumnDef, DataTable, PaginationState, SortableHeader } from "@ldc/data-table";
+import { keepPreviousData } from "@ldc/tanstack-query";
+import { cn } from "@ldc/ui";
+import { Badge } from "@ldc/ui/components/badge";
 import { format } from "date-fns";
 import { enGB } from "date-fns/locale";
 import { useCallback, useMemo } from "react";
@@ -13,11 +12,12 @@ import { useWorkflowExecutionList } from "../../hooks/apis/workflows";
 import useSearchParamsQuery from "../../hooks/use-search-params-query";
 import { IWorkflowExecutionHistory } from "../../types/execution";
 import ExecutionFilter from "./execution-filter";
-import { useSeo } from "@common/components/ldc-seo/use-seo";
 
 export interface IWorkflowExecutionHistoryProps {
     isActive?: boolean;
 }
+
+interface IIWorkflowExecutionHistoryColumnDef extends IWorkflowExecutionHistory, Record<"_id", string> { }
 
 const STATUS_BADGE_CLASS: Record<string, string> = {
     [WORKFLOW_EXECUTION_STATUS_ENUM.COMPLETED]: "bg-green-500/15 text-green-700 dark:text-green-400 border-green-500/30",
@@ -71,7 +71,10 @@ const WorkflowExecutionHistory = ({ isActive }: IWorkflowExecutionHistoryProps) 
         placeholderData: keepPreviousData,
     });
 
-    const tableData = useMemo(() => executionResponse?.data?.items || [], [executionResponse, isActive]);
+    const tableData = useMemo(() => {
+        return (executionResponse?.data?.items ?? []).map(i => ({ ...i, _id: i.id })
+        )
+    }, [executionResponse, isActive]);
 
     const pagination: PaginationState = useMemo(() => ({
         pageIndex: currentPage - 1,
@@ -82,7 +85,7 @@ const WorkflowExecutionHistory = ({ isActive }: IWorkflowExecutionHistoryProps) 
         setCurrentPage(state.pageIndex + 1);
     }, [setCurrentPage]);
 
-    const columns = useMemo((): ColumnDef<IWorkflowExecutionHistory>[] => [
+    const columns = useMemo((): ColumnDef<IIWorkflowExecutionHistoryColumnDef>[] => [
         {
             accessorKey: "id",
             header: () => t("execution_id"),
@@ -144,11 +147,6 @@ const WorkflowExecutionHistory = ({ isActive }: IWorkflowExecutionHistoryProps) 
         },
     ], [t]);
 
-    useSeo({
-        title: t("workflows_execution_tab_title"),
-        description: t("workflows_execution_seo_description")
-    })
-
     return (
         <section className="flex flex-col h-full overflow-hidden gap-4 p-4">
             <ExecutionFilter
@@ -165,7 +163,7 @@ const WorkflowExecutionHistory = ({ isActive }: IWorkflowExecutionHistoryProps) 
                 {(isLoading || isFetching) && (
                     <div className="loader-bar w-full" />
                 )}
-                <DataTable<IWorkflowExecutionHistory>
+                <DataTable
                     data={tableData}
                     columns={columns}
                     enablePagination

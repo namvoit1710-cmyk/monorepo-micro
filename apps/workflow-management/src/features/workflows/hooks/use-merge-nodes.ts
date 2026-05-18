@@ -1,6 +1,6 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import { useQueryNodePallete } from "@/features/workflows/hooks/apis/node-pallete";
 import { IMenuItem } from "@/features/workflows/types/node-pallete";
+import { useLanguage } from "@/hooks/use-language";
 import { useMemo } from "react";
 
 const useGenerateWorkerMenu = () => {

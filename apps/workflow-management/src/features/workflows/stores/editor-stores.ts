@@ -1,6 +1,4 @@
-import { IEditorConnectionValue } from "@common/components/ldc-workflow-editor";
-import { IEditorValue } from "@common/components/ldc-workflow-editor/components/rete-editor";
-import { BaseNode } from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/base-node";
+import { BaseNode, IEditorConnectionValue, IEditorValue } from "@ldc/workflow-editor";
 import { create } from "zustand";
 import { NodeExecutionState } from "../types/execution";
 import { IWorkflow } from "../types/workflows";

@@ -1,8 +1,8 @@
-import { useLanguage } from "@/components/containers/language-provider"
 import JsonView from "@/components/json-view/json-view"
 import { useEditorStore } from "@/features/workflows/stores/editor-stores"
 import { IVariableSuggestionSource } from "@/features/workflows/types/workflows"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@common/components/ui/accordion"
+import { useLanguage } from "@/hooks/use-language"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@ldc/ui/components/accordion"
 import { Paperclip, SquarePlay, Workflow } from "lucide-react"
 
 interface IVariablesContextGroupProps {

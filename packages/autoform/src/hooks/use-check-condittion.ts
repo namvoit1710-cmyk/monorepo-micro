@@ -38,9 +38,14 @@ const useCheckCondition = (field: IField, path: string[]) => {
     const { control } = useFormContext();
 
     const parentPath = useMemo(() => path.slice(0, -1), [path]);
+    const conditionFieldKey = field.fieldConfig.condition?.fieldKey;
+    const watchName = conditionFieldKey
+        ? `${parentPath.join(".")}.${conditionFieldKey}`
+        : "__no_condition__";
     const watchValue = useWatch({
         control,
-        name: `${parentPath.join(".")}.${field.fieldConfig.condition?.fieldKey}`,
+        name: watchName,
+        disabled: !conditionFieldKey
     });
 
     const isDisabled: boolean = useMemo(() => {

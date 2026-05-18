@@ -1,18 +1,20 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import { useMessageBox } from "@/components/containers/messagebox-provider";
-import { ColumnDef, DataTable } from "@common/components/ldc-table";
-import { toast } from "@common/components/ldc-toast";
-import DynamicNodeIcon from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/components/dynamic-node-icon";
-import { Button } from "@common/components/ui/button";
-import { Input } from "@common/components/ui/input";
-import { cn } from "@common/lib/utils";
-import { useQueryClient } from "@tanstack/react-query";
+import { useLanguage } from "@/hooks/use-language";
+import { ColumnDef, DataTable } from "@ldc/data-table";
+import { useQueryClient } from "@ldc/tanstack-query";
+import { cn } from "@ldc/ui";
+import { toast } from "@ldc/ui/blocks/toast/toast";
+import { Button } from "@ldc/ui/components/button";
+import { Input } from "@ldc/ui/components/input";
+import { DynamicNodeIcon } from "@ldc/workflow-editor";
 import { SearchIcon, Trash2Icon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { nodeDefinitionKey, useDeleteNodeDefinition, useNodeDefinitionList } from "../../hooks/apis/node-definitions";
 import { nodepalleteKey } from "../../../workflows/hooks/apis/node-pallete";
+import { nodeDefinitionKey, useDeleteNodeDefinition, useNodeDefinitionList } from "../../hooks/apis/node-definitions";
 import { INodeDefinition } from "../../types/node-definition";
+
+interface INodeDefinitionColumnDef extends INodeDefinition { _id: string; }
 
 const NodeDefinitionList = () => {
     const { t } = useLanguage();
@@ -53,14 +55,14 @@ const NodeDefinitionList = () => {
 
         const lowerSearch = search.toLowerCase();
         return definitions.filter(
-            (d) =>
+            (d: any) =>
                 d.name.toLowerCase().includes(lowerSearch) ||
                 d.description?.toLowerCase().includes(lowerSearch) ||
-                d.tags?.some((tag) => tag.toLowerCase().includes(lowerSearch))
+                d.tags?.some((tag: string) => tag.toLowerCase().includes(lowerSearch))
         );
     }, [definitionsResponse, search]);
 
-    const columns = useMemo((): ColumnDef<INodeDefinition>[] => [
+    const columns = useMemo((): ColumnDef<INodeDefinitionColumnDef>[] => [
         {
             accessorKey: "name",
             header: () => t("node_definitions.name"),
@@ -159,8 +161,8 @@ const NodeDefinitionList = () => {
                 {(isLoading || isFetching || isDeleting) && (
                     <div className="loader-bar w-full" />
                 )}
-                <DataTable<INodeDefinition>
-                    data={filteredDefinitions}
+                <DataTable
+                    data={filteredDefinitions.map((d) => ({ ...d, _id: d.id }))}
                     columns={columns}
                 />
             </div>

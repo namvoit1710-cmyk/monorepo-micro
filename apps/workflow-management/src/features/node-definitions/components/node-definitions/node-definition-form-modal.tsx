@@ -1,15 +1,15 @@
-import { useLanguage } from "@/components/containers/language-provider";
-import Builder, { BuilderRef } from "@common/components/ldc-auto-form/components/builder/builder";
+import { useLanguage } from "@/hooks/use-language";
 import { toast } from "@common/components/ldc-toast";
-import LoadingSpin from "@common/components/ldc-workflow-editor/components/rete-editor/nodes/components/loading-spin/loading-spin";
-import { Button } from "@common/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@common/components/ui/dialog";
+import { LoadingSpin } from "@ldc/workflow-editor";
+import Builder, { BuilderRef } from "@ldc/autoform";
+import { Button } from "@ldc/ui/components/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@ldc/ui/components/dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
-import { nodeDefinitionKey, useCreateNodeDefinition, useUpdateNodeDefinition } from "../../hooks/apis/node-definitions";
 import { nodepalleteKey } from "../../../workflows/hooks/apis/node-pallete";
 import useGenerateWorkerMenu from "../../../workflows/hooks/use-merge-nodes";
 import { useNodeDefinitionStore } from "../../../workflows/stores/node-definition-stores";
+import { nodeDefinitionKey, useCreateNodeDefinition, useUpdateNodeDefinition } from "../../hooks/apis/node-definitions";
 import { ICreateNodeDefinitionPayload, IUpdateNodeDefinitionPayload } from "../../types/node-definition";
 
 const NodeDefinitionFormModal = () => {

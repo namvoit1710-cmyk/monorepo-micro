@@ -1,11 +1,9 @@
 import type { ComponentType } from "react";
 import { createContext, useContext } from "react";
+import { BuilderServices } from "../hooks/use-builder-services";
 import type { FieldComponentProps, FieldWrapperProps, ISchema } from "../types/schema";
 
-export type BuilderServiceHandler = (endpoint: string, params: Record<string, any>) => unknown;
-export interface BuilderServices {
-    [key: string]: BuilderServiceHandler | BuilderServices;
-}
+export type { ServiceHandler as BuilderServiceHandler, BuilderServices } from "../hooks/use-builder-services";
 
 interface IBuilderContext {
     schema: ISchema;

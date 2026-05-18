@@ -7,6 +7,8 @@ export { createEditor, makeCreateEditor } from "./components/rete-editor/core/ed
 export { BaseNode } from "./components/rete-editor/nodes/base-node";
 export { ObjectControl } from "./components/rete-editor/nodes/object-control";
 export { socket } from "./components/rete-editor/nodes/socket";
+export { default as DynamicNodeIcon } from "./components/rete-editor/nodes/components/dynamic-node-icon";
+export { default as LoadingSpin } from "./components/rete-editor/nodes/components/loading-spin/loading-spin";
 
 // ─── i18n ─────────────────────────────────────────────────────────────────────
 export { addReteEditorResources } from "./i18n";

@@ -1,9 +1,9 @@
-import { useLanguage } from "@/components/containers/language-provider";
 import { INodeInputSchema } from "@/features/workflows/types/node-pallete";
-import LdcCodeEditor from "@common/components/ldc-code-editor/ldc-code-editor";
-import { Input } from "@common/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@common/components/ui/select";
-import { cn } from "@common/lib/utils";
+import { useLanguage } from "@/hooks/use-language";
+import { LdcCodeEditor } from "@ldc/autoform";
+import { cn } from "@ldc/ui";
+import { Input } from "@ldc/ui/components/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ldc/ui/components/select";
 import { LockIcon, UnlockIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 
@@ -132,7 +132,7 @@ const LockedDefaultsEditor = ({ entries, onChange }: LockedDefaultsEditorProps) 
     const handleUpdate = useCallback(
         (index: number, partial: Partial<ILockedDefaultEntry>) => {
             const next = [...entries];
-            next[index] = { ...next[index], ...partial };
+            next[index] = { ...next[index], ...partial } as ILockedDefaultEntry;
             onChange(next);
         },
         [entries, onChange]
@@ -141,7 +141,7 @@ const LockedDefaultsEditor = ({ entries, onChange }: LockedDefaultsEditorProps) 
     const handleToggleLock = useCallback(
         (index: number) => {
             const next = [...entries];
-            next[index] = { ...next[index], locked: !next[index].locked };
+            next[index] = { ...next[index], locked: !next[index]?.locked } as ILockedDefaultEntry;
             onChange(next);
         },
         [entries, onChange]

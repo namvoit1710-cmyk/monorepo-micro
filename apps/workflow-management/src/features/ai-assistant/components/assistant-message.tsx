@@ -1,4 +1,4 @@
-import { useLanguage } from "@/components/containers/language-provider";
+import { useLanguage } from "@/hooks/use-language";
 import {
     MessagePrimitive,
     useAuiState

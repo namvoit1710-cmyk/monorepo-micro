@@ -1,6 +1,7 @@
 
-import { useLanguage } from "@/components/containers/language-provider";
-import { toast } from "@common/components/ldc-toast";
+import { useLanguage } from "@/hooks/use-language";
+import { isAxiosError } from "@ldc/api-sdk";
+import { toast } from "@ldc/ui/blocks/toast/toast";
 import { useCallback, useRef, useState } from "react";
 import type { IAIAssistantMessage } from "../types";
 import { useCreateWorkflowWithAI } from "./apis/execute";
@@ -55,9 +56,9 @@ export const useExecuteAIAssistant = (): UseExecuteAIAssistantReturn => {
             isRunningRef.current = true;
 
             try {
-                const response = await mutateAsync({ 
+                const response = await mutateAsync({
                     message: text,
-                     ...(conversationId && { conv_id: conversationId }),
+                    ...(conversationId && { conv_id: conversationId }),
                 });
 
                 if (!conversationId && response.agent_data?.conv_id) {
@@ -94,8 +95,9 @@ export const useExecuteAIAssistant = (): UseExecuteAIAssistantReturn => {
             } catch (error) {
                 removeMessage(thinkingMessageId);
 
-                const errMsg =
-                    error instanceof Error
+                const errMsg = isAxiosError(error)
+                    ? (error.response?.data as { message?: string })?.message ?? error.message
+                    : error instanceof Error
                         ? error.message
                         : t("notification.workflow_creation_failed");
 
@@ -115,7 +117,7 @@ export const useExecuteAIAssistant = (): UseExecuteAIAssistantReturn => {
                 isRunningRef.current = false;
             }
         },
-        [mutateAsync, appendMessage, removeMessage, t],
+        [mutateAsync, appendMessage, removeMessage, t, conversationId],
     );
 
     return { messages, isRunning, sendMessage };

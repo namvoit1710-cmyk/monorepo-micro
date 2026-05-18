@@ -7,6 +7,9 @@ import type {
 } from "axios";
 import axios from "axios";
 
+export { isAxiosError } from "axios";
+export type { AxiosError } from "axios";
+
 interface SDKConfig {
   baseURL: string;
   timeout?: number;

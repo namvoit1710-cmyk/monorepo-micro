@@ -9,7 +9,7 @@ vi.mock("@/components/containers/language-provider", () => ({
     useLanguage: () => ({ t: (key: string) => key }),
 }));
 
-vi.mock("@common/components/ui/dropdown-menu", () => ({
+vi.mock("@ldc/ui/components/dropdown-menu", () => ({
     DropdownMenu: ({ children }: { children: ReactNode }) => {
         const [open, setOpen] = useState(false);
 

@@ -1,5 +1,5 @@
-import { createContext, useContext } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { createContext, useContext } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import WorkflowFilter from "./workflow-filter";
@@ -14,13 +14,13 @@ vi.mock("@common/hooks/use-debounce-callback", () => ({
     useDebounceCallback: (callback: (value: string) => void) => callback,
 }));
 
-vi.mock("@common/components/ui/input", () => ({
+vi.mock("@ldc/ui/components/input", () => ({
     SearchInput: ({ placeholder, value, onChange }: { placeholder: string; value: string; onChange: (event: { target: { value: string } }) => void }) => (
         <input aria-label={placeholder} placeholder={placeholder} value={value} onChange={onChange} />
     ),
 }));
 
-vi.mock("@common/components/ui/select", () => ({
+vi.mock("@ldc/ui/components/select", () => ({
     Select: ({ children, onValueChange }: { children: React.ReactNode; onValueChange: (value: string) => void }) => (
         <SelectContext.Provider value={{ onValueChange }}>{children}</SelectContext.Provider>
     ),

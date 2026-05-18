@@ -53,7 +53,7 @@ export const setConnectionStatusBySourcePort = (
     status: NodeExecutionStatus
 ) => {
     const targetConnection = editor.getConnections().filter((c) => c.source === sourceNodeId && c.sourceOutput === sourcePortId);
-    if (!targetConnection) return;
+    if (targetConnection.length === 0) return;
 
     targetConnection.forEach((conn) => {
         conn.executionStatus = status;
@@ -69,7 +69,7 @@ export const setConnectionStatusByTargetPort = (
     status: NodeExecutionStatus
 ) => {
     const targetConnection = editor.getConnections().filter((c) => c.target === targetNodeId && c.targetInput === targetPortId);
-    if (!targetConnection) return;
+    if (targetConnection.length === 0) return;
 
     targetConnection.forEach((conn) => {
         conn.executionStatus = status;
@@ -83,7 +83,7 @@ export const removeConnectionBySource = (
 ): void => {
     editor
         .getConnections()
-        .filter((c) => c.sourceOutput === sourceNodeId)
+        .filter((c) => c.source === sourceNodeId)
         .forEach((conn) => {
             editor.removeConnection(conn.id);
         });
@@ -95,7 +95,7 @@ export const removeConnectionByTarget = (
 ): void => {
     editor
         .getConnections()
-        .filter((c) => c.targetInput === targetNodeId)
+        .filter((c) => c.target === targetNodeId)
         .forEach((conn) => {
             editor.removeConnection(conn.id);
         });

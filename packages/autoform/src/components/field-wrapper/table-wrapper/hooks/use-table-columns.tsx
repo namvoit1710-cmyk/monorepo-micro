@@ -1,11 +1,13 @@
 import type { ColumnDef } from "@ldc/data-table";
+import { Badge } from "@ldc/ui/components/badge";
 import { Button } from "@ldc/ui/components/button";
 import { Checkbox } from "@ldc/ui/components/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@ldc/ui/components/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@ldc/ui/components/tooltip";
 import { AlertCircle, AlertTriangle, MoreHorizontal } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
-import { Slot } from "../../../../contexts/slot.context";
+import { ErrorBoundary } from "react-error-boundary";
+import { Slot, useSlots } from "../../../../contexts/slot.context";
 import { getByPath } from "../../../../libs/action-engine";
 import type { IField } from "../../../../types/schema";
 import ActionCell from "../components/action-cell";
@@ -118,7 +120,7 @@ export const useTableColumns = ({
 
                     return (
                         <ErrorBoundary
-                            FallbackComponent={null}
+                            fallbackRender={() => null}
                         >
                             <div className="flex items-center gap-1 h-full w-full">
                                 {showValidation && (
@@ -136,7 +138,7 @@ export const useTableColumns = ({
 
                 return (
                     <ErrorBoundary
-                        FallbackComponent={null}
+                        fallbackRender={() => null}
                     >
                         <div className="flex items-center gap-1 h-full w-full">
                             {showValidation && (
@@ -177,7 +179,7 @@ export const useTableColumns = ({
                     rowId={row.original._id}
                     rowData={row.original}
                     rowIndex={row.index}
-                    updateRowById={(rowId, partial) => {
+                    updateRowById={(rowId: string, partial: Record<string, any>) => {
                         updateRow(rowId, partial)
                     }}
                     updateRow={(partial: Record<string, any>) => updateRow(row.original._id, partial)}
@@ -214,7 +216,7 @@ export const useTableColumns = ({
                                         rowId={row.original._id}
                                         rowData={row.original}
                                         rowIndex={row.index}
-                                        updateRowById={(rowId, partial) => updateRow(rowId, partial)}
+                                        updateRowById={(rowId: string, partial: Record<string, any>) => updateRow(rowId, partial)}
                                         updateRow={(partial: Record<string, any>) => updateRow(row.original._id, partial)}
                                     />
                                 </DropdownMenuContent>

@@ -1,3 +1,5 @@
+import { env } from "@/env";
+
 export enum TYPE_CONFIG_PARAMETER {
     TEXT = "string",
     FILE = "file",
@@ -15,31 +17,31 @@ export enum WORKER_TYPE_UPDATE_PORT {
 
 export const SERVICE_CONFIGS = {
     governance: {
-        baseUrl: import.meta.env.VITE_URL_GOVERNANCE_API,
+        baseUrl: env.PUBLIC_GOVERNANCE_API_URL,
         basePath: "api/v1",
     },
     odata: {
-        baseUrl: import.meta.env.VITE_URL_FILE_SERVICE,
+        baseUrl: env.PUBLIC_FILE_SERVICE_URL,
         basePath: "api/v1",
     },
     workflow: {
-        baseUrl: import.meta.env.VITE_WORKFLOW_API_URL,
+        baseUrl: env.PUBLIC_WORKFLOW_API_URL,
         basePath: "api/v1",
     },
     "workflow-validate": {
-        baseUrl: import.meta.env.VITE_WORKFLOW_VALIDATION_RULE_AGENT_API_URL,
+        baseUrl: env.PUBLIC_WORKFLOW_VALIDATION_RULE_AGENT_API_URL,
         basePath: "api/v1",
     },
     "governance-agent": {
-        baseUrl: import.meta.env.VITE_WORKFLOW_GOVERNANCE_AGENT_API_URL,
+        baseUrl: env.PUBLIC_WORKFLOW_GOVERNANCE_AGENT_API_URL,
         basePath: "api/v1",
     },
     "profile-manager-agent": {
-        baseUrl: import.meta.env.VITE_WORKFLOW_PROFILE_MANAGER_API_URL,
+        baseUrl: env.PUBLIC_WORKFLOW_PROFILE_MANAGER_API_URL,
         basePath: "api/v1",
     },
-    "intergration-hub": {
-        baseUrl: import.meta.env.VITE_INTEGRATION_HUB_API_URL,
+    "integration-hub": {
+        baseUrl: env.PUBLIC_INTEGRATION_HUB_API_URL,
         basePath: "api/v1",
     },
 };

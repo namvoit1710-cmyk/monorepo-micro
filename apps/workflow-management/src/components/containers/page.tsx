@@ -1,13 +1,12 @@
-import { cn } from "@common/lib/utils"
+import { cn } from "@ldc/ui"
+import { Separator } from "@ldc/ui/components/separator"
+import { SidebarTrigger } from "@ldc/ui/components/sidebar"
 import { ReactNode } from "react"
 
 interface IPageContainerProps {
     children: ReactNode
     className?: string
 }
-
-import { Separator } from "@common/components/ui/separator"
-import { SidebarTrigger } from "@common/components/ui/sidebar"
 
 interface IPageHeaderProps {
     title: string | ReactNode

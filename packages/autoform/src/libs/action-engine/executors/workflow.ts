@@ -108,7 +108,7 @@ export async function executeTriggerWorkflow(
 
   if (step.service && ctx.services?.[step.service]) {
     apiResponse = await serviceRequest(
-      ctx.services[step.service],
+      ctx.services[step.service]!,
       "POST",
       url,
       body,

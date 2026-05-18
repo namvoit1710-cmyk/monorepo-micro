@@ -26,7 +26,6 @@ const createServiceHandler = (config: ServiceConfig): ServiceHandler => {
 
   const api = new APISdk({
     baseURL: `${baseUrl}/${basePath}`.replace(/\/+/g, "/").replace(":/", "://"),
-    headers,
   });
 
   return {
