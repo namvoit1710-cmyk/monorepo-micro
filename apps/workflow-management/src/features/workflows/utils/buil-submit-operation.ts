@@ -84,14 +84,18 @@ export function buildSubmitOperations(
 
 export function createConfirmRejectPayload(action: "confirm" | "reject") {
     return {
-        artifact_id: "__root__",
-        operations: [
+        artifacts: [
             {
-                operation: "insert",
-                row_id: null,
-                data: {
-                    _action: action
-                }
+                artifact_id: "__root__",
+                operations: [
+                    {
+                        operation: "insert",
+                        row_id: null,
+                        data: {
+                            _action: action
+                        }
+                    }
+                ]
             }
         ]
     };

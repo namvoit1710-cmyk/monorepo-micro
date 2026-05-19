@@ -24,7 +24,7 @@ import {
 
 interface IUseExecuteWorkflowProps {
     dismiss?: (nodeId: string) => void;
-    prompt: (payload: IRequestedPayload) => Promise<InteractionResultType | boolean>;
+    prompt: (payload: IRequestedPayload) => Promise<InteractionResultType>;
     editorRef: RefObject<WorkflowEditorHandle | null>;
     onSaveWorkflow?: () => void;
     onNodeCompleted?: (data: INodeLogData) => void;
@@ -212,22 +212,21 @@ const useExecuteWorkflow = ({
     useEffect(() => {
         if (!testRunId) return;
 
-        const reRunNode = async ({ nodeId, runId, taskId, payload }: {
+        const reRunNode = async ({ nodeId, runId, taskId, eTag, payload }: {
             nodeId: string;
             runId: string;
             taskId: string;
+            eTag: string;
             payload: Record<string, any>;
         }) => {
 
             try {
-                const { eTag, ...rest } = payload ?? {};
-
                 await patchInteractionResult({
                     node_id: nodeId,
                     run_id: runId,
                     task_id: taskId,
                     etag: eTag,
-                    data: rest
+                    data: payload
                 })
 
             } catch (error) {
@@ -454,11 +453,13 @@ const useExecuteWorkflow = ({
             //         updated_input: result ? result as Record<string, any> : {}
             //     }
             // });
+            const { eTag, ...restResult } = result || {};
             void reRunNode({
                 nodeId: payload.node_id,
                 runId: payload.run_id,
                 taskId: payload.task_id,
-                payload: result ? result as Record<string, any> : createConfirmRejectPayload("reject")
+                eTag: eTag as string,
+                payload: restResult ? restResult as Record<string, unknown> : createConfirmRejectPayload("reject")
             })
         };
 
@@ -490,11 +491,14 @@ const useExecuteWorkflow = ({
             //         }
             //     }
             // });
+
+            console.log("Human action result", { result });
             void reRunNode({
                 nodeId: payload.node_id,
                 runId: payload.run_id,
                 taskId: payload.task_id,
-                payload: result ? createConfirmRejectPayload("confirm") : createConfirmRejectPayload("reject")
+                eTag: result?.eTag as string,
+                payload: result?.isConfirmed ? createConfirmRejectPayload("confirm") : createConfirmRejectPayload("reject")
             })
         };
 
@@ -520,11 +524,13 @@ const useExecuteWorkflow = ({
             //         updated_input: result ? result as Record<string, any> : {}
             //     }
             // });
+            const { eTag, ...restResult } = result || {};
             void reRunNode({
                 nodeId: payload.node_id,
                 runId: payload.run_id,
                 taskId: payload.task_id,
-                payload: result ? result as Record<string, any> : createConfirmRejectPayload("reject")
+                eTag: eTag as string,
+                payload: restResult ? restResult as Record<string, unknown> : createConfirmRejectPayload("reject")
             })
         };
 
@@ -606,7 +612,7 @@ const useExecuteWorkflow = ({
 
             const payload = nestedData?.data || nestedData;
 
-
+            console.log("Received socket event", { event, payload });
             const handler = methodByEvent[event as keyof typeof methodByEvent];
             if (handler) {
                 handler(payload);

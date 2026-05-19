@@ -8,7 +8,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@l
 import { isEmpty } from "lodash-es"
 import { Paperclip } from "lucide-react"
 import { useCallback } from "react"
-import ArtifactFileItem from "./artifact-file-item"
 import { useNodeDetailContext } from "./node-detail-provider"
 
 const NodeDetailOutput = () => {
@@ -79,14 +78,14 @@ const NodeDetailOutput = () => {
                                 {!outputArtifacts?.length && (<span className="text-sm text-gray-500 text-center w-full block">{t("no_artifacts")}</span>)}
                                 {!!outputArtifacts?.length && (
                                     <div className="flex flex-col gap-2">
-                                        {outputArtifacts.map((artifact, index) => (
+                                        {/* {outputArtifacts.map((artifact, index) => (
                                             <ArtifactFileItem
                                                 key={artifact.file_id || index}
                                                 artifact={artifact}
                                                 isDownloading={isDownloading(artifact.file_id)}
                                                 onDownload={downloadArtifact}
                                             />
-                                        ))}
+                                        ))} */}
                                     </div>
                                 )}
                             </AccordionContent>

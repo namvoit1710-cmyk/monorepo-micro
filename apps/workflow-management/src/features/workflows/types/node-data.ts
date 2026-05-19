@@ -18,7 +18,7 @@ export interface INodeDataDetails {
     taken_edge_ports: string | null;
 }
 
-export interface IGetNodeDataInfoResponse {
+export interface IGetNodeDataInfo {
     run_id: string;
     node_id: string;
     task_id: string;
@@ -32,4 +32,9 @@ export interface IGetNodeDataInfoResponse {
     output: any | null;
     produced_artifacts: any[];
     etag: string;
+}
+
+export interface IGetNodeDataInfoResponse {
+    status: boolean;
+    data: IGetNodeDataInfo
 }

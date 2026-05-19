@@ -1,5 +1,5 @@
-import { SocketClient } from "@ldc/api-sdk/socket";
 import type { ISocket } from "@ldc/api-sdk/socket";
+import { SocketClient } from "@ldc/api-sdk/socket";
 import type { ChatMessage } from "../../types/message";
 import type {
   ChatTransport,
@@ -20,6 +20,11 @@ export interface SocketTransportConfig {
   timeout?: number;
   retry?: TransportRetryConfig;
   reconnect?: boolean;
+  parseEvent?: (raw: unknown) => ChatTransportEvent | null;
+  join?: {
+    event: string;
+    payload: Record<string, unknown> | ((context: { room: string; runId: string }) => Record<string, unknown>);
+  } | false;
 }
 
 export class SocketTransport implements ChatTransport {
@@ -90,7 +95,18 @@ export class SocketTransport implements ChatTransport {
     };
 
     this.iSocket.on("connect", () => {
-      this.iSocket!.emit("wait", { room });
+      const joinConfig = this.config.join;
+
+      if (joinConfig === false) return;
+
+      const event = joinConfig?.event ?? "wait";
+      const payload = typeof joinConfig?.payload === "function"
+        ? joinConfig.payload({ room, runId: context.runId })
+        : (joinConfig?.payload ?? { room });
+
+      if (this.iSocket) {
+        this.iSocket.emit(event, payload);
+      }
     });
 
     this.iSocket.on(this.channel, dataHandler);
@@ -119,12 +135,16 @@ export class SocketTransport implements ChatTransport {
   }
 
   private parseEvent(raw: unknown): ChatTransportEvent | null {
+    if (this.config.parseEvent) {
+      return this.config.parseEvent(raw);
+    }
+
     const data = raw as Record<string, unknown>;
     const eventKey = data[this.eventKeyField] as string | undefined;
 
     if (eventKey === this.completedEventKey) return null;
     if (eventKey === this.errorEventKey) {
-      return { type: "error", error: (data.message as string) ?? "Unknown error" };
+      return { type: "error", error: (data.message as string) || "Unknown error" };
     }
 
     if (typeof data.content === "string") {

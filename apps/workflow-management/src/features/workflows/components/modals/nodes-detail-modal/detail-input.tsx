@@ -1,32 +1,42 @@
-
 import { useEditorStore } from "@/features/workflows/stores/editor-stores"
-import type { IArtifactVariableSuggestionSource, IVariableSuggestionSource } from "@/features/workflows/types/workflows"
 import { useLanguage } from "@/hooks/use-language"
 import { cn } from "@ldc/ui"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@ldc/ui/components/accordion"
 import { useMemo } from "react"
+import ArtifactItem from "./artifact-item"
+import InputSchema from "./input-schema"
 import { useNodeDetailContext } from "./node-detail-provider"
 import { UpstreamNodes } from "./upstream-item"
-import VariablesContextGroup from "./variables-context-group"
-
-const isArtifactVariableSuggestionSource = (
-    item: IVariableSuggestionSource
-): item is IArtifactVariableSuggestionSource => {
-    return item.node_id === null && item.node_name === "artifacts"
-}
 
 const NodeDetailInput = () => {
     const { t } = useLanguage()
 
-    const { isRunNodeLoading, loadingNodeId, variablesInputs, artifactInputs, isLoadingInput, refetchVariableInput } = useNodeDetailContext()
-    const selectedNodeId = useEditorStore(s => s.selectedNode?.id)
+    const {
+        isRunNodeLoading,
+        loadingNodeId,
+        scopedVariables,
+        isLoadingInput,
+        refetchVariableInput
+    } = useNodeDetailContext()
+    const selectedNode = useEditorStore(s => s.selectedNode)
+    const selectedNodeId = selectedNode?.id
     const predecessorNodes = useEditorStore(s => s.predecessorNodes)
 
-    const isUpstreamLoading = isRunNodeLoading && loadingNodeId !== selectedNodeId;
+    const isUpstreamLoading = isRunNodeLoading && loadingNodeId !== selectedNodeId
 
-    const invalidVariablesInputs = useMemo(() => {
-        return variablesInputs.filter(item => !!item.node_id)
-    }, [variablesInputs])
+    const nodeVariablesInputs = useMemo(() => {
+        return scopedVariables.filter(item => item.scopeType !== "input" && item.scopeType !== "artifacts")
+    }, [scopedVariables])
+
+    const inputVariablesInputs = useMemo(() => {
+        return scopedVariables.find(item => item.scopeType === "input")
+    }, [scopedVariables])
+
+    const artifactVariablesInputs = useMemo(() => {
+        return scopedVariables.find(item => item.scopeType === "artifacts")
+    }, [scopedVariables])
+
+    console.log("artifactVariablesInputs", scopedVariables)
 
     const hasUpstreamNodes = useMemo(() => {
         return predecessorNodes?.length > 0
@@ -34,7 +44,7 @@ const NodeDetailInput = () => {
 
     return (
         <div className="flex flex-col gap-4 w-full h-full overflow-hidden!">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between px-1.5">
                 <h5 className="uppercase font-semibold">{t("nodes.nodes_popup_input")}</h5>
             </div>
 
@@ -57,26 +67,51 @@ const NodeDetailInput = () => {
                         <>
                             <UpstreamNodes
                                 nodes={predecessorNodes}
-                                variableNodes={invalidVariablesInputs}
+                                variableNodes={nodeVariablesInputs}
                                 reloadInputSchema={refetchVariableInput}
                             />
-
                         </>
                     )}
 
-                    <Accordion type="single" defaultValue="variables-contexts" collapsible className="w-full">
-                        <AccordionItem value="variables-contexts" className="border-0">
-                            <AccordionTrigger className="justify-start [&>svg]:order-first hover:no-underline cursor-pointer hover:bg-gray-100 py-2 rounded-md">
-                                <span className="flex items-center gap-4 pl-2">
-                                    <span>{t("nodes.nodes_popup_variables_contexts")}</span>
-                                </span>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-3">
-                                <VariablesContextGroup artifacts={artifactInputs!} />
-                            </AccordionContent>
-                        </AccordionItem>
-                    </Accordion>
+                    {!!inputVariablesInputs && (
+                        <Accordion type="multiple" className="w-full mt-4">
+                            <AccordionItem key={inputVariablesInputs.scopeId} value={inputVariablesInputs.scopeId} className="border-0">
+                                <AccordionTrigger className="justify-start px-1 w-full hover:no-underline cursor-pointer hover:bg-gray-100 py-2 rounded-md">
+                                    <span className="flex items-center gap-2 flex-2">
+                                        <span className="font-medium">{inputVariablesInputs.label}</span>
+                                    </span>
+                                </AccordionTrigger>
+                                <AccordionContent className="px-3 py-2">
+                                    {!!Object.keys(inputVariablesInputs.paths).length && (
+                                        <InputSchema scopePath={inputVariablesInputs.paths} />
+                                    )}
 
+                                    {!Object.keys(inputVariablesInputs.paths).length && (
+                                        <span className="text-sm text-gray-500 text-center block">
+                                            {t("nodes.nodes_popup_no_input_data")}
+                                        </span>
+                                    )}
+                                </AccordionContent>
+                            </AccordionItem>
+
+                        </Accordion>
+                    )}
+
+                    {!!artifactVariablesInputs && (
+                        <Accordion type="multiple" className="w-full mt-4">
+                            <AccordionItem key={artifactVariablesInputs.scopeId} value={artifactVariablesInputs.scopeId} className="border-0">
+                                <AccordionTrigger className="justify-start px-1 w-full hover:no-underline cursor-pointer hover:bg-gray-100 py-2 rounded-md">
+                                    <span className="flex items-center gap-2 flex-2">
+                                        <span className="font-medium">{artifactVariablesInputs.label}</span>
+                                    </span>
+                                </AccordionTrigger>
+                                <AccordionContent className="px-3 py-2">
+                                    <ArtifactItem paths={artifactVariablesInputs.paths} enableDragKey />
+                                </AccordionContent>
+                            </AccordionItem>
+
+                        </Accordion>
+                    )}
                 </div>
 
                 {(isUpstreamLoading || isLoadingInput) && (

@@ -17,7 +17,7 @@ export default defineConfig({
       shared: {
         react: { singleton: true, eager: true, requiredVersion: "^19" },
         "react-dom": { singleton: true, eager: true, requiredVersion: "^19" },
-        "react-router-dom": { singleton: true, eager: true },
+        "react-router-dom": { singleton: true, eager: true, requiredVersion: false },
         "react-i18next": {
           singleton: true,
           eager: true,
@@ -38,6 +38,9 @@ export default defineConfig({
       //   },
       // },
       dts: false,
+      dev: {
+        disableLiveReload: true,
+      },
     }),
   ],
   tools: {
@@ -48,6 +51,11 @@ export default defineConfig({
         ],
       },
     },
+    rspack: {
+      experiments: {
+        css: true
+      },
+    }
   },
 
   resolve: {
@@ -63,9 +71,11 @@ export default defineConfig({
     client: {
       overlay: false,
     },
-    lazyCompilation: {
-      entries: true,
-      imports: false,
-    },
+    lazyCompilation: false,
+    hmr: true
   },
+
+  output: {
+    injectStyles: false,
+  }
 });

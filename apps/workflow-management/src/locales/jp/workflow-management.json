@@ -24,5 +24,6 @@
     "filter": "フィルター",
     "start_date": "開始日",
     "end_date": "終了日"
-  }
+  },
+  "nodes.execute_previous_node": ""
 }

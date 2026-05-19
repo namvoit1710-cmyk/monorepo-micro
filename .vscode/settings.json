@@ -39,7 +39,9 @@
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
 
-  "i18n-ally.localesPaths": ["packages/i18n/src/locales"],
+  // "i18n-ally.localesPaths": ["packages/i18n/src/locales"],
+  // "i18n-ally.localesPaths": ["packages/i18n/src/locales"],
+  "i18n-ally.localesPaths": ["apps/workflow-management/src/locales"],
   "i18n-ally.keystyle": "flat",
   "i18n-ally.sourceLanguage": "en",
   "i18n-ally.displayLanguage": "en",
@@ -52,6 +54,7 @@
       "templates": ["{key}"]
     }
   ],
-  "i18n-ally.pathMatcher": "{locale}/dashboard.json"
+  "i18n-ally.pathMatcher": "{locale}/workflow-management.json"
+  // "i18n-ally.pathMatcher": "{locale}/dashboard.json"
   // "i18n-ally.pathMatcher": "{locale}/common.json"
 }

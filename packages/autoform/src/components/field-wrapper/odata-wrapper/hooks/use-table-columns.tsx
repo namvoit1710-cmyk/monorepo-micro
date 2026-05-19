@@ -61,18 +61,14 @@ const CheckboxCell = ({ checked }: { checked: boolean }) => (
     </div>
 );
 
-const ValidationIcon = ({ status, message, fieldKey, rowData }: { status: "error" | "warning"; message: string; fieldKey: string; rowData: any }) => {
-    const validateField = rowData._validate_field;
-
-    if (validateField !== fieldKey) return null;
-
+const ValidationIcon = ({ status, message }: { status: "error" | "warning"; message: string }) => {
     const Icon = status === "error" ? AlertCircle : AlertTriangle;
     const colorClass = status === "error" ? "text-destructive" : "text-yellow-500";
 
     return (
         <TooltipProvider>
             <Tooltip>
-                <TooltipTrigger asChild>
+                <TooltipTrigger>
                     <Icon className={`size-4 ${colorClass} ml-2 inline-block`} />
                 </TooltipTrigger>
                 <TooltipContent>
@@ -156,10 +152,9 @@ export const useTableColumns = <T extends { _id: string },>({
                     const status: RowDisplayStatus = row.original._status;
                     const isLocalChange = status === "inserted" || status === "updated";
 
-                    // Get validation info
-                    const validateStatus = row.original._validate_status as "error" | "warning" | undefined;
-                    const validateMessage = row.original._validate_message as string | undefined;
-                    const showValidation = validateStatus && validateMessage && (validateStatus === "error" || validateStatus === "warning");
+                    const validateStatus = row.original.__validate_status as "error" | "warning" | undefined;
+                    const validateMessage = row.original.__validate_message as string | undefined;
+                    const showValidation = validateStatus && validateMessage && (validateStatus === "error" || validateStatus === "warning") && row.original.__validate_field === rawKey;
 
                     let content: React.ReactNode;
 
@@ -192,11 +187,12 @@ export const useTableColumns = <T extends { _id: string },>({
                                 <ValidationIcon
                                     status={validateStatus}
                                     message={validateMessage}
-                                    fieldKey={rawKey}
-                                    rowData={row.original}
                                 />
                             )}
-                            {content}
+
+                            <span className="line-clamp-2">
+                                {content}
+                            </span>
                         </div>
                     );
                 },

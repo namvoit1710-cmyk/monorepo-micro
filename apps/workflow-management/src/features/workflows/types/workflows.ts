@@ -1,4 +1,4 @@
-import { IWorkflowSessionData } from "./workflow-session";
+import type { IWorkflowSessionData } from "./workflow-session";
 
 export interface IWorkflowNodeMetadata {
     groups?: string[];
@@ -14,7 +14,7 @@ export interface IWorkflowNodeParamBinding {
 
 export type WorkflowStatus = "DRAFT" | "VALID" | "DEPLOYED" | "ARCHIVED";
 export type PortDataType = "any" | "string" | "number" | "boolean" | "object" | "array";
-export type NodeType = 
+export type NodeType =
     | "TASK"
     | "PARALLEL"
     | "CONDITION"
@@ -274,9 +274,15 @@ export interface IWorkflowConfig {
 
 export interface IVariableSuggestionPath {
     path: string;
-    type: string;
-    label: string;
+    kind: string;
+    output_type: string;
+    item_type: string | null;
     sample: any;
+    columns: string[];
+    preview_rows: any[];
+    label: string;
+    expandable: boolean;
+    display_path: string;
 }
 
 export interface IWorkflowArtifact {
@@ -291,6 +297,22 @@ export interface IWorkflowArtifact {
     };
 }
 
+export interface IVariableSuggestionScope {
+    scope_type: string;
+    scope_id: string;
+    label: string;
+    expression_prefix: string;
+    paths: IVariableSuggestionPath[];
+    node_type: string | null;
+    has_file_data: boolean;
+    file_id: string | null;
+    columns: string[];
+    preview_rows: Record<string, any>[];
+    artifacts: IWorkflowArtifact[];
+    default_artifact_path: string | null;
+}
+
+// Legacy types for backward compatibility
 export interface IVariableSuggestionSource {
     node_id: string | null;
     node_name: string;
@@ -314,9 +336,15 @@ export interface IArtifactVariableSuggestionSource extends IVariableSuggestionSo
 export interface IVariableSuggestionData {
     run_id: string;
     node_id: string;
-    artifacts: IArtifactVariableSuggestionSource;
-    sources: IVariableSuggestionSource[];
+    workflow: any;
+    run: any;
+    scopes: IVariableSuggestionScope[];
     error: string | null;
+    error_code: string;
+    error_details: Record<string, any>;
+    // Legacy fields for backward compatibility
+    artifacts?: IArtifactVariableSuggestionSource;
+    sources?: IVariableSuggestionSource[];
 }
 
 export interface IVariableSuggestionResponse {

@@ -48,11 +48,14 @@ const NodeDetailForm = () => {
 
     const defaultValues = useMemo(() => {
         return { parameters: selectedNode?.original.parameters ?? {} }
-    }, [selectedNode])
+    }, [selectedNode?.id])
 
     const handleUpdateParameters = (data: FieldValues) => {
         const parameters = data.parameters ?? {}
         if (!selectedNode) return
+
+        const current = selectedNode.original.parameters ?? {}
+        if (JSON.stringify(current) === JSON.stringify(parameters)) return
 
         if (selectedNode.original.worker_type === WORKER_TYPE_UPDATE_PORT.SWITCH) {
             const { data: cases } = data.parameters;

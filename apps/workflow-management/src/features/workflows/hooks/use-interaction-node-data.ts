@@ -27,6 +27,8 @@ export function useInteractionNodeData(payload: InteractionPayload) {
         }
     );
 
+    console.log("Node schema response", { nodeDataResponse });
+
     const { refetch: refetchOutputData } = useGetNodeDataInfo(
         { runId: payload?.run_id ?? "", nodeId: payload?.node_id ?? "", side: "output" },
         {
@@ -40,12 +42,12 @@ export function useInteractionNodeData(payload: InteractionPayload) {
             return null;
         }
 
-        return nodeDataResponse.data.data.root;
+        return nodeDataResponse.data?.data.root;
     }, [nodeDataResponse]);
 
     const rootFileId = root?.file_id ?? "";
 
-    const { data: rootFileData, isLoading: isLoadingRootFile } = useQueryFileById(rootFileId, {
+    const { data: rootFileData, isLoading: isLoadingRootFile } = useQueryFileById({ file_id: rootFileId }, {
         enabled: !!rootFileId,
         staleTime: 0,
     });
@@ -55,9 +57,9 @@ export function useInteractionNodeData(payload: InteractionPayload) {
             return null;
         }
 
-        const rows = rootFileData.data.data;
+        const rows = rootFileData.data;
 
-        return (rows[0] as Record<string, unknown> | undefined) ?? null;
+        return (rows?.[0] as Record<string, unknown> | undefined) ?? null;
     }, [rootFileData]);
 
     const schema = useMemo<ISchema>(() => {
@@ -68,7 +70,6 @@ export function useInteractionNodeData(payload: InteractionPayload) {
         }
         return { fields: nodeSchema.data.schema };
     }, [nodeSchema, isNodeSchemaLoading, payload]);
-    console.log("Node Schema:", nodeSchema, schema);
 
     const defaultValueFromPayload = useMemo(() => {
         const inputSchema = Array.isArray(payload.input_schema) ? payload.input_schema : [];
@@ -92,8 +93,6 @@ export function useInteractionNodeData(payload: InteractionPayload) {
 
         return root ? { ...scalarDefaults, ...artifactDefaults } : defaultValueFromPayload;
     }, [rootDefaultRow, root, defaultValueFromPayload]);
-
-    console.log("Default Values:", defaultValues, schema);
 
     const isLargeWrapperInput = useMemo(
         () => isLargeWrapperSchema(schema.fields),

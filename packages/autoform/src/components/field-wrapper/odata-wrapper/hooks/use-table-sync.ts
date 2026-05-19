@@ -12,7 +12,7 @@ export const useTableSync = ({ name }: UseTableSyncOptions) => {
 
     const syncArrayToRHF = useCallback((data: any[]) => {
         const clean = data?.map(({ _id, ...rest }) => rest);
-        
+
         setValue(name, clean, { shouldDirty: true, shouldValidate: true });
     }, [name, setValue]);
 

@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/refs */
-
 import { useMemo } from "react";
 import type { ChangeRecord } from "./use-change-tracker";
 
@@ -7,8 +5,8 @@ export type RowDisplayStatus = "inserted" | "updated" | "deleted" | "none";
 
 export interface DisplayRow {
     _id: string;
-    _status: RowDisplayStatus;
-    _disabled: boolean;
+    __status: RowDisplayStatus;
+    __disabled: boolean;
     [key: string]: any;
 }
 
@@ -31,8 +29,8 @@ export const useTableData = ({
             if (record._action === "insert") {
                 insertedRows.unshift({
                     ...record,
-                    _status: "inserted",
-                    _disabled: false,
+                    __status: "inserted",
+                    __disabled: false,
                 });
             }
         });
@@ -42,19 +40,19 @@ export const useTableData = ({
             const change = changeMap.get(String(id));
 
             if (!change) {
-                return { ...row, _id: String(id), _status: "none", _disabled: false };
+                return { ...row, _id: String(id), __status: "none", __disabled: false };
             }
 
             if (change._action === "delete") {
-                return { ...row, _id: String(id), _status: "deleted", _disabled: true };
+                return { ...row, _id: String(id), __status: "deleted", __disabled: true };
             }
 
             if (change._action === "edit") {
                 const { _id, _action, ...updatedFields } = change;
-                return { ...row, ...updatedFields, _id: String(id), _status: "updated", _disabled: false };
+                return { ...row, ...updatedFields, _id: String(id), __status: "updated", __disabled: false };
             }
 
-            return { ...row, _id: String(id), _status: "none", _disabled: false };
+            return { ...row, _id: String(id), __status: "none", __disabled: false };
         });
 
         return [...insertedRows, ...serverRows];

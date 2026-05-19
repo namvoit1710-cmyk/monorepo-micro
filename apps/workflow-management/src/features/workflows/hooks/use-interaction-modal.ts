@@ -3,6 +3,7 @@ import { useLanguage } from "@/hooks/use-language";
 import type { IField } from "@ldc/autoform";
 import { useCallback, useState } from "react";
 import type { SocketEvent, SocketEventFullPayload } from "../types/socket-event";
+import { useGetNodeDataInfo } from "./apis/node-data";
 
 export enum InteractionModalEnum {
     WORKFLOW_EXECUTION = "workflow_execution",
@@ -41,6 +42,14 @@ export function useInteractionModal() {
         null
     );
 
+    const { refetch: refetchOutputData } = useGetNodeDataInfo(
+        { runId: modalState?.payload?.run_id ?? "", nodeId: modalState?.payload?.node_id ?? "", side: "output" },
+        {
+            enabled: false,
+            staleTime: 0,
+        }
+    );
+
     const showMessageBox = useMessageBox();
 
     const handleAction = useCallback(
@@ -54,14 +63,24 @@ export function useInteractionModal() {
     const prompt = useCallback(
         async (
             payload: IRequestedPayload
-        ): Promise<InteractionResultType | boolean> => {
+        ): Promise<InteractionResultType> => {
             if (payload.type === InteractionModalEnum.HUMAN_ACTION_REQUESTED) {
+                setModalState({
+                    title: "",
+                    payload,
+                    resolve: handleAction(() => null),
+                });
                 const result = await showMessageBox(
                     payload.instruction ?? "",
                     t(InteractionModalType[payload.type]),
                 );
 
-                return result;
+                setModalState(null);
+
+                const res = await refetchOutputData();
+                const latestETag = res.data?.data?.etag;
+
+                return { isConfirmed: result, eTag: latestETag };
             }
             const title = t(InteractionModalType[payload.type]);
             return new Promise((resolve) => {

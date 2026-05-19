@@ -19,6 +19,8 @@ import { Slot } from "../../../../contexts/slot.context";
 import type { FieldWrapperProps, IField } from "../../../../types/schema";
 import MoreActionDropdown from "./more-action-dropdown";
 
+import "../styles/styles.css";
+
 export interface IODataWrapperProps extends FieldWrapperProps {
     field: IField;
     path: string[];
@@ -51,6 +53,22 @@ const OdataWrapper = (props: IODataWrapperProps) => {
         changeMapRef, version,
     } = useChangeTracker({ name });
 
+    const customHandlers = useMemo(() => ({
+        updateTableData: (ctx: any) => {
+            const updatedRows = ctx.lastResult?.updatedRows;
+            if (!updatedRows || !Array.isArray(updatedRows)) {
+                console.warn("[ODataWrapper] updateTableData: no updatedRows in lastResult");
+                return;
+            }
+
+            updatedRows.forEach(row => {
+                if (row._id) {
+                    trackUpdate(row._id, row);
+                }
+            });
+        }
+    }), [trackUpdate]);
+
     const {
         pagination,
         setPagination,
@@ -64,7 +82,7 @@ const OdataWrapper = (props: IODataWrapperProps) => {
     } = useODataState();
 
     const odataService = useODataFetch({
-        odataService: services?.["odata"] as import("../../../../hooks/use-builder-services").ServiceHandler | undefined,
+        odataService: services?.odata,
         endpoint: fileId ? `odata/${fileId}/data` : field?.fieldConfig?.wrapperProps?.endpoint,
         pagination,
         defaultOrderBy: getOrderByString(),
@@ -129,9 +147,15 @@ const OdataWrapper = (props: IODataWrapperProps) => {
     };
 
     const getRowClassName = useCallback((row: any) => {
-        switch (row.original._status) {
+        switch (row.original.__validate_status) {
+            case "error": return "bg-red-50 border-l-4 border-l-red-500";
+            case "warning": return "bg-yellow-50 border-l-4 border-l-yellow-500";
+            case "success": return "bg-green-50 border-l-4 border-l-green-500";
+        }
+
+        switch (row.original.__status) {
             case "inserted": return "bg-green-50 border-l-4 border-l-green-500";
-            case "updated": return "bg-yellow-50 border-l-4 border-l-yellow-500";
+            case "edited": return "bg-yellow-50 border-l-4 border-l-yellow-500";
             case "deleted": return "bg-red-50 border-l-4 border-l-red-500 opacity-60 pointer-events-none";
             default: return "";
         }
@@ -158,7 +182,17 @@ const OdataWrapper = (props: IODataWrapperProps) => {
                     {isShowSearch ? <SearchInput wrapperClassName="flex-2 max-w-100" disabled={isLoading} /> : <span />}
 
                     <div className="flex items-center justify-end gap-2">
-                        <Slot name="filter" />
+                        <Slot
+                            name="filter"
+                            slotData={{
+                                tableData,
+                                rowSelections,
+                                pagination,
+                                sortState,
+                                searchValue,
+                                customHandlers
+                            }}
+                        />
 
                         <span className="h-4 w-0.5 bg-muted" />
 

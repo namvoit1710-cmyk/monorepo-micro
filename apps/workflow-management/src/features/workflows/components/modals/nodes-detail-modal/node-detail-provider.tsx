@@ -1,4 +1,4 @@
-import type { IUseNodeDetailReturn } from "@/features/workflows/types/node-comprehensive";
+import type { IUseNodeDetailReturn } from "@/features/workflows/types/node-detail";
 import type { BuilderRef } from "@ldc/autoform";
 import type { BaseNode } from "@ldc/workflow-editor";
 import type { RefObject } from "react";
@@ -26,6 +26,7 @@ const Context = createContext<INodeDetailContext>({
     showOutputSchema: false,
     outputArtifacts: [],
     isLoadingOutputSchema: false,
+    scopedVariables: [],
     artifactInputs: undefined,
     refetchVariableInput: () => { },
     variablesInputs: [],

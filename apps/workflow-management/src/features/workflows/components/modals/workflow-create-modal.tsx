@@ -135,7 +135,7 @@ const WorkflowCreateModal = (props: IWorkflowCreateModalProps) => {
                     )}
                 </div>
 
-                <DialogFooter className="py-1">
+                <DialogFooter>
                     <DialogClose asChild>
                         <Button variant="outline">{t("cancel")}</Button>
                     </DialogClose>

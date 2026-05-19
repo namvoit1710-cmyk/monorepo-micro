@@ -23,7 +23,11 @@ export interface IODataStateOptions {
 export interface IODataStateReturn {
     // Pagination
     pagination: IPaginationState;
-    setPagination: (newPagination: Partial<IPaginationState>) => void;
+    setPagination: (
+        pagination:
+            | Partial<IPaginationState>
+            | ((prev: IPaginationState) => Partial<IPaginationState> | IPaginationState)
+    ) => void;
 
     // Search
     searchValue: string;
@@ -72,17 +76,28 @@ export const useODataState = (
 
     const [filters, setFilters] = useState<IFilterState>(initialFilters);
 
-    const setPagination = useCallback((newPagination: Partial<IPaginationState>) => {
-        _setPagination(prev => ({ ...prev, ...newPagination }));
+    const setPagination = useCallback((
+        newPagination:
+            | Partial<IPaginationState>
+            | ((prev: IPaginationState) => Partial<IPaginationState> | IPaginationState)
+    ) => {
+        if (typeof newPagination === 'function') {
+            _setPagination(prev => {
+                const result = newPagination(prev);
+                return { ...prev, ...result };
+            });
+        } else {
+            _setPagination(prev => ({ ...prev, ...newPagination }));
+        }
     }, []);
 
     const setPageIndex = useCallback((pageIndex: number) => {
         _setPagination(prev => ({ ...prev, pageIndex }));
     }, []);
 
-    const setPageSize = useCallback((pageSize: number) => {
-        _setPagination(prev => ({ ...prev, pageSize, pageIndex: 0 }));
-    }, []);
+    // const setPageSize = useCallback((pageSize: number) => {
+    //     _setPagination(prev => ({ ...prev, pageSize, pageIndex: 0 }));
+    // }, []);
 
     const resetPagination = useCallback(() => {
         _setPagination({ pageIndex: initialPageIndex, pageSize: initialPageSize });
@@ -98,22 +113,22 @@ export const useODataState = (
         setPageIndex(0);
     }, [setPageIndex]);
 
-    const clearSort = useCallback(() => {
-        setSortState({});
-    }, []);
+    // const clearSort = useCallback(() => {
+    //     setSortState({});
+    // }, []);
 
-    const toggleSort = useCallback((field: string) => {
-        setSortState(prev => {
-            if (prev.field !== field) {
-                return { field, order: "asc" };
-            }
-            if (prev.order === "asc") {
-                return { field, order: "desc" };
-            }
-            return {};
-        });
-        setPageIndex(0);
-    }, [setPageIndex]);
+    // const toggleSort = useCallback((field: string) => {
+    //     setSortState(prev => {
+    //         if (prev.field !== field) {
+    //             return { field, order: "asc" };
+    //         }
+    //         if (prev.order === "asc") {
+    //             return { field, order: "desc" };
+    //         }
+    //         return {};
+    //     });
+    //     setPageIndex(0);
+    // }, [setPageIndex]);
 
     const setFilter = useCallback((key: string, value: any) => {
         setFilters(prev => ({ ...prev, [key]: value }));

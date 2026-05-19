@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@ldc/u
 import type { BaseNode } from "@ldc/workflow-editor";
 import { LoadingSpin } from "@ldc/workflow-editor";
 import { InfoIcon, PenIcon, PlayIcon } from "lucide-react";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import NodesPopupContent from "./detail-content";
 import NodeDetailProvider from "./node-detail-provider";
 
@@ -35,17 +35,6 @@ const NodesDetailModal = ({
     const { t } = useLanguage();
 
     const builderRef = useRef<BuilderRef>(null);
-
-    const inputTitleRef = useRef<HTMLInputElement>(null);
-    const [isEditingTitle, setIsEditingTitle] = useState(false);
-
-    const handleChangeInputTitle = (e: HTMLInputElement) => {
-        const value = e.value;
-        if (!selectedNode) return;
-        selectedNode.updateNodeLabel(value.trim());
-
-        setIsEditingTitle(false);
-    }
 
     const nodeDetailData = useNodeDetail();
 

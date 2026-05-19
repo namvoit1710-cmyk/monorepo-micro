@@ -36,20 +36,18 @@ export const useGetNodeDataInfo = (
     { runId, nodeId, side }: { runId: string, nodeId: string, side?: "input" | "output" },
     options?: Omit<
         UseQueryOptions<
-            { data: IGetNodeDataInfoResponse; etag?: string },
+            IGetNodeDataInfoResponse,
             AxiosError<{ code?: string, errors?: string }>,
-            { data: IGetNodeDataInfoResponse; etag?: string }
+            IGetNodeDataInfoResponse
         >, "queryKey" | "queryFn"
     >
 ) => {
     return useQuery({
         queryKey: nodeDataKeys.getNodeDataInfo(runId, nodeId, side ?? "output"),
-        queryFn: async (): Promise<{ data: IGetNodeDataInfoResponse; etag?: string }> => ({
-            data: await api.get<IGetNodeDataInfoResponse>(`/runs/${runId}/nodes/${nodeId}/data`, {
-                params: {
-                    side,
-                },
-            }),
+        queryFn: async (): Promise<IGetNodeDataInfoResponse> => await api.get<IGetNodeDataInfoResponse>(`/runs/${runId}/nodes/${nodeId}/data`, {
+            params: {
+                side,
+            },
         }),
         ...options
     })

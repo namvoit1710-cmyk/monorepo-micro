@@ -6,6 +6,24 @@ import type { IArtifactVariableSuggestionSource, IVariableSuggestionSource } fro
 
 export type IOutputSchemaHierarchical = unknown
 
+export interface IScopedVariable {
+    label: string
+    scopeType: string
+    scopeId: string
+    expressionPrefix: string
+    paths: Record<string, {
+        sample: unknown
+        displayPath: string
+        kind: string
+        outputType: string
+    }>
+    artifacts: unknown[]
+    hasFileData: boolean
+    fileId: string | null
+    columns: string[]
+    previewRows: any[]
+}
+
 export interface IUseNodeDetailReturn {
     // Node identity
     selectedNode: BaseNode | null
@@ -19,9 +37,13 @@ export interface IUseNodeDetailReturn {
     outputArtifacts: any[]
     isLoadingOutputSchema: boolean
 
-    artifactInputs: IArtifactVariableSuggestionSource | undefined
+    // New scoped variables structure
+    scopedVariables: IScopedVariable[]
     isLoadingInput?: boolean
     refetchVariableInput: () => void
+
+    // Legacy fields for backward compatibility
+    artifactInputs: IArtifactVariableSuggestionSource | undefined
     variablesInputs: IVariableSuggestionSource[]
 
     nodeDetail: INodeCatalogDetail | undefined

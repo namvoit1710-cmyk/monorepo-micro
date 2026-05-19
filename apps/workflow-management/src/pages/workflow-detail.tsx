@@ -206,7 +206,7 @@ const WorkflowDetailPage = () => {
                 loadingNodeId={loadingNodeId}
             />
 
-            {modalState &&
+            {modalState?.title &&
                 <>
                     {
                         modalState.payload.type === InteractionModalEnum.APPROVAL_FLOW_VIEWER ? (
