@@ -22,7 +22,7 @@ const ANIMATION_DURATION = 200;
 const reasoningVariants = cva("aui-reasoning-root mb-4 w-full", {
     variants: {
         variant: {
-            outline: "rounded-lg border px-3 py-2",
+            outline: "rounded-xl border border-border/50 bg-muted/10 px-3 py-2",
             ghost: "",
             muted: "rounded-lg bg-muted/50 px-3 py-2",
         },
@@ -131,7 +131,7 @@ function ReasoningTrigger({
         <CollapsibleTrigger
             data-slot="reasoning-trigger"
             className={cn(
-                "aui-reasoning-trigger group/trigger flex max-w-[75%] items-center gap-2 py-1 text-muted-foreground text-sm transition-colors hover:text-foreground",
+                "aui-reasoning-trigger group/trigger flex max-w-[75%] items-center gap-1.5 py-1.5 text-muted-foreground/70 text-xs font-medium transition-colors hover:text-muted-foreground",
                 className,
             )}
             {...props}
@@ -177,7 +177,7 @@ function ReasoningContent({
         <CollapsibleContent
             data-slot="reasoning-content"
             className={cn(
-                "aui-reasoning-content relative overflow-hidden text-muted-foreground text-sm outline-none",
+                "aui-reasoning-content relative overflow-hidden text-muted-foreground/80 text-sm outline-none",
                 "group/collapsible-content ease-out",
                 "data-[state=closed]:animate-collapsible-up",
                 "data-[state=open]:animate-collapsible-down",
@@ -200,7 +200,7 @@ function ReasoningText({ className, ...props }: React.ComponentProps<"div">) {
         <div
             data-slot="reasoning-text"
             className={cn(
-                "aui-reasoning-text relative z-0 max-h-64 space-y-4 overflow-y-auto ps-6 pt-2 pb-2 leading-relaxed",
+                "aui-reasoning-text relative z-0 max-h-64 space-y-3 overflow-y-auto ps-5 pt-2 pb-2 leading-6",
                 "transform-gpu transition-[transform,opacity]",
                 "group-data-[state=open]/collapsible-content:animate-in",
                 "group-data-[state=closed]/collapsible-content:animate-out",

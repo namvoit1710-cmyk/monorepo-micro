@@ -57,6 +57,8 @@
     "dev:dashboard": "turbo watch dev -F @ldc/dashboard",
     "build:dashboard": "turbo build -F @ldc/dashboard",
     "start:dashboard": "bun install && bun run dev:dashboard",
+    "dev:smdg-ai": "turbo watch dev -F @ldc/smdg-ai",
+    "build:smdg-ai": "turbo build -F @ldc/smdg-ai",
     "dev:workflow": "turbo watch dev -F @ldc/workflow-management",
     "build:workflow": "turbo build -F @ldc/workflow-management",
     "dev:docs": "turbo watch dev -F @ldc/docs",

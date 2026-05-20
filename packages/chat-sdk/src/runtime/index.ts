@@ -12,7 +12,7 @@ export type { ChatStoreAdapter } from "./store/types";
 
 export type { ChatActions, ChatActionsConfig } from "./use-chat-actions";
 
-export type { ChatRuntimeConfig } from "./use-chat-runtime";
+export type { ChatRuntimeConfig, ChatThreadListAdapter } from "./use-chat-runtime";
 
 export { SocketTransport } from "./transport/socket-transport";
 export type { SocketTransportConfig } from "./transport/socket-transport";

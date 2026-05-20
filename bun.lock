@@ -113,6 +113,42 @@
         "typescript": "catalog:",
       },
     },
+    "apps/smdg-ai": {
+      "name": "@ldc/smdg-ai",
+      "version": "1.0.0",
+      "dependencies": {
+        "@ldc/api-sdk": "workspace:^",
+        "@ldc/autoform": "workspace:^",
+        "@ldc/chat-sdk": "workspace:^",
+        "@ldc/env": "workspace:^",
+        "@ldc/tanstack-query": "workspace:^",
+        "@ldc/ui": "workspace:^",
+        "date-fns": "catalog:",
+        "lucide-react": "catalog:",
+        "react": "catalog:react19",
+        "react-dom": "catalog:react19",
+        "react-error-boundary": "catalog:",
+        "react-router-dom": "catalog:",
+        "zod": "catalog:",
+        "zustand": "catalog:",
+      },
+      "devDependencies": {
+        "@ldc/eslint-config": "workspace:^",
+        "@ldc/prettier-config": "workspace:^",
+        "@ldc/tailwind-config": "workspace:^",
+        "@ldc/tsconfig": "workspace:^",
+        "@module-federation/rsbuild-plugin": "^2.3.1",
+        "@rsbuild/core": "^1.7.5",
+        "@rsbuild/plugin-react": "^1.4.6",
+        "@tailwindcss/postcss": "catalog:",
+        "@types/node": "catalog:",
+        "@types/react": "catalog:react19",
+        "@types/react-dom": "catalog:react19",
+        "eslint": "catalog:",
+        "prettier": "catalog:",
+        "typescript": "catalog:",
+      },
+    },
     "apps/workflow-management": {
       "name": "@ldc/workflow-management",
       "version": "1.0.0",
@@ -727,6 +763,8 @@
     "@ldc/prettier-config": ["@ldc/prettier-config@workspace:tooling/prettier"],
 
     "@ldc/shell": ["@ldc/shell@workspace:apps/shell"],
+
+    "@ldc/smdg-ai": ["@ldc/smdg-ai@workspace:apps/smdg-ai"],
 
     "@ldc/tailwind-config": ["@ldc/tailwind-config@workspace:tooling/tailwind"],
 

@@ -23,9 +23,9 @@ const ANIMATION_DURATION = 200;
 const toolGroupVariants = cva("aui-tool-group-root group/tool-group w-full", {
     variants: {
         variant: {
-            outline: "rounded-lg border py-3",
+            outline: "rounded-xl border border-border/50 bg-muted/5 py-3",
             ghost: "",
-            muted: "rounded-lg border border-muted-foreground/30 bg-muted/30 py-3",
+            muted: "rounded-xl border border-muted-foreground/20 bg-muted/20 py-3",
         },
     },
     defaultVariants: { variant: "outline" },
@@ -109,7 +109,7 @@ function ToolGroupTrigger({
         <CollapsibleTrigger
             data-slot="tool-group-trigger"
             className={cn(
-                "aui-tool-group-trigger group/trigger flex items-center gap-2 text-sm transition-colors",
+                "aui-tool-group-trigger group/trigger flex items-center gap-1.5 text-xs font-medium text-muted-foreground/70 transition-colors hover:text-muted-foreground",
                 "group-data-[variant=outline]/tool-group-root:w-full group-data-[variant=outline]/tool-group-root:px-4",
                 "group-data-[variant=muted]/tool-group-root:w-full group-data-[variant=muted]/tool-group-root:px-4",
                 className,

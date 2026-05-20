@@ -1,0 +1,51 @@
+# Dependency directories
+node_modules/
+bower_components/
+env/
+venv/
+.venv/
+
+# Build and output directories
+dist/
+build/
+out/
+.next/
+.nuxt/
+
+# Logs and runtime data
+*.log
+logs/
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Sensitive data (Backup in case they aren't in .gitignore)
+.env
+.env.*
+*.pem
+*.key
+id_rsa
+
+# Heavy Media / Design assets
+*.mp4
+*.mov
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+
+# OS generated files
+.DS_Store
+Thumbs.db

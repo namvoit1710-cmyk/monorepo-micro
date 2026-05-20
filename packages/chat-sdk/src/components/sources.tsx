@@ -88,7 +88,7 @@ function Source({
             asChild
             variant={variant}
             className={cn(
-                "cursor-pointer outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+                "cursor-pointer rounded-full px-2.5 py-0.5 gap-1 text-xs font-normal outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
                 className,
             )}
         >

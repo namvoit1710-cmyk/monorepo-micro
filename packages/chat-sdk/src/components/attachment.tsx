@@ -144,7 +144,7 @@ const AttachmentUI: FC = () => {
                 <AttachmentPreviewDialog>
                     <TooltipTrigger asChild>
                         <div
-                            className="aui-attachment-tile size-14 cursor-pointer overflow-hidden rounded-[calc(var(--composer-radius)-var(--composer-padding))] border bg-muted transition-opacity hover:opacity-75"
+                            className="aui-attachment-tile size-14 cursor-pointer overflow-hidden rounded-[calc(var(--composer-radius)-var(--composer-padding))] border border-border/40 bg-muted/80 shadow-sm transition-all hover:opacity-80 hover:shadow-none"
                             role="button"
                             tabIndex={0}
                             aria-label={`${typeLabel} attachment`}
@@ -186,6 +186,60 @@ export const UserMessageAttachments: FC = () => {
     );
 };
 
+const UserImageAttachmentItem: FC = () => {
+    const isImage = useAuiState((s) => s.attachment.type === "image");
+    if (!isImage) return null;
+    return (
+        <AttachmentPrimitive.Root className="relative size-24 overflow-hidden rounded-xl border border-border/40 bg-muted/80 shadow-sm">
+            <AttachmentPreviewDialog>
+                <div className="size-full cursor-pointer">
+                    <AttachmentThumb />
+                </div>
+            </AttachmentPreviewDialog>
+        </AttachmentPrimitive.Root>
+    );
+};
+
+const UserFileAttachmentChip: FC = () => {
+    const isImage = useAuiState((s) => s.attachment.type === "image");
+    const name = useAuiState((s) => s.attachment.name);
+    if (isImage) return null;
+    return (
+        <AttachmentPrimitive.Root className="flex items-center gap-1.5 rounded-full border border-border/40 bg-muted/80 px-3 py-1.5 text-xs text-muted-foreground">
+            <FileText className="size-3.5 shrink-0" />
+            <span className="max-w-[160px] truncate">{name}</span>
+        </AttachmentPrimitive.Root>
+    );
+};
+
+export const UserMessageImageAttachments: FC = () => {
+    const hasImages = useAuiState((s) =>
+        s.message.attachments?.some((a) => a.type === "image") ?? false,
+    );
+    if (!hasImages) return null;
+    return (
+        <div className="aui-user-message-image-attachments col-span-full col-start-1 row-start-1 flex w-full flex-wrap justify-end gap-1">
+            <MessagePrimitive.Attachments>
+                {() => <UserImageAttachmentItem />}
+            </MessagePrimitive.Attachments>
+        </div>
+    );
+};
+
+export const UserMessageFileAttachments: FC = () => {
+    const hasFiles = useAuiState((s) =>
+        s.message.attachments?.some((a) => a.type !== "image") ?? false,
+    );
+    if (!hasFiles) return null;
+    return (
+        <div className="aui-user-message-file-attachments col-span-full col-start-1 row-start-2 flex w-full flex-wrap justify-end gap-1.5">
+            <MessagePrimitive.Attachments>
+                {() => <UserFileAttachmentChip />}
+            </MessagePrimitive.Attachments>
+        </div>
+    );
+};
+
 export const ComposerAttachments: FC = () => {
     return (
         <div className="aui-composer-attachments flex w-full flex-row items-center gap-2 overflow-x-auto empty:hidden">
@@ -204,7 +258,7 @@ export const ComposerAddAttachment: FC = () => {
                 side="bottom"
                 variant="ghost"
                 size="icon"
-                className="aui-composer-add-attachment size-8 rounded-full p-1 font-semibold text-xs hover:bg-muted-foreground/15 dark:border-muted-foreground/15 dark:hover:bg-muted-foreground/30"
+                className="aui-composer-add-attachment size-8 rounded-full p-1 font-semibold text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 aria-label="Add Attachment"
             >
                 <PlusIcon className="aui-attachment-add-icon size-5 stroke-[1.5px]" />

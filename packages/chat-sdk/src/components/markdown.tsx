@@ -8,6 +8,7 @@ import {
     unstable_memoizeMarkdownComponents as memoizeMarkdownComponents,
     useIsMarkdownCodeBlock,
 } from "@assistant-ui/react-markdown";
+import { TextMessagePartProvider } from "@assistant-ui/react";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { type FC, memo, useState } from "react";
 import remarkGfm from "remark-gfm";
@@ -27,6 +28,16 @@ const MarkdownTextImpl = () => {
 
 export const MarkdownText = memo(MarkdownTextImpl);
 
+export const StandaloneMarkdown: FC<{ content: string }> = ({ content }) => (
+    <TextMessagePartProvider text={content} isRunning={false}>
+        <MarkdownTextPrimitive
+            remarkPlugins={[remarkGfm]}
+            className="aui-md"
+            components={defaultComponents}
+        />
+    </TextMessagePartProvider>
+);
+
 const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
     const { isCopied, copyToClipboard } = useCopyToClipboard();
     const onCopy = () => {
@@ -35,7 +46,7 @@ const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
     };
 
     return (
-        <div className="aui-code-header-root mt-2.5 flex items-center justify-between rounded-t-lg border border-border/50 border-b-0 bg-muted/50 px-3 py-1.5 text-xs">
+        <div className="aui-code-header-root mt-2.5 flex items-center justify-between rounded-t-lg border border-border/40 border-b-0 bg-muted/30 px-4 py-2 text-xs">
             <span className="aui-code-header-language font-medium text-muted-foreground lowercase">
                 {language}
             </span>
@@ -75,7 +86,7 @@ const defaultComponents = memoizeMarkdownComponents({
     h1: ({ className, ...props }) => (
         <h1
             className={cn(
-                "aui-md-h1 mb-2 scroll-m-20 font-semibold text-base first:mt-0 last:mb-0",
+                "aui-md-h1 mt-5 mb-2 scroll-m-20 font-semibold text-base tracking-tight first:mt-0 last:mb-0",
                 className,
             )}
             {...props}
@@ -84,7 +95,7 @@ const defaultComponents = memoizeMarkdownComponents({
     h2: ({ className, ...props }) => (
         <h2
             className={cn(
-                "aui-md-h2 mt-3 mb-1.5 scroll-m-20 font-semibold text-sm first:mt-0 last:mb-0",
+                "aui-md-h2 mt-4 mb-1.5 scroll-m-20 font-semibold text-sm tracking-tight first:mt-0 last:mb-0",
                 className,
             )}
             {...props}
@@ -129,7 +140,7 @@ const defaultComponents = memoizeMarkdownComponents({
     p: ({ className, ...props }) => (
         <p
             className={cn(
-                "aui-md-p my-2.5 leading-normal first:mt-0 last:mb-0",
+                "aui-md-p my-3 leading-7 first:mt-0 last:mb-0",
                 className,
             )}
             {...props}
@@ -147,7 +158,7 @@ const defaultComponents = memoizeMarkdownComponents({
     blockquote: ({ className, ...props }) => (
         <blockquote
             className={cn(
-                "aui-md-blockquote my-2.5 border-muted-foreground/30 border-s-2 ps-3 text-muted-foreground italic",
+                "aui-md-blockquote my-3 border-muted-foreground/25 border-s-[3px] ps-4 text-muted-foreground/80 italic",
                 className,
             )}
             {...props}
@@ -156,7 +167,7 @@ const defaultComponents = memoizeMarkdownComponents({
     ul: ({ className, ...props }) => (
         <ul
             className={cn(
-                "aui-md-ul my-2 ms-4 list-disc marker:text-muted-foreground [&>li]:mt-1",
+                "aui-md-ul my-3 ms-5 list-disc marker:text-muted-foreground/60 [&>li]:mt-1.5",
                 className,
             )}
             {...props}
@@ -165,7 +176,7 @@ const defaultComponents = memoizeMarkdownComponents({
     ol: ({ className, ...props }) => (
         <ol
             className={cn(
-                "aui-md-ol my-2 ms-4 list-decimal marker:text-muted-foreground [&>li]:mt-1",
+                "aui-md-ol my-3 ms-5 list-decimal marker:text-muted-foreground/60 [&>li]:mt-1.5",
                 className,
             )}
             {...props}
@@ -225,7 +236,7 @@ const defaultComponents = memoizeMarkdownComponents({
     pre: ({ className, ...props }) => (
         <pre
             className={cn(
-                "aui-md-pre overflow-x-auto rounded-t-none rounded-b-lg border border-border/50 border-t-0 bg-muted/30 p-3 text-xs leading-relaxed",
+                "aui-md-pre overflow-x-auto rounded-t-none rounded-b-lg border border-border/40 border-t-0 bg-muted/20 px-4 py-3 text-xs leading-6",
                 className,
             )}
             {...props}
@@ -237,7 +248,7 @@ const defaultComponents = memoizeMarkdownComponents({
             <code
                 className={cn(
                     !isCodeBlock &&
-                    "aui-md-inline-code rounded-md border border-border/50 bg-muted/50 px-1.5 py-0.5 font-mono text-[0.85em]",
+                    "aui-md-inline-code rounded bg-muted/60 px-1.5 py-0.5 font-mono text-[0.85em]",
                     className,
                 )}
                 {...props}

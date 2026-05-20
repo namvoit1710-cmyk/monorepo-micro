@@ -15,6 +15,7 @@ export interface ChatRuntimeProviderProps {
   beforeSend?: (messages: ChatMessage[]) => Promise<TransportContext>;
   convertMessage?: (message: ChatMessage) => ThreadMessageLike;
   joinStrategy?: "concat-content" | "none";
+  onUpload?: (file: File) => Promise<{ id: string; url: string; contentType?: string }>;
 }
 
 export function ChatRuntimeProvider({
@@ -24,11 +25,12 @@ export function ChatRuntimeProvider({
   beforeSend,
   convertMessage,
   joinStrategy,
+  onUpload,
 }: ChatRuntimeProviderProps) {
   const defaultStore = useDefaultChatStore();
   const store = externalStore ?? defaultStore;
   const actions = useChatActions(transport, store, { beforeSend });
-  const runtime = useChatRuntime(store, actions, { convertMessage, joinStrategy });
+  const runtime = useChatRuntime(store, actions, { convertMessage, joinStrategy, onUpload });
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>

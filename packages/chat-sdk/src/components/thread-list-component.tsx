@@ -16,7 +16,7 @@ export function ThreadListSidebar({
 }: React.ComponentProps<typeof Sidebar>) {
     return (
         <Sidebar {...props}>
-            <SidebarHeader className="aui-sidebar-header mb-2 border-b">
+            <SidebarHeader className="aui-sidebar-header mb-1 border-b border-border/50 pb-1">
                 <div className="aui-sidebar-header-content flex items-center justify-between">
                     <SidebarMenu>
                         <SidebarMenuItem>
@@ -40,7 +40,7 @@ export function ThreadListSidebar({
                     </SidebarMenu>
                 </div>
             </SidebarHeader>
-            <SidebarContent className="aui-sidebar-content px-2">
+            <SidebarContent className="aui-sidebar-content px-2 pt-1">
                 <ThreadList />
             </SidebarContent>
             <SidebarRail />

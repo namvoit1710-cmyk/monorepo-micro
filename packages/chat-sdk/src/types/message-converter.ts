@@ -16,11 +16,19 @@ export function defaultConvertMessage(
       : undefined,
     attachments: message.attachments?.map((att) => ({
       id: att.id,
-      type: att.contentType?.startsWith("image/") ? "image" : "document",
+      type: att.type ?? (
+        att.contentType?.startsWith("image/")
+          ? "image"
+          : att.contentType === "application/pdf"
+            ? "document"
+            : "file"
+      ),
       name: att.name,
       contentType: att.contentType,
       status: { type: "complete" },
-      content: [],
+      content: att.type === "image" && att.url
+        ? [{ type: "image" as const, image: att.url }]
+        : [],
     })),
     status: mapStatus(message),
   };
@@ -42,6 +50,9 @@ function convertPart(
   switch (part.type) {
     case "text":
       return { type: "text", text: (part).text };
+
+    case "reasoning":
+      return { type: "reasoning", text: JSON.stringify(part.steps) } as never;
 
     case "tool-call": {
       const tc = part;

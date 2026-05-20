@@ -1,4 +1,5 @@
 // Runtime
+export { AssistantRuntimeProvider } from "@assistant-ui/react";
 export { ChatRuntimeProvider } from "./provider/chat-runtime-provider";
 export type { ChatRuntimeProviderProps } from "./provider/chat-runtime-provider";
 export {
@@ -42,6 +43,7 @@ export { Thread } from "./components/thread";
 export { AssistantSidebar } from "./components/assistant-sidebar";
 export { AssistantModal } from "./components/assistant-modal";
 export { ThreadListSidebar } from "./components/thread-list-component";
+export { ThreadList } from "./components/thread-list";
 export { MarkdownText } from "./components/markdown";
 export { ToolFallback } from "./components/tool-fallback";
 export { Reasoning } from "./components/reasoning";

@@ -44,14 +44,15 @@ export function useChatActions(
     const assistantMsg = createStreamingAssistantMessage();
     s.setMessages((prev) => [...prev, assistantMsg]);
 
+    const snapshot = [...s.messages, userMsg];
+
     let context: TransportContext | undefined;
     if (configRef.current?.beforeSend) {
-      const snapshot = [...s.messages, userMsg];
       context = await configRef.current.beforeSend(snapshot);
     }
 
     transportRef.current.send(
-      [...s.messages, userMsg],
+      snapshot,
       {
         onChunk: (event: ChatTransportEvent) => {
           storeRef.current.setMessages((prev) =>

@@ -1,11 +1,11 @@
-import type { ChatMessage } from "../../types/message";
+import type { ChatMessage, ReasoningStep } from "../../types/message";
 
 export type ChatTransportEvent =
   | { type: "text-delta"; textDelta: string }
   | { type: "tool-call-start"; toolCallId: string; toolName: string }
   | { type: "tool-call-delta"; toolCallId: string; argsDelta: string }
   | { type: "tool-call-end"; toolCallId: string; result?: unknown }
-  | { type: "reasoning"; reasoning: string }
+  | { type: "reasoning"; step: ReasoningStep }
   | { type: "metadata"; data: Record<string, unknown> }
   | { type: "error"; error: string; code?: string }
   | { type: "custom"; event: string; payload: unknown };

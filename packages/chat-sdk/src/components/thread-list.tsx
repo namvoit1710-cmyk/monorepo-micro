@@ -5,22 +5,11 @@ import {
     ThreadListPrimitive,
 } from "@assistant-ui/react";
 import { cn } from "@ldc/ui";
-import { Button } from "@ldc/ui/components/button";
-import { PlusIcon } from "lucide-react";
 import type { FC } from "react";
 
 export const ThreadList: FC = () => {
     return (
-        <ThreadListPrimitive.Root className="aui-thread-list-root flex flex-col gap-0.5">
-            <ThreadListPrimitive.New asChild>
-                <Button
-                    variant="ghost"
-                    className="aui-thread-list-new flex items-center justify-start gap-2 rounded-lg px-3 py-2 text-sm"
-                >
-                    <PlusIcon className="size-4 shrink-0" />
-                    New Thread
-                </Button>
-            </ThreadListPrimitive.New>
+        <ThreadListPrimitive.Root className="aui-thread-list-root flex flex-col gap-0.5 py-2">
             <ThreadListPrimitive.Items>
                 {() => <ThreadListItem />}
             </ThreadListPrimitive.Items>
@@ -32,8 +21,8 @@ const ThreadListItem: FC = () => {
     return (
         <ThreadListItemPrimitive.Root
             className={cn(
-                "aui-thread-list-item group flex items-center gap-2 rounded-lg px-3 py-2 text-sm",
-                "hover:bg-accent data-[active=true]:bg-accent",
+                "aui-thread-list-item group flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors",
+                "hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground data-[active=true]:font-medium",
             )}
         >
             <ThreadListItemPrimitive.Trigger className="aui-thread-list-item-trigger flex-1 truncate text-start">

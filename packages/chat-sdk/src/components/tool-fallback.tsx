@@ -66,7 +66,7 @@ function ToolFallbackRoot({
             open={isOpen}
             onOpenChange={handleOpenChange}
             className={cn(
-                "aui-tool-fallback-root group/tool-fallback-root w-full rounded-lg border py-3",
+                "aui-tool-fallback-root group/tool-fallback-root w-full rounded-xl border border-border/50 bg-muted/5 py-3",
                 className,
             )}
             style={
@@ -111,7 +111,7 @@ function ToolFallbackTrigger({
         <CollapsibleTrigger
             data-slot="tool-fallback-trigger"
             className={cn(
-                "aui-tool-fallback-trigger group/trigger flex w-full items-center gap-2 px-4 text-sm transition-colors",
+                "aui-tool-fallback-trigger group/trigger flex w-full items-center gap-1.5 px-4 text-xs font-medium text-muted-foreground/70 transition-colors hover:text-muted-foreground",
                 className,
             )}
             {...props}
@@ -178,7 +178,7 @@ function ToolFallbackContent({
             )}
             {...props}
         >
-            <div className="mt-3 flex flex-col gap-2 border-t pt-2">{children}</div>
+            <div className="mt-2 flex flex-col gap-2 border-t border-border/40 pt-3">{children}</div>
         </CollapsibleContent>
     );
 }
@@ -279,7 +279,7 @@ const ToolFallbackImpl: ToolCallMessagePartComponent = ({
 
     return (
         <ToolFallbackRoot
-            className={cn(isCancelled && "border-muted-foreground/30 bg-muted/30")}
+            className={cn(isCancelled && "border-muted-foreground/20 bg-muted/30")}
         >
             <ToolFallbackTrigger toolName={toolName} status={status} />
             <ToolFallbackContent>

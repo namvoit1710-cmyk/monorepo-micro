@@ -13,6 +13,16 @@ export interface ToolCallContentPart {
   result?: unknown;
 }
 
+export interface ReasoningStep {
+  label: string;
+  content?: string;
+}
+
+export interface ReasoningContentPart {
+  type: "reasoning";
+  steps: ReasoningStep[];
+}
+
 export interface ImageContentPart {
   type: "image";
   image: string;
@@ -24,7 +34,9 @@ export interface FileAttachment {
   name: string;
   contentType?: string;
   url?: string;
+  type?: "image" | "document" | "file";
 }
+
 
 export interface DataContentPart<T = unknown> {
   type: `data-${string}`;
@@ -33,6 +45,7 @@ export interface DataContentPart<T = unknown> {
 
 export type ChatContentPart =
   | TextContentPart
+  | ReasoningContentPart
   | ToolCallContentPart
   | ImageContentPart
   | DataContentPart;
