@@ -3,6 +3,7 @@ export type {
   ChatTransportEvent,
   ChatTransportError,
   ChatTransportEvents,
+  ChatTransportMiddleware,
   ChatTransportOptions,
   TransportContext,
   TransportRetryConfig,

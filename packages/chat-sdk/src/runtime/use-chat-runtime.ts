@@ -78,6 +78,8 @@ export function useChatRuntime(
     isRunning: store.isRunning,
     onNew: actions.onNew,
     onCancel: actions.onCancel,
+    onEdit: actions.onEdit,
+    onReload: actions.onReload,
     adapters: {
       ...(attachmentsAdapter ? { attachments: attachmentsAdapter } : {}),
       ...(threadList ? { threadList } : {}),

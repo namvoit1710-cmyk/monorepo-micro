@@ -2,18 +2,20 @@
 
 import "@assistant-ui/react-markdown/styles/dot.css";
 
+import { TextMessagePartProvider } from "@assistant-ui/react";
+import type { CodeHeaderProps } from "@assistant-ui/react-markdown";
 import {
-    type CodeHeaderProps,
     MarkdownTextPrimitive,
     unstable_memoizeMarkdownComponents as memoizeMarkdownComponents,
-    useIsMarkdownCodeBlock,
+    useIsMarkdownCodeBlock
 } from "@assistant-ui/react-markdown";
-import { TextMessagePartProvider } from "@assistant-ui/react";
 import { CheckIcon, CopyIcon } from "lucide-react";
-import { type FC, memo, useState } from "react";
+import type { FC } from "react";
+import { memo, useState } from "react";
 import remarkGfm from "remark-gfm";
 
 import { cn } from "@ldc/ui";
+import { SyntaxHighlighter } from "./syntax-highlighting";
 import { TooltipIconButton } from "./tooltip-icon-button";
 
 const MarkdownTextImpl = () => {
@@ -83,6 +85,7 @@ const useCopyToClipboard = ({
 };
 
 const defaultComponents = memoizeMarkdownComponents({
+    SyntaxHighlighter,
     h1: ({ className, ...props }) => (
         <h1
             className={cn(
@@ -233,15 +236,6 @@ const defaultComponents = memoizeMarkdownComponents({
             {...props}
         />
     ),
-    pre: ({ className, ...props }) => (
-        <pre
-            className={cn(
-                "aui-md-pre overflow-x-auto rounded-t-none rounded-b-lg border border-border/40 border-t-0 bg-muted/20 px-4 py-3 text-xs leading-6",
-                className,
-            )}
-            {...props}
-        />
-    ),
     code: function Code({ className, ...props }) {
         const isCodeBlock = useIsMarkdownCodeBlock();
         return (
@@ -255,5 +249,12 @@ const defaultComponents = memoizeMarkdownComponents({
             />
         );
     },
+    img: ({ className, alt, ...props }) => (
+        <img
+            className={cn("aui-md-img my-2 max-w-full rounded-md", className)}
+            alt={alt ?? ""}
+            {...props}
+        />
+    ),
     CodeHeader,
 });

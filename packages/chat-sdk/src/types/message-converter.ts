@@ -11,9 +11,7 @@ export function defaultConvertMessage(
     id: message.id,
     role: message.role,
     content: normalizeContent(message.content),
-    createdAt: message.createdAt
-      ? new Date(message.createdAt)
-      : undefined,
+    createdAt: message.createdAt ? new Date(message.createdAt as string | number) : undefined,
     attachments: message.attachments?.map((att) => ({
       id: att.id,
       type: att.type ?? (

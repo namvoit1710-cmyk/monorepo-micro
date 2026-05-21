@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import type { ChatMessage } from "../../types/message";
 import type { ChatStoreAdapter } from "./types";
 
@@ -17,10 +17,13 @@ export function useDefaultChatStore(
     [],
   );
 
-  return {
-    messages,
-    isRunning,
-    setMessages: stableSetMessages,
-    setIsRunning,
-  };
+  return useMemo(
+    () => ({
+      messages,
+      isRunning,
+      setMessages: stableSetMessages,
+      setIsRunning,
+    }),
+    [messages, isRunning, stableSetMessages],
+  );
 }

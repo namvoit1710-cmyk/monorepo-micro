@@ -1,5 +1,9 @@
 import type { ChatMessage, ReasoningStep } from "../../types/message";
 
+// ---------------------------------------------------------------------------
+// Transport Events — discriminated union
+// ---------------------------------------------------------------------------
+
 export type ChatTransportEvent =
   | { type: "text-delta"; textDelta: string }
   | { type: "tool-call-start"; toolCallId: string; toolName: string }
@@ -22,6 +26,10 @@ export interface ChatTransportEvents {
   onError: (error: ChatTransportError) => void;
 }
 
+// ---------------------------------------------------------------------------
+// Transport Context & Options
+// ---------------------------------------------------------------------------
+
 export interface TransportContext {
   runId: string;
   conversationId?: string;
@@ -33,12 +41,41 @@ export interface ChatTransportOptions {
   context?: TransportContext;
 }
 
+// ---------------------------------------------------------------------------
+// Retry Config
+// ---------------------------------------------------------------------------
+
 export interface TransportRetryConfig {
   maxRetries?: number;
   retryDelay?: number;
   backoffMultiplier?: number;
   onRetry?: (attempt: number, error: Error) => void;
 }
+
+// ---------------------------------------------------------------------------
+// Middleware — interceptor seam for logging/analytics/error-tracking
+// ---------------------------------------------------------------------------
+
+export interface ChatTransportMiddleware {
+  /** Called before transport.send — can modify messages or context */
+  beforeSend?: (
+    messages: ChatMessage[],
+    context?: TransportContext,
+  ) => { messages: ChatMessage[]; context?: TransportContext };
+
+  /** Called on every chunk — for logging/analytics */
+  onChunk?: (event: ChatTransportEvent) => void;
+
+  /** Called on complete */
+  onComplete?: () => void;
+
+  /** Called on error — return true to suppress default error handling */
+  onError?: (error: ChatTransportError) => boolean | void;
+}
+
+// ---------------------------------------------------------------------------
+// Transport Interface
+// ---------------------------------------------------------------------------
 
 export interface ChatTransport {
   send(

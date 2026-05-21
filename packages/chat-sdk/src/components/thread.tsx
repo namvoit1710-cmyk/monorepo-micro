@@ -9,6 +9,7 @@ import {
     SuggestionPrimitive,
     ThreadPrimitive,
     useAuiState,
+    type ToolCallMessagePartComponent,
 } from "@assistant-ui/react";
 import { cn } from "@ldc/ui";
 import { Button } from "@ldc/ui/components/button";
@@ -26,7 +27,7 @@ import {
     SquareIcon,
 } from "lucide-react";
 import type { FC } from "react";
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
     ComposerAddAttachment,
     ComposerAttachments,
@@ -39,8 +40,15 @@ import { ThinkingProgressTimeline } from "./thinking-progress";
 import { ToolFallback } from "./tool-fallback";
 import { TooltipIconButton } from "./tooltip-icon-button";
 
-export const Thread: FC = () => {
+export interface ThreadTools {
+    by_name?: Record<string, ToolCallMessagePartComponent | undefined>;
+}
+
+const ThreadToolsContext = createContext<ThreadTools | undefined>(undefined);
+
+export const Thread: FC<{ tools?: ThreadTools }> = ({ tools }) => {
     return (
+        <ThreadToolsContext.Provider value={tools}>
         <ThreadPrimitive.Root
             className="aui-root aui-thread-root @container flex h-full flex-col bg-background"
             style={{
@@ -75,6 +83,7 @@ export const Thread: FC = () => {
                 </div>
             </ThreadPrimitive.Viewport>
         </ThreadPrimitive.Root>
+        </ThreadToolsContext.Provider>
     );
 };
 
@@ -255,6 +264,7 @@ const ThinkingProgress: FC = () => {
 };
 
 const AssistantMessage: FC = () => {
+    const threadTools = useContext(ThreadToolsContext);
     // reserves space for action bar and compensates with `-mb` for consistent msg spacing
     // keeps hovered action bar from shifting layout (autohide doesn't support absolute positioning well)
     // for pt-[n] use -mb-[n + 6] & min-h-[n + 6] to preserve compensation
@@ -292,10 +302,16 @@ const AssistantMessage: FC = () => {
                         }
                         return groups;
                     }}
-                    components={{
+                    components={useMemo(() => ({
                         Text: () => <MarkdownText />,
                         Reasoning: () => null,
-                        tools: { Fallback: (part) => <ToolFallback {...part} /> },
+                        tools: {
+                            Fallback: (part) => {
+                                const Named = threadTools?.by_name?.[part.toolName];
+                                if (Named) return <Named {...part} />;
+                                return <ToolFallback {...part} />;
+                            },
+                        },
                         Group: ({ groupKey, children }) => {
                             if (groupKey === "chainOfThought") {
                                 return (
@@ -306,7 +322,7 @@ const AssistantMessage: FC = () => {
                             }
                             return <>{children}</>;
                         },
-                    }}
+                    }), [threadTools])}
                 />
                 <MessageError />
             </div>

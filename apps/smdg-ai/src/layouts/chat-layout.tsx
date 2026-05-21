@@ -55,18 +55,20 @@ export function ChatLayout() {
 
   const actions = useChatActions(transport, store, { beforeSend });
 
+  const { setMessages } = store;
+
   // Load mock history messages when selecting a mock conversation,
   // or clear the messages when navigating to the new chat screen.
   useEffect(() => {
     if (conversationId && conversationId in MOCK_HISTORY_MESSAGES) {
       const messages = MOCK_HISTORY_MESSAGES[conversationId];
       if (messages) {
-        store.setMessages(messages);
+        setMessages(messages);
       }
     } else if (!conversationId) {
-      store.setMessages([]);
+      setMessages([]);
     }
-  }, [conversationId, store]);
+  }, [conversationId, setMessages]);
 
   const threadListAdapter = useMemo(
     () => ({
@@ -77,16 +79,15 @@ export function ChatLayout() {
         title: t.title,
       })),
       onSwitchToThread: (id: string) => {
-        store.setMessages([]);
+        setMessages([]);
         navigateToConversation(id);
       },
       onSwitchToNewThread: () => {
-        store.setMessages([]);
+        setMessages([]);
         startNewChat();
       },
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [conversationId, navigateToConversation, startNewChat],
+    [conversationId, navigateToConversation, startNewChat, setMessages],
   );
 
   const mockOnUpload = useCallback(async (file: File) => {

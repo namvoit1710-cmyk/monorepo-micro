@@ -15,6 +15,7 @@ export type {
   ChatTransportEvent,
   ChatTransportError,
   ChatTransportEvents,
+  ChatTransportMiddleware,
   ChatTransportOptions,
   TransportContext,
   TransportRetryConfig,
@@ -22,6 +23,7 @@ export type {
   ChatActions,
   ChatActionsConfig,
   ChatRuntimeConfig,
+  ChatThreadListAdapter,
   SocketTransportConfig,
   SSETransportConfig,
 } from "./runtime";
@@ -33,6 +35,8 @@ export {
   updateAssistantMessageFromEvent,
   markMessageComplete,
   markMessageError,
+  editUserMessage,
+  removeLastAssistantMessage,
 } from "./helpers/message-helpers";
 
 // Types
@@ -40,6 +44,7 @@ export type * from "./types";
 
 // Components
 export { Thread } from "./components/thread";
+export type { ThreadTools } from "./components/thread";
 export { AssistantSidebar } from "./components/assistant-sidebar";
 export { AssistantModal } from "./components/assistant-modal";
 export { ThreadListSidebar } from "./components/thread-list-component";

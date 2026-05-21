@@ -3,7 +3,8 @@
 import type { SyntaxHighlighterProps as AUIProps } from "@assistant-ui/react-markdown";
 import { cn } from "@ldc/ui";
 import type { FC } from "react";
-import ShikiHighlighter, { type ShikiHighlighterProps } from "react-shiki";
+import type { ShikiHighlighterProps } from "react-shiki";
+import ShikiHighlighter from "react-shiki";
 
 /**
  * Props for the SyntaxHighlighter component
@@ -41,7 +42,7 @@ export const SyntaxHighlighter: FC<HighlighterProps> = ({
     return (
         <ShikiHighlighter
             {...props}
-            language={language}
+            language={language ?? "text"}
             theme={theme}
             addDefaultStyles={addDefaultStyles}
             showLanguage={showLanguage}

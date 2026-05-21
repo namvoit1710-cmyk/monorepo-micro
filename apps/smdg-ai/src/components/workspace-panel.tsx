@@ -1,5 +1,7 @@
-import { X, FileText, GitBranch } from "lucide-react";
+import { Builder, type BuilderRef, type ISchema } from "@ldc/autoform";
 import { cn } from "@ldc/ui";
+import { X, FileText, GitBranch } from "lucide-react";
+import { useRef } from "react";
 import { useWorkspaceStore } from "../stores/workspace-store";
 import { FlowchartViewer } from "./flowchart-viewer";
 
@@ -63,12 +65,9 @@ export function WorkspacePanel() {
   );
 }
 
-type FormField = { name: string; label: string; type: string; required?: boolean };
-
 function FormContent({ data }: { data: unknown }) {
-  const schema = (
-    data as { schema?: { fields?: FormField[] } } | null
-  )?.schema;
+  const schema = (data as { schema?: ISchema } | null)?.schema;
+  const builderRef = useRef<BuilderRef>(null);
 
   if (!schema?.fields?.length) {
     return (
@@ -79,38 +78,22 @@ function FormContent({ data }: { data: unknown }) {
   }
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
-      {schema.fields.map((field) => (
-        <div key={field.name} className="flex flex-col gap-1.5">
-          <label htmlFor={field.name} className="text-xs font-medium text-foreground">
-            {field.label}
-            {field.required && <span className="ml-1 text-destructive">*</span>}
-          </label>
-          {field.type === "textarea" ? (
-            <textarea
-              id={field.name}
-              name={field.name}
-              rows={3}
-              className="w-full resize-none rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder={`Nhập ${field.label.toLowerCase()}...`}
-            />
-          ) : (
-            <input
-              id={field.name}
-              name={field.name}
-              type={field.type === "date" ? "date" : "text"}
-              className="w-full rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder={field.type !== "date" ? `Nhập ${field.label.toLowerCase()}...` : undefined}
-            />
-          )}
-        </div>
-      ))}
+    <div className="flex flex-col gap-4">
+      <Builder
+        ref={builderRef}
+        schema={schema}
+        onSubmit={(values) => {
+          // TODO(Phase 5): wire to real API
+          console.info("[WorkspacePanel] form submitted:", values);
+        }}
+      />
       <button
-        type="submit"
+        type="button"
+        onClick={() => builderRef.current?.onSubmit()}
         className="mt-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         Xác nhận
       </button>
-    </form>
+    </div>
   );
 }

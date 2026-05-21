@@ -1,4 +1,9 @@
-import type { ChatTransport, ChatTransportEvents } from "@ldc/chat-sdk";
+import type {
+  ChatMessage,
+  ChatTransport,
+  ChatTransportEvents,
+  ChatTransportOptions,
+} from "@ldc/chat-sdk";
 import { MOCK_STREAMING_SCRIPT } from "./mock-data";
 import { useWorkspaceStore } from "../stores/workspace-store";
 
@@ -6,7 +11,11 @@ export class MockTransport implements ChatTransport {
   private timers: ReturnType<typeof setTimeout>[] = [];
   private completionTimer: ReturnType<typeof setTimeout> | null = null;
 
-  send(_messages: unknown[], events: ChatTransportEvents): void {
+  send(
+    _messages: ChatMessage[],
+    events: ChatTransportEvents,
+    _options?: ChatTransportOptions,
+  ): void {
     this.cancel();
 
     const completionEntry = MOCK_STREAMING_SCRIPT.find((e) => e.type === "complete");
@@ -20,6 +29,24 @@ export class MockTransport implements ChatTransport {
           events.onChunk({ type: "text-delta", textDelta: entry.text });
         } else if (entry.type === "reasoning") {
           events.onChunk({ type: "reasoning", step: entry.step });
+        } else if (entry.type === "tool-call-start") {
+          events.onChunk({
+            type: "tool-call-start",
+            toolCallId: entry.toolCallId,
+            toolName: entry.toolName,
+          });
+        } else if (entry.type === "tool-call-delta") {
+          events.onChunk({
+            type: "tool-call-delta",
+            toolCallId: entry.toolCallId,
+            argsDelta: entry.argsDelta,
+          });
+        } else if (entry.type === "tool-call-end") {
+          events.onChunk({
+            type: "tool-call-end",
+            toolCallId: entry.toolCallId,
+            result: entry.result,
+          });
         } else if (entry.type === "agent_step") {
           useWorkspaceStore.getState().updateStep(entry.step);
         } else if (entry.type === "show_workspace") {

@@ -1,4 +1,6 @@
+import type { ISchema } from "@ldc/autoform";
 import type { ChatMessage, ChatThread } from "@ldc/chat-sdk";
+import type { WorkspaceMode } from "../stores/workspace-store";
 
 const now = Date.now();
 const h = 3_600_000;
@@ -112,25 +114,38 @@ export const MOCK_THREADS: ChatThread[] = [
   },
 ];
 
-export const MOCK_FORM_SCHEMA = {
+export const MOCK_FORM_SCHEMA: ISchema = {
   fields: [
     {
-      name: "container_ids",
-      label: "Container IDs cần kiểm tra",
-      type: "textarea",
-      required: true,
+      key: "container_ids",
+      outputType: "string",
+      fieldConfig: {
+        fieldWrapper: "FormItemWrapper",
+        fieldControl: "TextareaControl",
+        wrapperProps: { label: "Container IDs cần kiểm tra" },
+        controlProps: { rows: 3 },
+        rules: [{ method: "required", message: "Vui lòng nhập container IDs" }],
+      },
     },
     {
-      name: "inspection_date",
-      label: "Ngày kiểm tra",
-      type: "date",
-      required: true,
+      key: "inspection_date",
+      outputType: "string",
+      fieldConfig: {
+        fieldWrapper: "FormItemWrapper",
+        fieldControl: "InputControl",
+        wrapperProps: { label: "Ngày kiểm tra" },
+        controlProps: { type: "date" },
+        rules: [{ method: "required", message: "Vui lòng chọn ngày kiểm tra" }],
+      },
     },
     {
-      name: "inspector_note",
-      label: "Ghi chú của kiểm tra viên",
-      type: "text",
-      required: false,
+      key: "inspector_note",
+      outputType: "string",
+      fieldConfig: {
+        fieldWrapper: "FormItemWrapper",
+        fieldControl: "InputControl",
+        wrapperProps: { label: "Ghi chú của kiểm tra viên" },
+      },
     },
   ],
 };
@@ -148,7 +163,18 @@ export interface AgentStep {
   status: "pending" | "running" | "complete" | "error";
 }
 
-export const MOCK_STREAMING_SCRIPT = [
+
+type MockStreamEntry =
+  | { delay: number; type: "reasoning"; step: { label: string; content?: string } }
+  | { delay: number; type: "text"; text: string }
+  | { delay: number; type: "agent_step"; step: AgentStep }
+  | { delay: number; type: "show_workspace"; mode: WorkspaceMode; schema: unknown }
+  | { delay: number; type: "tool-call-start"; toolCallId: string; toolName: string }
+  | { delay: number; type: "tool-call-delta"; toolCallId: string; argsDelta: string }
+  | { delay: number; type: "tool-call-end"; toolCallId: string; result: unknown }
+  | { delay: number; type: "complete" };
+
+export const MOCK_STREAMING_SCRIPT: MockStreamEntry[] = [
   // ── Phase 1: in-chat thinking timeline ──
   // Format per chunk: "Step label\n\nMarkdown detail" — first line = label, rest = detail
   // Steps separated by leading "\n" between chunks
@@ -199,20 +225,58 @@ export const MOCK_STREAMING_SCRIPT = [
     step: { id: "step_4", label: "Tổng hợp kết quả và tạo báo cáo", status: "complete" } as AgentStep,
   },
 
+  // ── Phase 3b: tool-call streaming (smdg.inspect_batch) ──
+  // These demonstrate the new tool-call-start/delta/end event flow
+  {
+    delay: 4250,
+    type: "tool-call-start" as const,
+    toolCallId: "tc_inspect_001",
+    toolName: "smdg.inspect_batch",
+  },
+  {
+    delay: 4300,
+    type: "tool-call-delta" as const,
+    toolCallId: "tc_inspect_001",
+    argsDelta: '{"container_ids":',
+  },
+  {
+    delay: 4350,
+    type: "tool-call-delta" as const,
+    toolCallId: "tc_inspect_001",
+    argsDelta: '["TGBU4432109","MSCU7654321","CMAU1122334"]',
+  },
+  {
+    delay: 4400,
+    type: "tool-call-delta" as const,
+    toolCallId: "tc_inspect_001",
+    argsDelta: ',"rule_set":"SMDG_v2.4","priority":"high"}',
+  },
+  {
+    delay: 4500,
+    type: "tool-call-end" as const,
+    toolCallId: "tc_inspect_001",
+    result: {
+      status: "requires_action",
+      critical_count: 3,
+      warning_count: 3,
+      containers_checked: 47,
+    },
+  },
+
   // ── Phase 4: text-delta summary (after all reasoning steps done) ──
-  { delay: 4300, type: "text" as const, text: "## Kết quả phân tích\n\n" },
-  { delay: 4400, type: "text" as const, text: "Dựa trên dữ liệu manifest đã truy vấn, tôi xác định được:\n\n" },
-  { delay: 4550, type: "text" as const, text: "- **3 container lạnh** cần kiểm tra nhiệt độ khẩn cấp\n" },
-  { delay: 4700, type: "text" as const, text: "- **2 lô hàng nguy hiểm** cần khai báo bổ sung trước khi thông quan\n" },
-  { delay: 4850, type: "text" as const, text: "- **1 container** có dấu hiệu hư hỏng seal niêm phong\n\n" },
-  { delay: 5000, type: "text" as const, text: '```json\n{ "status": "requires_action", "critical_count": 3, "warning_count": 3 }\n```\n\n' },
-  { delay: 5200, type: "text" as const, text: "Vui lòng điền form bên phải để xác nhận và lên lịch kiểm tra." },
+  { delay: 4600, type: "text" as const, text: "## Kết quả phân tích\n\n" },
+  { delay: 4700, type: "text" as const, text: "Dựa trên dữ liệu manifest đã truy vấn, tôi xác định được:\n\n" },
+  { delay: 4850, type: "text" as const, text: "- **3 container lạnh** cần kiểm tra nhiệt độ khẩn cấp\n" },
+  { delay: 5000, type: "text" as const, text: "- **2 lô hàng nguy hiểm** cần khai báo bổ sung trước khi thông quan\n" },
+  { delay: 5150, type: "text" as const, text: "- **1 container** có dấu hiệu hư hỏng seal niêm phong\n\n" },
+  { delay: 5300, type: "text" as const, text: '```json\n{ "status": "requires_action", "critical_count": 3, "warning_count": 3 }\n```\n\n' },
+  { delay: 5500, type: "text" as const, text: "Vui lòng điền form bên phải để xác nhận và lên lịch kiểm tra." },
 
   // ── Phase 5: open workspace form ──
-  { delay: 5400, type: "show_workspace" as const, mode: "form" as const, schema: MOCK_FORM_SCHEMA },
+  { delay: 5700, type: "show_workspace" as const, mode: "form" as const, schema: MOCK_FORM_SCHEMA },
 
   // ── Phase 6: stream complete ──
-  { delay: 5600, type: "complete" as const },
+  { delay: 5900, type: "complete" as const },
 ];
 
 export const MOCK_HISTORY_MESSAGES: Record<string, ChatMessage[]> = {
